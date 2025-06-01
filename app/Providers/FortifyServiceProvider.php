@@ -31,50 +31,46 @@ class FortifyServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
     public function boot(): void
-{
+    {
+        $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = \App\Models\User::where('email', $request->email)->first();
 
-    Fortify::authenticateUsing(function (Request $request) {
-    $user = \App\Models\User::where('email', $request->email)->first();
+            // ✅ Validate credentials first
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return null;
+            }
 
-    if (! $user || ! Hash::check($request->password, $user->password)) {
-        return null;
+            if ($request->has('is_admin_login')) {
+                // Only allow admin or superadmin to login here
+                if (!in_array(optional($user->role)->name, ['admin', 'superadmin'])) {
+                    return null;
+                }
+            } else {
+                // Default login (operator only)
+                if (optional($user->role)->name !== 'operator') {
+                    return null;
+                }
+            }
+
+            return $user;
+        });
+
+        Fortify::createUsersUsing(CreateNewUser::class);
+        Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
+        Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
+        Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        RateLimiter::for('login', function (Request $request) {
+            $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())) . '|' . $request->ip());
+            return Limit::perMinute(5)->by($throttleKey);
+        });
+
+        RateLimiter::for('two-factor', function (Request $request) {
+            return Limit::perMinute(5)->by($request->session()->get('login.id'));
+        });
+
+        // ✅ Bind custom login redirect
+        $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
     }
-
-    // Detect if user is coming from /admin/login
-    $isAdminLogin = $request->is('admin/login') || $request->fullUrl() === route('admin.login');
-    $role = optional($user->role)->name;
-
-    // Allow login only if route and role match
-    if ($isAdminLogin && in_array($role, ['admin', 'superadmin'])) {
-        return $user;
-    }
-
-    if (! $isAdminLogin && $role === 'operator') {
-        return $user;
-    }
-
-    // Prevent login if route and role don't match
-    return null;
-});
-
-    Fortify::createUsersUsing(CreateNewUser::class);
-    Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
-    Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
-    Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
-
-    RateLimiter::for('login', function (Request $request) {
-        $throttleKey = Str::transliterate(Str::lower($request->input(Fortify::username())).'|'.$request->ip());
-        return Limit::perMinute(5)->by($throttleKey);
-    });
-
-    RateLimiter::for('two-factor', function (Request $request) {
-        return Limit::perMinute(5)->by($request->session()->get('login.id'));
-    });
-
-    // ✅ Bind custom login redirect
-    $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
-
-    
-}
-
 }

@@ -22,21 +22,21 @@ class User extends Authenticatable
     use Notifiable;
     use TwoFactorAuthenticatable;
     use HasRoles;
-    
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-    'first_name',
-    'middle_name',
-    'last_name',
-    'contact_number',
-    'email',
-    'password',
-    // ...
-];
+        'first_name',
+        'middle_name',
+        'last_name',
+        'contact_number',
+        'email',
+        'password',
+        // ...
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -74,7 +74,6 @@ class User extends Authenticatable
 
     public function role()
     {
-    return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class);
     }
-
 }
