@@ -76,4 +76,28 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class);
     }
+    public function operator()
+    {
+        return $this->hasOne(Operator::class);
+    }
+
+    public function reviewedApplications()
+    {
+        return $this->hasMany(FranchiseApplication::class, 'reviewed_by');
+    }
+
+    public function verifiedOperatorDocuments()
+    {
+        return $this->hasMany(OperatorDocument::class, 'verified_by');
+    }
+
+    public function verifiedDriverDocuments()
+    {
+        return $this->hasMany(DriverDocument::class, 'verified_by');
+    }
+
+    public function statusChanges()
+    {
+        return $this->hasMany(ApplicationStatusHistory::class, 'changed_by');
+    }
 }

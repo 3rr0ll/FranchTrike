@@ -1,0 +1,200 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class FranchiseApplication extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'application_number',
+        'operator_id',
+        'driver_id',
+        'application_type',
+        'previous_application_id',
+        'franchise_no',
+        'sticker_no',
+        'operator_name',
+        'ctc_no',
+        'ctc_date_issued',
+        'ctc_place_issued',
+        'status',
+        'rejection_reason',
+        'submitted_at',
+        'reviewed_at',
+        'reviewed_by',
+        'franchise_start_date',
+        'franchise_end_date',
+        'franchise_fee',
+    ];
+
+    protected $casts = [
+        'ctc_date_issued' => 'date',
+        'submitted_at' => 'datetime',
+        'reviewed_at' => 'datetime',
+        'franchise_start_date' => 'date',
+        'franchise_end_date' => 'date',
+        'franchise_fee' => 'decimal:2',
+    ];
+
+    // Relationships
+    public function operator()
+    {
+        return $this->belongsTo(Operator::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
+    }
+
+    public function previousApplication()
+    {
+        return $this->belongsTo(FranchiseApplication::class, 'previous_application_id');
+    }
+
+    public function renewalApplications()
+    {
+        return $this->hasMany(FranchiseApplication::class, 'previous_application_id');
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function operatorDocuments()
+    {
+        return $this->hasMany(OperatorDocument::class);
+    }
+
+    public function driverDocuments()
+    {
+        return $this->hasMany(DriverDocument::class);
+    }
+
+    public function operatorClearances()
+    {
+        return $this->hasMany(OperatorClearance::class);
+    }
+
+    public function statusHistory()
+    {
+        return $this->hasMany(ApplicationStatusHistory::class);
+    }
+
+    // Accessors
+    public function getStatusBadgeAttribute()
+    {
+        $badges = [
+            'draft' => 'secondary',
+            'submitted' => 'info',
+            'under_review' => 'warning',
+            'approved' => 'success',
+            'rejected' => 'danger',
+        ];
+
+        return $badges[$this->status] ?? 'secondary';
+    }
+
+    public function getStatusLabelAttribute()
+    {
+        return ucfirst(str_replace('_', ' ', $this->status));
+    }
+
+    public function getApplicationTypeLabelAttribute()
+    {
+        return ucfirst($this->application_type);
+    }
+
+    // Methods
+    public function isEditable()
+    {
+        return in_array($this->status, ['draft', 'rejected']);
+    }
+
+    public function canBeSubmitted()
+    {
+        $hasRequiredOperatorDocs = $this->operatorDocuments()
+            ->whereHas('documentType', function ($query) {
+                $query->where('is_required', true)->where('applies_to', 'operator');
+            })
+            ->where('status', 'approved')
+            ->count() > 0;
+
+        $hasRequiredDriverDocs = $this->driverDocuments()
+            ->whereHas('documentType', function ($query) {
+                $query->where('is_required', true)->where('applies_to', 'driver');
+            })
+            ->where('status', 'approved')
+            ->count() > 0;
+
+        return $this->status === 'draft' && $hasRequiredOperatorDocs && $hasRequiredDriverDocs;
+    }
+
+    public function canBeRenewed()
+    {
+        return $this->status === 'approved' &&
+            !$this->renewalApplications()->whereIn('status', ['submitted', 'under_review', 'approved'])->exists();
+    }
+
+    public function isDueForRenewal()
+    {
+        if (!$this->franchise_end_date || $this->status !== 'approved') {
+            return false;
+        }
+
+        return $this->franchise_end_date->diffInDays(now()) <= 90; // 90 days before expiry
+    }
+
+    public function submit()
+    {
+        if ($this->canBeSubmitted()) {
+            $this->update([
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+
+            $this->logStatusChange('draft', 'submitted', 'Application submitted by operator');
+            return true;
+        }
+        return false;
+    }
+
+    public function approve($reviewerId, $franchiseDetails = [])
+    {
+        $this->update(array_merge([
+            'status' => 'approved',
+            'reviewed_at' => now(),
+            'reviewed_by' => $reviewerId,
+        ], $franchiseDetails));
+
+        $this->logStatusChange($this->status, 'approved', 'Application approved');
+    }
+
+    public function reject($reviewerId, $reason)
+    {
+        $this->update([
+            'status' => 'rejected',
+            'reviewed_at' => now(),
+            'reviewed_by' => $reviewerId,
+            'rejection_reason' => $reason,
+        ]);
+
+        $this->logStatusChange($this->status, 'rejected', $reason);
+    }
+
+    protected function logStatusChange($previousStatus, $newStatus, $reason = null)
+    {
+        ApplicationStatusHistory::create([
+            'franchise_application_id' => $this->id,
+            'previous_status' => $previousStatus,
+            'new_status' => $newStatus,
+            'changed_by' => auth()->id(),
+            'change_reason' => $reason,
+        ]);
+    }
+}
