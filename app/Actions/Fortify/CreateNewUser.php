@@ -17,24 +17,19 @@ class CreateNewUser implements CreatesNewUsers
      *
      * @param  array<string, string>  $input
      */
-   public function create(array $input)
-{
-    Validator::make($input, [
-        'first_name' => ['required', 'string', 'max:255'],
-        'middle_name' => ['nullable', 'string', 'max:255'],
-        'last_name' => ['required', 'string', 'max:255'],
-        'contact_number' => ['required', 'string', 'max:20'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => $this->passwordRules(),
-    ])->validate();
+    public function create(array $input)
+    {
+        Validator::make($input, [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => $this->passwordRules(),
+        ])->validate();
 
-    return User::create([
-        'first_name' => $input['first_name'],
-        'middle_name' => $input['middle_name'] ?? null,
-        'last_name' => $input['last_name'],
-        'contact_number' => $input['contact_number'],
-        'email' => $input['email'],
-        'password' => Hash::make($input['password']),
-    ]);
-}
+        return User::create([
+            'name' => $input['name'],
+            'email' => $input['email'],
+            'password' => Hash::make($input['password']),
+            'role_id' => 1,
+        ]);
+    }
 }
