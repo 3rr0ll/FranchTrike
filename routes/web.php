@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
+use App\Http\Controllers\Operator\OperatorController;
+
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -30,14 +32,22 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    // Operator routes
     Route::middleware([RoleMiddleware::class . ':operator'])
         ->prefix('operator')
         ->name('operator.')
         ->group(function () {
             Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
-            // Add more operator-specific routes here
+
+            // Manual CRUD routes to customize URI
+            Route::get('/', [OperatorController::class, 'index'])->name('index');
+            Route::get('/create', [OperatorController::class, 'create'])->name('create');
+            Route::post('/', [OperatorController::class, 'store'])->name('store');
+            Route::get('/{operator}/edit', [OperatorController::class, 'edit'])->name('edit');
+            Route::put('/{operator}', [OperatorController::class, 'update'])->name('update');
+            Route::delete('/{operator}', [OperatorController::class, 'destroy'])->name('destroy');
         });
+
+
 
     // Admin routes
     Route::middleware([RoleMiddleware::class . ':admin'])
