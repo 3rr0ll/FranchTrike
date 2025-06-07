@@ -131,18 +131,36 @@
                     </div>
                 </div>
 
-                {{-- Submit Button --}}
-                <div class="flex justify-end space-x-3">
-                    <a href="{{ route('driver.index') }}"
-                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded">
-                        Cancel
-                    </a>
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
-                        Submit Driver Information
-                    </button>
+
+                <div class="mt-4">
+                    <div class="flex justify-end">
+                        <x-button type="button" id="submit-btn">
+                            Submit
+                        </x-button>
+                    </div>
                 </div>
-            </form>
+
+                <!-- SweetAlert2 CDN -->
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script>
+                    document.getElementById('submit-btn').addEventListener('click', function(e) {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "Do you want to submit this information?",
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, submit'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.closest('form').submit();
+                            }
+                        });
+                    });
+                </script>
         </div>
+        </form>
+    </div>
     </div>
 </x-app-layout>

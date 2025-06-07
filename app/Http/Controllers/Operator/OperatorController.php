@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Operator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class OperatorController extends Controller
 {
@@ -39,13 +41,12 @@ class OperatorController extends Controller
             'civil_status' => 'required|string',
             'contact_no' => 'required|string',
         ]);
-
         // Add logged in user ID
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = Auth::user()->id;
 
         Operator::create($validated);
 
-        return redirect()->route('operator.home')->with('success', 'Operator created.');
+        return redirect()->route('driver.create')->with('success', 'Operator created.');
     }
 
     public function edit(Operator $operator)
@@ -71,7 +72,7 @@ class OperatorController extends Controller
 
         $operator->update($validated);
 
-        return redirect()->route('operator.index')->with('success', 'Operator updated.');
+        return redirect()->route('operator.home')->with('success', 'Operator updated.');
     }
 
     public function destroy(Operator $operator)

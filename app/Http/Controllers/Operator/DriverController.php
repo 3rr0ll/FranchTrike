@@ -49,7 +49,7 @@ class DriverController extends Controller
 
         Driver::create($validated);
 
-        return redirect()->route('driver.index')
+        return redirect()->route('operator.home')
             ->with('success', 'Driver information submitted successfully!');
     }
 
@@ -93,7 +93,7 @@ class DriverController extends Controller
 
         $driver->update($validated);
 
-        return redirect()->route('driver.index')
+        return redirect()->route('operator.home')
             ->with('success', 'Driver information updated successfully!');
     }
 
@@ -104,7 +104,7 @@ class DriverController extends Controller
     {
         $driver->delete();
 
-        return redirect()->route('driver.index')
+        return redirect()->route('operator.home')
             ->with('success', 'Driver deleted successfully!');
     }
 }

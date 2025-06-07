@@ -8,6 +8,9 @@ use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\DriverController;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\DriverManagementController;
+use App\Http\Controllers\Admin\OperatorManagementController;
+
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
 Route::get('/', function () {
@@ -39,7 +42,7 @@ Route::middleware([
         ->group(function () {
             Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
 
-            // Manual CRUD routes to customize URI
+
             Route::get('/', [OperatorController::class, 'index'])->name('index');
             Route::get('/create', [OperatorController::class, 'create'])->name('create');
             Route::post('/', [OperatorController::class, 'store'])->name('store');
@@ -59,14 +62,18 @@ Route::middleware([
     });
 
 
+
     // Admin routes
     Route::middleware([RoleMiddleware::class . ':admin'])
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
             Route::get('/home', [AdminDashboard::class, 'index'])->name('home');
-            // Add more admin-specific routes here
+
+            Route::get('/operators', [OperatorManagementController::class, 'index'])->name('operators.index');
+            Route::get('/drivers', [DriverManagementController::class, 'index'])->name('drivers.index');
         });
+
 
     // SuperAdmin routes
     Route::middleware([RoleMiddleware::class . ':superadmin'])

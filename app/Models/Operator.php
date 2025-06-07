@@ -84,6 +84,10 @@ class Operator extends Model
             $this->save();
         }
     }
+    public function drivers()
+    {
+        return $this->hasMany(Driver::class);
+    }
 
     // Boot method for auto-calculating age
     protected static function boot()
