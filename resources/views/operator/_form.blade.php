@@ -14,7 +14,8 @@
     <div>
         <label class="block text-sm font-medium">Middle Initial</label>
         <input type="text" name="middle_initial" value="{{ old('middle_initial', $operator->middle_initial ?? '') }}"
-            class="w-full mt-1 border-gray-300 rounded">
+            class="w-full mt-1 border-gray-300 rounded"
+            maxlength="1" pattern="[A-Za-z]" title="Please enter a single letter">
     </div>
 
     <div>
@@ -57,8 +58,13 @@
 
     <div>
         <label class="block text-sm font-medium">Civil Status</label>
-        <input type="text" name="civil_status" value="{{ old('civil_status', $operator->civil_status ?? '') }}"
-            class="w-full mt-1 border-gray-300 rounded" required>
+        <select name="civil_status" class="w-full mt-1 border-gray-300 rounded" required>
+            <option value="">Select Civil Status</option>
+            <option value="Single" @selected(old('civil_status', $operator->civil_status ?? '') === 'Single')>Single</option>
+            <option value="Married" @selected(old('civil_status', $operator->civil_status ?? '') === 'Married')>Married</option>
+            <option value="Widowed" @selected(old('civil_status', $operator->civil_status ?? '') === 'Widowed')>Widowed</option>
+            <option value="Separated" @selected(old('civil_status', $operator->civil_status ?? '') === 'Separated')>Separated</option>
+        </select>
     </div>
 
     <div>

@@ -5,6 +5,7 @@ use App\Http\Middleware\RoleMiddleware;
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
 use App\Http\Controllers\Operator\OperatorController;
+use App\Http\Controllers\Operator\DriverController;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
@@ -47,6 +48,15 @@ Route::middleware([
             Route::delete('/{operator}', [OperatorController::class, 'destroy'])->name('destroy');
         });
 
+    Route::prefix('driver')->name('driver.')->group(function () {
+        Route::get('/', [DriverController::class, 'index'])->name('index');
+        Route::get('/create', [DriverController::class, 'create'])->name('create');
+        Route::post('/', [DriverController::class, 'store'])->name('store');
+        Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
+        Route::get('/{driver}/edit', [DriverController::class, 'edit'])->name('edit');
+        Route::put('/{driver}', [DriverController::class, 'update'])->name('update');
+        Route::delete('/{driver}', [DriverController::class, 'destroy'])->name('destroy');
+    });
 
 
     // Admin routes

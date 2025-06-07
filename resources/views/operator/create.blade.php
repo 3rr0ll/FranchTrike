@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-xl font-semibold leading-tight">
-            Add Operator
+            Operator Information
         </h2>
     </x-slot>
 
@@ -11,10 +11,11 @@
                 @csrf
                 @include('operator._form', ['operator' => null])
                 <div class="mt-4">
-                    <button type="submit"
-                        class="bg-black-600 text-black px-4 py-2 rounded hover:bg-green-700">
-                        Save
-                    </button>
+                    <div class="flex justify-end">
+                        <x-button type="submit">
+                            Save
+                        </x-button>
+                    </div>
                 </div>
             </form>
         </div>
