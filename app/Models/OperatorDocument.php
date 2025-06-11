@@ -77,7 +77,7 @@ class OperatorDocument extends Model
 
     public function getFileUrlAttribute()
     {
-        return Storage::disk('public')->url($this->file_path);
+        return Storage::url($this->file_path);
     }
 
     // Methods

@@ -8,8 +8,9 @@ use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\DriverController;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
-use App\Http\Controllers\Admin\DriverManagementController;
-use App\Http\Controllers\Admin\OperatorManagementController;
+use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
+use App\Http\Controllers\Admin\DriverController as AdminDriverController;
+
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -40,9 +41,10 @@ Route::middleware([
         ->prefix('operator')
         ->name('operator.')
         ->group(function () {
+            // Operator dashboard
             Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
 
-
+            // Operator resource routes
             Route::get('/', [OperatorController::class, 'index'])->name('index');
             Route::get('/create', [OperatorController::class, 'create'])->name('create');
             Route::post('/', [OperatorController::class, 'store'])->name('store');
@@ -50,6 +52,9 @@ Route::middleware([
             Route::put('/{operator}', [OperatorController::class, 'update'])->name('update');
             Route::delete('/{operator}', [OperatorController::class, 'destroy'])->name('destroy');
         });
+
+
+
 
     Route::prefix('driver')->name('driver.')->group(function () {
         Route::get('/', [DriverController::class, 'index'])->name('index');
@@ -70,8 +75,8 @@ Route::middleware([
         ->group(function () {
             Route::get('/home', [AdminDashboard::class, 'index'])->name('home');
 
-            Route::get('/operators', [OperatorManagementController::class, 'index'])->name('operators.index');
-            Route::get('/drivers', [DriverManagementController::class, 'index'])->name('drivers.index');
+            Route::get('/operators', [AdminOperatorController::class, 'index'])->name('operators.index');
+            Route::get('/drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
         });
 
 
