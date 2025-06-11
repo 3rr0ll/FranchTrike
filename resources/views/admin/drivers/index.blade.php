@@ -5,7 +5,7 @@
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white shadow p-6 rounded-lg">
-            <table class="table-auto w-full text-left">
+            <table id="drivers-table" class="table-auto w-full text-left">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -31,4 +31,12 @@
             </table>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#drivers-table').DataTable();
+        });
+    </script>
+    @endpush
 </x-app-layout>
