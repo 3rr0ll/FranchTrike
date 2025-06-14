@@ -31,6 +31,7 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'operator_id' => 'required|exists:operators,id',
             'last_name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:1',
@@ -49,7 +50,7 @@ class DriverController extends Controller
 
         Driver::create($validated);
 
-        return redirect()->route('operator.home')
+        return redirect()->route('operator.documents.operator.create')
             ->with('success', 'Driver information submitted successfully!');
     }
 

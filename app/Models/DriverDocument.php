@@ -12,7 +12,6 @@ class DriverDocument extends Model
 
     protected $fillable = [
         'driver_id',
-        'franchise_application_id',
         'document_type_id',
         'document_name',
         'file_path',
@@ -25,96 +24,135 @@ class DriverDocument extends Model
     ];
 
     protected $casts = [
-        'upload_date' => 'datetime',
         'verified_at' => 'datetime',
         'file_size' => 'integer',
     ];
 
-    // Relationships
+    /**
+     * Get the driver that owns the document
+     */
     public function driver()
     {
         return $this->belongsTo(Driver::class);
     }
 
-    public function franchiseApplication()
-    {
-        return $this->belongsTo(FranchiseApplication::class);
-    }
-
+    /**
+     * Get the document type
+     */
     public function documentType()
     {
-        return $this->belongsTo(DocumentType::class);
+        return $this->belongsTo(DocumentType::class, 'document_type_id', 'document_id');
     }
 
-    public function verifier()
+    /**
+     * Get the user who verified the document
+     */
+    public function verifiedBy()
     {
         return $this->belongsTo(User::class, 'verified_by');
     }
 
-    // Accessors (same as OperatorDocument)
-    public function getStatusBadgeAttribute()
-    {
-        $badges = [
-            'pending' => 'warning',
-            'approved' => 'success',
-            'rejected' => 'danger',
-        ];
-
-        return $badges[$this->status] ?? 'secondary';
-    }
-
-    public function getFileSizeFormattedAttribute()
-    {
-        $bytes = $this->file_size;
-        $units = ['B', 'KB', 'MB', 'GB'];
-
-        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
-            $bytes /= 1024;
-        }
-
-        return round($bytes, 2) . ' ' . $units[$i];
-    }
-
+    /**
+     * Get the full file URL
+     */
     public function getFileUrlAttribute()
     {
         return Storage::url($this->file_path);
     }
 
-    // Methods (same as OperatorDocument)
-    public function approve($verifierId)
+    /**
+     * Get formatted file size
+     */
+    public function getFormattedFileSizeAttribute()
+    {
+        return $this->formatBytes($this->file_size);
+    }
+
+    /**
+     * Check if document is approved
+     */
+    public function isApproved()
+    {
+        return $this->status === 'approved';
+    }
+
+    /**
+     * Check if document is rejected
+     */
+    public function isRejected()
+    {
+        return $this->status === 'rejected';
+    }
+
+    /**
+     * Check if document is pending
+     */
+    public function isPending()
+    {
+        return $this->status === 'pending';
+    }
+
+    /**
+     * Approve the document
+     */
+    public function approve($verifiedBy = null)
     {
         $this->update([
             'status' => 'approved',
-            'verified_by' => $verifierId,
+            'verified_by' => $verifiedBy,
             'verified_at' => now(),
             'rejection_reason' => null,
         ]);
     }
 
-    public function reject($verifierId, $reason)
+    /**
+     * Reject the document
+     */
+    public function reject($reason, $verifiedBy = null)
     {
         $this->update([
             'status' => 'rejected',
-            'verified_by' => $verifierId,
+            'verified_by' => $verifiedBy,
             'verified_at' => now(),
             'rejection_reason' => $reason,
         ]);
     }
 
-    public function deleteFile()
+    /**
+     * Format bytes to human readable format
+     */
+    private function formatBytes($bytes, $precision = 2)
     {
-        if (Storage::disk('public')->exists($this->file_path)) {
-            Storage::disk('public')->delete($this->file_path);
+        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+
+        for ($i = 0; $bytes > 1024; $i++) {
+            $bytes /= 1024;
         }
+
+        return round($bytes, $precision) . ' ' . $units[$i];
     }
 
-    // Boot method
-    protected static function boot()
+    /**
+     * Scope for approved documents
+     */
+    public function scopeApproved($query)
     {
-        parent::boot();
+        return $query->where('status', 'approved');
+    }
 
-        static::deleting(function ($document) {
-            $document->deleteFile();
-        });
+    /**
+     * Scope for pending documents
+     */
+    public function scopePending($query)
+    {
+        return $query->where('status', 'pending');
+    }
+
+    /**
+     * Scope for rejected documents
+     */
+    public function scopeRejected($query)
+    {
+        return $query->where('status', 'rejected');
     }
 }

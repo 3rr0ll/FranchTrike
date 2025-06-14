@@ -9,58 +9,46 @@ class DocumentType extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'document_id';
+
     protected $fillable = [
-        'code',
         'name',
-        'description',
         'applies_to',
-        'is_required',
-        'max_file_size_mb',
-        'allowed_extensions',
     ];
 
     protected $casts = [
-        'is_required' => 'boolean',
-        'max_file_size_mb' => 'integer',
-        'allowed_extensions' => 'array',
+        'applies_to' => 'string',
     ];
 
-    // Relationships
+    /**
+     * Get operator documents of this type
+     */
     public function operatorDocuments()
     {
-        return $this->hasMany(OperatorDocument::class);
+        return $this->hasMany(OperatorDocument::class, 'document_type_id', 'document_id');
     }
 
+    /**
+     * Get driver documents of this type
+     */
     public function driverDocuments()
     {
-        return $this->hasMany(DriverDocument::class);
+        return $this->hasMany(DriverDocument::class, 'document_type_id', 'document_id');
     }
 
-    // Scopes
+    /**
+     * Scope for operator document types
+     */
     public function scopeForOperator($query)
     {
-        return $query->whereIn('applies_to', ['operator', 'both']);
+        return $query->where('applies_to', 'operator');
     }
 
+    /**
+     * Scope for driver document types
+     */
     public function scopeForDriver($query)
     {
-        return $query->whereIn('applies_to', ['driver', 'both']);
-    }
-
-    public function scopeRequired($query)
-    {
-        return $query->where('is_required', true);
-    }
-
-    // Methods
-    public function isValidFileType($extension)
-    {
-        return in_array(strtolower($extension), $this->allowed_extensions ?? []);
-    }
-
-    public function isValidFileSize($sizeInBytes)
-    {
-        $maxSizeInBytes = ($this->max_file_size_mb ?? 5) * 1024 * 1024;
-        return $sizeInBytes <= $maxSizeInBytes;
+        return $query->where('applies_to', 'driver');
     }
 }
