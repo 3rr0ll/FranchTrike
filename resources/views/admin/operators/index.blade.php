@@ -14,6 +14,7 @@
                         <th>Birth Date</th>
                         <th>Sex</th>
                         <th>Contact No</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,6 +25,11 @@
                         <td>{{ $operator->birth_date->format('M d, Y') }}</td>
                         <td>{{ $operator->sex }}</td>
                         <td>{{ $operator->contact_no }}</td>
+                        <td>
+                            <a href="{{ route('admin.documents.operator.show', $operator->operator_id) }}" class="text-sm text-blue-600 hover:underline">
+                                View Documents
+                            </a>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>

@@ -36,7 +36,7 @@ class DocumentSubmissionController extends Controller
         }
 
         $documentTypes = DocumentType::forOperator()->get();
-        $submittedDocuments = OperatorDocument::where('operator_id', $operator->operator_id) // Changed from Auth::id()
+        $submittedDocuments = OperatorDocument::where('operator_id', $operator->operator_id)
             ->with('documentType')
             ->get()
             ->keyBy('document_type_id');

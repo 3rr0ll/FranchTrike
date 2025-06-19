@@ -100,4 +100,9 @@ class Operator extends Model
             }
         });
     }
+
+    public function getRouteKeyName()
+    {
+        return 'operator_id';
+    }
 }

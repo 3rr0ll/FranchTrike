@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
 use App\Models\Driver;
+use App\Models\Operator;
 use Illuminate\Http\Request;
+
+
 
 class DriverController extends Controller
 {
@@ -31,7 +34,6 @@ class DriverController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'operator_id' => 'required|exists:operators,id',
             'last_name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:1',
@@ -48,12 +50,13 @@ class DriverController extends Controller
             'license_nature' => 'required|in:Professional,Non-Professional,Student,Restriction 1,Restriction 2',
         ]);
 
+
+
         Driver::create($validated);
 
         return redirect()->route('operator.documents.operator.create')
             ->with('success', 'Driver information submitted successfully!');
     }
-
     /**
      * Display the specified resource.
      */

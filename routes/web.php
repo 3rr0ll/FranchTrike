@@ -12,7 +12,7 @@ use App\Http\Controllers\Operator\DocumentSubmissionController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
 use App\Http\Controllers\Admin\DriverController as AdminDriverController;
-
+use App\Http\Controllers\Admin\DocumentController;
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -108,6 +108,9 @@ Route::middleware([
 
             Route::get('/operators', [AdminOperatorController::class, 'index'])->name('operators.index');
             Route::get('/drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
+
+            Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
+            Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
         });
 
 

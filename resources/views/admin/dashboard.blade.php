@@ -27,11 +27,7 @@
                 </x-button>
             </a>
 
-            <a href="{{ route('admin.operators.index') }}">
-                <x-button>
-                    Manage Operators
-                </x-button>
-            </a>
+
         </div>
     </div>
 </x-app-layout>

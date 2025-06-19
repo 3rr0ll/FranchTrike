@@ -46,7 +46,7 @@ class OperatorController extends Controller
 
         Operator::create($validated);
 
-        return redirect()->route('driver.create')->with('success', 'Operator created.');
+        return redirect()->route('operator.driver.create')->with('success', 'Operator created.');
     }
 
     public function edit(Operator $operator)

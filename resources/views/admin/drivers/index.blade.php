@@ -25,6 +25,9 @@
                         <td>{{ \Carbon\Carbon::parse($driver->license_validity)->format('M d, Y') }}</td>
                         <td>{{ $driver->license_nature }}</td>
                         <td>{{ $driver->contact_no }}</td>
+                        <td>
+                            <a href="{{ route('admin.drivers.documents', $driver->id) }}" class="btn btn-sm btn-info">View Documents</a>
+
                     </tr>
                     @endforeach
                 </tbody>
