@@ -1,12 +1,31 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight">
-            Add Operator
-        </h2>
+
     </x-slot>
 
     <div class="py-6 px-4">
         <div class="bg-black shadow rounded-lg p-6">
+            <a href="{{ url()->previous() }}">
+                <x-button type="button">
+                    Back
+                </x-button>
+            </a>
+            @php
+            $hasOperator = \App\Models\Operator::where('user_id', auth()->id())->exists();
+            @endphp
+
+            @if ($hasOperator)
+            <div class="text-red-500 text-center font-bold">
+                You have already submitted your operator profile.
+
+            </div>
+            <a href="{{ route('operator.driver.create') }}">
+                <x-button class="mt-4">Proceed to Driver Registration</x-button>
+            </a>
+            @else
+            <h2 class="text-xl font-semibold leading-tight">
+                Add Operator
+            </h2>
             <form action="{{ route('operator.store') }}" method="POST">
                 @csrf
 
@@ -98,6 +117,7 @@
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                 <script>
                     document.getElementById('submit-btn').addEventListener('click', function(e) {
+                        e.preventDefault(); // <- Prevent any default behavior
                         Swal.fire({
                             title: 'Are you sure?',
                             text: "Do you want to submit this information?",
@@ -108,12 +128,17 @@
                             confirmButtonText: 'Yes, submit'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                this.closest('form').submit();
+                                this.closest('form').submit(); // only one clean submission
                             }
                         });
                     });
                 </script>
+
             </form>
+            @endif
+        </div>
+        <div class="mt-4">
+
         </div>
     </div>
 </x-app-layout>

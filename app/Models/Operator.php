@@ -37,7 +37,7 @@ class Operator extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function applications()
+    public function franchiseApplications()
     {
         return $this->hasMany(FranchiseApplication::class);
     }

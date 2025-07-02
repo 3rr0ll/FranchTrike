@@ -30,7 +30,6 @@ class DocumentController extends Controller
         return view('admin.documents.drivers.show', compact('driver', 'documents'));
     }
 
-
     /**
      * Update operator document verification status
      */
@@ -52,27 +51,33 @@ class DocumentController extends Controller
     }
 
     /**
-     * Update driver document verification status
+     * Verify operator document - FIXED VERSION
      */
     public function verifyOperatorDocument(Request $request, OperatorDocument $document)
     {
         $request->validate([
             'status' => 'required|in:approved,rejected',
+            'rejection_reason' => 'nullable|string|max:255',
         ]);
 
         $document->status = $request->status;
+        $document->rejection_reason = $request->status === 'rejected' ? $request->rejection_reason : null;
         $document->save();
 
-        return back()->with('success', 'Operator document status updated.');
+        return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
     }
 
     public function verifyDriverDocument(Request $request, DriverDocument $document)
     {
         $request->validate([
             'status' => 'required|in:approved,rejected',
+            'rejection_reason' => 'nullable|string|max:255',
         ]);
 
         $document->status = $request->status;
+        $document->rejection_reason = $request->status === 'rejected' ? $request->rejection_reason : null;
+        $document->verified_by = Auth::id();
+        $document->verified_at = now();
         $document->save();
 
         return back()->with('success', 'Driver document status updated.');

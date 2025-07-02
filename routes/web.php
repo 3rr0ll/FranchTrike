@@ -67,7 +67,7 @@ Route::middleware([
                 Route::delete('/{driver}', [DriverController::class, 'destroy'])->name('destroy');
             });
 
-            // Document Submission Routes (moved to same level as driver)
+            // Document Submission Routes 
             Route::prefix('documents')->name('documents.')->group(function () {
 
                 // Operator Documents
@@ -92,6 +92,7 @@ Route::middleware([
                 Route::prefix('driver')->name('driver.')->group(function () {
                     Route::get('/create/{driver?}', [DocumentSubmissionController::class, 'createDriverDocuments'])
                         ->name('create');
+
                     Route::post('/store', [DocumentSubmissionController::class, 'storeDriverDocuments'])
                         ->name('store');
                 });
@@ -111,6 +112,11 @@ Route::middleware([
 
             Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
             Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
+
+            Route::post('/documents/operator/{document}/verify', [DocumentController::class, 'verifyOperatorDocument'])
+                ->name('documents.operator.verify');
+            Route::post('/documents/driver/{document}/verify', [DocumentController::class, 'verifyDriverDocument'])
+                ->name('documents.driver.verify');
         });
 
 

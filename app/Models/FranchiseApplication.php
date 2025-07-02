@@ -76,10 +76,7 @@ class FranchiseApplication extends Model
         return $this->hasMany(DriverDocument::class);
     }
 
-    public function operatorClearances()
-    {
-        return $this->hasMany(OperatorClearance::class);
-    }
+
 
     public function statusHistory()
     {
@@ -147,7 +144,7 @@ class FranchiseApplication extends Model
             return false;
         }
 
-        return $this->franchise_end_date->diffInDays(now()) <= 90; // 90 days before expiry
+        return $this->franchise_end_date->diffInDays(now()) <= 90;
     }
 
     public function submit()
@@ -193,7 +190,7 @@ class FranchiseApplication extends Model
             'franchise_application_id' => $this->id,
             'previous_status' => $previousStatus,
             'new_status' => $newStatus,
-            'changed_by' => auth()->id(),
+            'changed_by' => optional(auth())->id(),
             'change_reason' => $reason,
         ]);
     }

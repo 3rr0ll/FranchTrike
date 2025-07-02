@@ -47,27 +47,23 @@ class DocumentSubmissionController extends Controller
     /**
      * Show driver document submission form
      */
-    public function createDriverDocuments($driverId = null)
+    public function createDriverDocuments()
     {
-        // Get the operator record for current user
         $operator = $this->getCurrentOperator();
 
         if (!$operator) {
             return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
         }
 
-        $drivers = Driver::where('operator_id', $operator->operator_id)->get(); // Changed from Auth::id()
+        // Get drivers under the current operator
+        $drivers = Driver::where('operator_id', $operator->operator_id)->get();
+
         $documentTypes = DocumentType::forDriver()->get();
 
-        $submittedDocuments = collect();
-        if ($driverId) {
-            $submittedDocuments = DriverDocument::where('driver_id', $driverId)
-                ->with('documentType')
-                ->get()
-                ->keyBy('document_type_id');
-        }
+        // If no specific driver is selected yet, empty submitted documents
+        $submittedDocuments = [];
 
-        return view('operator.documents.driver.create', compact('drivers', 'documentTypes', 'submittedDocuments', 'driverId'));
+        return view('operator.documents.driver.create', compact('documentTypes', 'submittedDocuments', 'drivers'));
     }
 
     /**
@@ -129,9 +125,9 @@ class DocumentSubmissionController extends Controller
     public function storeDriverDocuments(Request $request)
     {
         $request->validate([
-            'driver_id' => 'required|exists:drivers,id',
+            'driver_id' => 'required|exists:drivers,driver_id',
             'documents' => 'required|array',
-            'documents.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // 5MB max
+            'documents.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
         ]);
 
         $driverId = $request->driver_id;
@@ -144,8 +140,7 @@ class DocumentSubmissionController extends Controller
             return back()->withErrors(['error' => 'Please complete your operator profile first']);
         }
 
-        // Verify driver belongs to authenticated operator (using operator_id from operators table)
-        $driver = Driver::where('id', $driverId)
+        $driver = Driver::where('driver_id', $driverId)
             ->where('operator_id', $operator->operator_id)
             ->firstOrFail();
 
@@ -179,7 +174,7 @@ class DocumentSubmissionController extends Controller
             ]);
         }
 
-        return redirect()->route('operator.documents.driver.create', ['driver' => $driverId])
+        return redirect()->route('operator.home', ['driver' => $driverId])
             ->with('success', 'Driver documents uploaded successfully!');
     }
 

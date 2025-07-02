@@ -23,18 +23,18 @@
 
                     <div class="space-y-3">
 
-                        <div class="flex space-x-2">
-                            <x-button
-                                color="blue"
-                                class="flex-1 flex items-center justify-center"
-                                onclick="openDocumentModal('{{ asset('storage/' . $document->file_path) }}', '{{ $document->documentType->name }}')">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                View Document
-                            </x-button>
-                        </div>
+
+                        <x-button
+                            color="blue"
+                            class="flex-1 flex items-center justify-center"
+                            onclick="openDocumentModal('{{ asset('storage/' . $document->file_path) }}', '{{ $document->documentType->name }}', '{{ $document->id }}')">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            View Document
+                        </x-button>
+
                     </div>
                 </div>
             </div>
@@ -51,6 +51,7 @@
             @endforelse
         </div>
     </div>
+
 
     <!-- Document Modal -->
     <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 hidden">
@@ -71,27 +72,47 @@
                     <iframe id="documentViewer" class="w-full h-full rounded-md border border-gray-300" style="min-height:600px;" frameborder="0"></iframe>
                 </div>
 
-                <!-- Footer -->
+                <!-- Modal Footer Buttons -->
                 <div class="flex justify-end mt-4 space-x-3">
-                    <button onclick="closeDocumentModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm font-medium">
-                        Close
-                    </button>
-                    <a id="downloadLink" href="" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                        Download
-                    </a>
+                    <form id="verifyForm" method="POST">
+                        @csrf
+                        <input type="hidden" name="status" id="documentStatus">
+                        <div id="rejectionReasonBox" class="hidden mt-2">
+                            <textarea name="rejection_reason" id="rejectionReason" rows="2" placeholder="Enter reason for rejection..."
+                                class="w-full border rounded p-2 text-sm text-gray-800"></textarea>
+                        </div>
+                        <div class="flex gap-2 mt-2 justify-end">
+                            <x-button type="button" onclick="submitVerification('approved')">
+                                Approve
+                            </x-button>
+                            <x-button type="button" color="red" onclick="showRejectReason()">
+                                Reject
+                            </x-button>
+                            <x-button type="button" class="hidden" id="submitButton" onclick="submitVerification('rejected')">
+                                Submit
+                            </x-button>
+                        </div>
+                    </form>
+
                 </div>
+
             </div>
         </div>
     </div>
 
 
 
-
+    <!-- Include SweetAlert2 from CDN if not already included -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function openDocumentModal(filePath, documentName) {
+        let currentDocumentId = null;
+
+        function openDocumentModal(filePath, documentName, documentId) {
             document.getElementById('modalTitle').textContent = documentName;
             document.getElementById('documentViewer').src = filePath;
-            document.getElementById('downloadLink').href = filePath;
+            currentDocumentId = documentId;
+
+            // Don't set action here, we'll set it in submitVerification
             document.getElementById('documentModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }
@@ -99,21 +120,78 @@
         function closeDocumentModal() {
             document.getElementById('documentModal').classList.add('hidden');
             document.getElementById('documentViewer').src = '';
+            document.getElementById('rejectionReasonBox').classList.add('hidden');
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('submitButton').classList.add('hidden');
+            document.getElementById('documentStatus').value = '';
             document.body.style.overflow = 'auto';
         }
 
-        // Close modal when clicking outside
-        document.getElementById('documentModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeDocumentModal();
-            }
-        });
+        function submitVerification(status) {
+            console.log('Submitting with status:', status);
+            document.getElementById('documentStatus').value = status;
 
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeDocumentModal();
+            const form = document.getElementById('verifyForm');
+
+            if (currentDocumentId) {
+                const baseUrl = '{{ url("/") }}';
+                form.action = `${baseUrl}/admin/documents/operator/${currentDocumentId}/verify`;
+                console.log('Form action set to:', form.action);
             }
+
+            if (status === 'approved') {
+                form.submit();
+            }
+        }
+
+        function showRejectReason() {
+            document.getElementById('rejectionReasonBox').classList.remove('hidden');
+            document.getElementById('submitButton').classList.remove('hidden');
+            document.getElementById('documentStatus').value = 'rejected';
+
+            const form = document.getElementById('verifyForm');
+
+            if (currentDocumentId) {
+                form.action = `/admin/documents/operator/${currentDocumentId}/verify`;
+            }
+        }
+
+        function submitVerification(status) {
+            console.log('Submitting with status:', status);
+            document.getElementById('documentStatus').value = status;
+
+            const form = document.getElementById('verifyForm');
+
+            if (currentDocumentId) {
+                const baseUrl = '{{ url("/") }}';
+                form.action = `${baseUrl}/admin/documents/operator/${currentDocumentId}/verify`;
+                console.log('Form action set to:', form.action);
+            }
+
+            if (status === 'rejected') {
+                const reason = document.getElementById('rejectionReason').value.trim();
+                if (!reason) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Rejection Reason Required',
+                        text: 'Please provide a reason for rejection.',
+                    });
+                    return;
+                }
+            }
+
+            form.submit();
+        }
+    </script>
+    @if (session('status'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: "{{ session('status') }}",
+            confirmButtonColor: '#3085d6',
         });
     </script>
+    @endif
+
 </x-app-layout>
