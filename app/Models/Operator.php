@@ -47,11 +47,6 @@ class Operator extends Model
         return $this->hasMany(OperatorDocument::class);
     }
 
-    public function clearances()
-    {
-        return $this->hasMany(OperatorClearance::class);
-    }
-
     // Accessors
     public function getFullNameAttribute()
     {

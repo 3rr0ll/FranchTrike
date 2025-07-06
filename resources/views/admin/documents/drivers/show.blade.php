@@ -1,13 +1,198 @@
-<x-admin-layout>
-    <h2 class="text-2xl font-semibold mb-4">Documents for Driver: {{ $driver->first_name }} {{ $driver->last_name }}</h2>
+<x-app-layout>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Driver Document</h2>
+        </div>
 
-    @forelse($documents as $document)
-    <div class="mb-4 p-4 border rounded shadow">
-        <h3 class="font-semibold">{{ $document->documentType->name }}</h3>
-        <p>Status: <span class="text-sm">{{ ucfirst($document->status) }}</span></p>
-        <a href="{{ asset('storage/' . $document->file_path) }}" target="_blank" class="text-blue-500 underline">View</a>
+        <!-- Driver Info -->
+        <div class="mb-8 bg-white p-6 rounded-lg shadow border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Driver Information</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-800">
+                <div>
+                    <span class="font-semibold">Full Name:</span>
+                    {{ $driver->last_name }}, {{ $driver->first_name }} {{ $driver->middle_initial ? $driver->middle_initial . '.' : '' }}
+                </div>
+                <div>
+                    <span class="font-semibold">Birth Date:</span>
+                    {{ \Carbon\Carbon::parse($driver->birth_date)->format('F d, Y') }}
+                </div>
+                <div>
+                    <span class="font-semibold">Age:</span>
+                    {{ $driver->age }}
+                </div>
+                <div>
+                    <span class="font-semibold">Sex:</span>
+                    {{ ucfirst($driver->sex) }}
+                </div>
+                <div>
+                    <span class="font-semibold">Civil Status:</span>
+                    {{ ucfirst($driver->civil_status) }}
+                </div>
+                <div>
+                    <span class="font-semibold">Contact No:</span>
+                    {{ $driver->contact_no }}
+                </div>
+                <div>
+                    <span class="font-semibold">License No:</span>
+                    {{ $driver->license_no }}
+                </div>
+                <div>
+                    <span class="font-semibold">License Validity:</span>
+                    {{ \Carbon\Carbon::parse($driver->license_validity)->format('F d, Y') }}
+                </div>
+                <div>
+                    <span class="font-semibold">License Nature:</span>
+                    {{ $driver->license_nature }}
+                </div>
+                <div class="col-span-full">
+                    <span class="font-semibold">Address:</span>
+                    {{ $driver->barangay }}, {{ $driver->municipality }}, {{ $driver->province }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @forelse($documents as $document)
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">{{ $document->documentType->name }}</h3>
+                        <span class="px-3 py-1 text-xs font-medium rounded-full 
+                            @if($document->status === 'approved') bg-green-100 text-green-800
+                            @elseif($document->status === 'pending') bg-yellow-100 text-yellow-800
+                            @elseif($document->status === 'rejected') bg-red-100 text-red-800
+                            @else bg-gray-100 text-gray-800
+                            @endif">
+                            {{ ucfirst($document->status) }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <x-button
+                            color="blue"
+                            class="flex-1 flex items-center justify-center"
+                            onclick="openDocumentModal('{{ asset('storage/' . $document->file_path) }}', '{{ $document->documentType->name }}', '{{ $document->id }}')">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            View Document
+                        </x-button>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="col-span-full">
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No documents</h3>
+                    <p class="mt-1 text-sm text-gray-500">No documents have been submitted by this driver yet.</p>
+                </div>
+            </div>
+            @endforelse
+        </div>
     </div>
-    @empty
-    <p>No documents submitted by this driver.</p>
-    @endforelse
-</x-admin-layout>
+
+    <!-- Document Modal -->
+    <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 hidden">
+        <div class="relative mx-auto my-12 w-full max-w-6xl bg-white rounded-md shadow-lg">
+            <div class="flex flex-col h-[90vh] p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="modalTitle" class="text-xl font-semibold text-gray-900"></h3>
+                    <button onclick="closeDocumentModal()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 overflow-hidden">
+                    <iframe id="documentViewer" class="w-full h-full rounded-md border border-gray-300" style="min-height:600px;" frameborder="0"></iframe>
+                </div>
+
+                <div class="flex justify-end mt-4 space-x-3">
+                    <form id="verifyForm" method="POST">
+                        @csrf
+                        <input type="hidden" name="status" id="documentStatus">
+                        <div id="rejectionReasonBox" class="hidden mt-2">
+                            <textarea name="rejection_reason" id="rejectionReason" rows="2" placeholder="Enter reason for rejection..."
+                                class="w-full border rounded p-2 text-sm text-gray-800"></textarea>
+                        </div>
+                        <div class="flex gap-2 mt-2 justify-end">
+                            <x-button type="button" onclick="submitVerification('approved')">Approve</x-button>
+                            <x-button type="button" color="red" onclick="showRejectReason()">Reject</x-button>
+                            <x-button type="button" class="hidden" id="submitButton" onclick="submitVerification('rejected')">Submit</x-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        let currentDocumentId = null;
+
+        function openDocumentModal(filePath, documentName, documentId) {
+            document.getElementById('modalTitle').textContent = documentName;
+            document.getElementById('documentViewer').src = filePath;
+            currentDocumentId = documentId;
+            document.getElementById('documentModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDocumentModal() {
+            document.getElementById('documentModal').classList.add('hidden');
+            document.getElementById('documentViewer').src = '';
+            document.getElementById('rejectionReasonBox').classList.add('hidden');
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('submitButton').classList.add('hidden');
+            document.getElementById('documentStatus').value = '';
+            document.body.style.overflow = 'auto';
+        }
+
+        function showRejectReason() {
+            document.getElementById('rejectionReasonBox').classList.remove('hidden');
+            document.getElementById('submitButton').classList.remove('hidden');
+            document.getElementById('documentStatus').value = 'rejected';
+        }
+
+        function submitVerification(status) {
+            document.getElementById('documentStatus').value = status;
+            const form = document.getElementById('verifyForm');
+            const baseUrl = '{{ url("/") }}';
+
+            if (currentDocumentId) {
+                form.action = `${baseUrl}/admin/documents/driver/${currentDocumentId}/verify`;
+            }
+
+            if (status === 'rejected') {
+                const reason = document.getElementById('rejectionReason').value.trim();
+                if (!reason) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Rejection Reason Required',
+                        text: 'Please provide a reason for rejection.',
+                    });
+                    return;
+                }
+            }
+
+            form.submit();
+        }
+    </script>
+
+    @if (session('status'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: "{{ session('status') }}",
+            confirmButtonColor: '#3085d6',
+        });
+    </script>
+    @endif
+</x-app-layout>

@@ -135,6 +135,11 @@
 
                 <div class="mt-4">
                     <div class="flex justify-end">
+                        <a href="{{ url()->previous() }}">
+                            <x-button type="button">
+                                Back
+                            </x-button>
+                        </a>
                         <x-button type="button" id="submit-btn">
                             Submit
                         </x-button>

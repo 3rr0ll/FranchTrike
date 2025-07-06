@@ -23,7 +23,7 @@ class DocumentController extends Controller
 
     public function viewDriverDocuments(Driver $driver)
     {
-        $documents = DriverDocument::where('driver_id', $driver->id)
+        $documents = DriverDocument::where('driver_id', $driver->driver_id)
             ->with('documentType')
             ->get();
 
@@ -50,8 +50,25 @@ class DocumentController extends Controller
         return back()->with('success', 'Operator document verification status updated successfully.');
     }
 
+    public function updateDriverDocumentStatus(Request $request, $documentId)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected',
+            'remarks' => 'nullable|string|max:500'
+        ]);
+
+        $document = DriverDocument::findOrFail($documentId);
+        $document->update([
+            'status' => $request->status,
+            'verified_by' => Auth::user()->id,
+            'verified_at' => now()
+        ]);
+
+        return back()->with('success', 'Driver document verification status updated successfully.');
+    }
+
     /**
-     * Verify operator document - FIXED VERSION
+    
      */
     public function verifyOperatorDocument(Request $request, OperatorDocument $document)
     {
@@ -80,6 +97,6 @@ class DocumentController extends Controller
         $document->verified_at = now();
         $document->save();
 
-        return back()->with('success', 'Driver document status updated.');
+        return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
     }
 }

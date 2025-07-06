@@ -92,4 +92,9 @@ class Driver extends Model
             }
         });
     }
+
+    public function getRouteKeyName()
+    {
+        return 'driver_id';
+    }
 }

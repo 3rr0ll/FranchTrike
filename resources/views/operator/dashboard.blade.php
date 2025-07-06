@@ -21,6 +21,13 @@
                 Apply Fracnhise
             </x-button>
         </a>
+
+        <a href="{{ route('documents.status') }}">
+            <x-button class="ms-4">
+                View Document Status
+            </x-button>
+        </a>
+
     </div>
 
 </x-app-layout>

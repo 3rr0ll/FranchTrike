@@ -56,7 +56,7 @@ Route::middleware([
             Route::put('/{operator}', [OperatorController::class, 'update'])->name('update');
             Route::delete('/{operator}', [OperatorController::class, 'destroy'])->name('destroy');
 
-            // Driver resource routes (moved outside documents)
+
             Route::prefix('driver')->name('driver.')->group(function () {
                 Route::get('/', [DriverController::class, 'index'])->name('index');
                 Route::get('/create', [DriverController::class, 'create'])->name('create');

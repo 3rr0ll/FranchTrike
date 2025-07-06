@@ -1,8 +1,41 @@
 <x-app-layout>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 mb-2">Documents for Operator: {{ $operator->name }}</h2>
-            <p class="text-gray-600">Manage and view operator documents</p>
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Operator Document {{ $operator->name }}</h2>
+
+        </div>
+        <div class="mb-8 bg-white p-6 rounded-lg shadow border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Operator Information</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-800">
+                <div>
+                    <span class="font-semibold">Full Name:</span>
+                    {{ $operator->last_name }}, {{ $operator->first_name }} {{ $operator->middle_initial ? $operator->middle_initial . '.' : '' }}
+                </div>
+                <div>
+                    <span class="font-semibold">Birth Date:</span>
+                    {{ $operator->birth_date }}
+                </div>
+                <div>
+                    <span class="font-semibold">Age:</span>
+                    {{ $operator->age }}
+                </div>
+                <div>
+                    <span class="font-semibold">Sex:</span>
+                    {{ ucfirst($operator->sex) }}
+                </div>
+                <div>
+                    <span class="font-semibold">Civil Status:</span>
+                    {{ ucfirst($operator->civil_status) }}
+                </div>
+                <div>
+                    <span class="font-semibold">Contact No:</span>
+                    {{ $operator->contact_no }}
+                </div>
+                <div class="col-span-full">
+                    <span class="font-semibold">Address:</span>
+                    {{ $operator->barangay }}, {{ $operator->municipality }}, {{ $operator->province }}
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -102,7 +135,6 @@
 
 
 
-    <!-- Include SweetAlert2 from CDN if not already included -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentDocumentId = null;
@@ -112,7 +144,6 @@
             document.getElementById('documentViewer').src = filePath;
             currentDocumentId = documentId;
 
-            // Don't set action here, we'll set it in submitVerification
             document.getElementById('documentModal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
         }

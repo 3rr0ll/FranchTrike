@@ -14,6 +14,7 @@
                         <th>Validity</th>
                         <th>Nature</th>
                         <th>Contact No</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,8 +27,8 @@
                         <td>{{ $driver->license_nature }}</td>
                         <td>{{ $driver->contact_no }}</td>
                         <td>
-                            <a href="{{ route('admin.drivers.documents', $driver->id) }}" class="btn btn-sm btn-info">View Documents</a>
-
+                            <a href="{{ route('admin.documents.driver.show', ['driver' => $driver->driver_id]) }}" class="btn btn-sm btn-info">View Documents</a>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
