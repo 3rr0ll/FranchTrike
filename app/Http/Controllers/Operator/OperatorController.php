@@ -20,7 +20,6 @@ class OperatorController extends Controller
         return view('operator.index', compact('operators'));
     }
 
-
     public function create()
     {
         return view('operator.create');

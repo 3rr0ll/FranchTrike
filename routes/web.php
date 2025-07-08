@@ -7,7 +7,7 @@ use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
 use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\DriverController;
 use App\Http\Controllers\Operator\DocumentSubmissionController;
-
+use App\Http\Controllers\Operator\FranchiseApplicationController;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
@@ -56,6 +56,11 @@ Route::middleware([
             Route::put('/{operator}', [OperatorController::class, 'update'])->name('update');
             Route::delete('/{operator}', [OperatorController::class, 'destroy'])->name('destroy');
 
+            Route::prefix('franchise')->name('franchise.')->group(function () {
+                Route::get('/', [FranchiseApplicationController::class, 'index'])->name('index');
+                Route::get('/create', [FranchiseApplicationController::class, 'create'])->name('create');
+                Route::post('/', [FranchiseApplicationController::class, 'store'])->name('store');
+            });
 
             Route::prefix('driver')->name('driver.')->group(function () {
                 Route::get('/', [DriverController::class, 'index'])->name('index');

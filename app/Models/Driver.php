@@ -97,4 +97,9 @@ class Driver extends Model
     {
         return 'driver_id';
     }
+
+    public function operator()
+    {
+        return $this->belongsTo(Operator::class, 'operator_id');
+    }
 }

@@ -49,7 +49,19 @@
                         </span>
                     </div>
 
-                    <p class="text-sm text-gray-600 mb-2">Driver: {{ $doc->driver->name ?? 'N/A' }}</p>
+                    <p class="text-sm text-gray-600 mb-2">
+                        Driver: 
+                        @if(isset($doc->driver))
+                            @php
+                                $driver = $doc->driver;
+                                $middleInitial = $driver->middle_initial ? ' ' . $driver->middle_initial . '.' : '';
+                                $driverName = $driver->first_name . $middleInitial . ' ' . $driver->last_name;
+                            @endphp
+                            {{ $driverName }}
+                        @else
+                            N/A
+                        @endif
+                    </p>
 
                     <x-button onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
                         View Document

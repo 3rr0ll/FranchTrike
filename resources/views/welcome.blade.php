@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -25,11 +26,12 @@
   <link rel="stylesheet" href="css/components.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body class="bg-white text-primary-navy font-['Inter']">
 
   <!-- Navbar -->
   <header class="bg-primary-navy text-white shadow-lg fixed w-full z-50">
-    
+
     <div class="container mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center gap-2">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
@@ -52,33 +54,30 @@
         <a href="#faq" class="hover:text-primary-gold transition-colors">FAQ</a>
       </nav>
 
-       @if (Route::has('login'))
-    <nav class="hidden md:flex gap-4 items-center justify-end">
+      @if (Route::has('login'))
+      <nav class="hidden md:flex gap-4 items-center justify-end">
         @auth
-            <a
-                href="{{ url('/dashboard') }}"
-                class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm"
-            >
-                Dashboard
-            </a>
+        <a
+          href="{{ url('/dashboard') }}"
+          class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
+          Dashboard
+        </a>
         @else
-            @if (Route::has('register'))
-                <a
-                    href="{{ route('register') }}"
-                    class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm"
-                >
-                    Register
-                </a>
-            @endif
-            <a
-                href="{{ route('login') }}"
-                class="border-2 border-white text-white font-semibold px-6 py-2 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-sm"
-            >
-                Login
-            </a>
+        @if (Route::has('register'))
+        <a
+          href="{{ route('register') }}"
+          class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
+          Register
+        </a>
+        @endif
+        <a
+          href="{{ route('login') }}"
+          class="border-2 border-white text-white font-semibold px-6 py-2 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-sm">
+          Login
+        </a>
         @endauth
-    </nav>
-@endif
+      </nav>
+      @endif
     </div>
 
     <!-- Mobile Navigation -->
@@ -99,9 +98,9 @@
       </nav>
     </div>
   </header>
- @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
+  @if (Route::has('login'))
+  <div class="h-14.5 hidden lg:block"></div>
+  @endif
   <!-- Hero Section -->
   <section class="pt-32 pb-20 bg-gradient-to-b from-white to-gray-50">
     <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12">
@@ -193,9 +192,9 @@
         <span class="text-primary-gold font-semibold">ABOUT US</span>
         <h3 class="text-3xl font-bold mt-2 mb-6">Revolutionizing Tricycle Franchising</h3>
         <p class="text-lg leading-relaxed text-gray-300">
-          FranchTrike is an innovative online system designed to transform tricycle franchising in Padre Garcia, Batangas. 
-          We combine cutting-edge technology with user-friendly design to create a seamless experience for both tricycle operators 
-          and local government officials. Our platform ensures transparency, efficiency, and better compliance through digital 
+          FranchTrike is an innovative online system designed to transform tricycle franchising in Padre Garcia, Batangas.
+          We combine cutting-edge technology with user-friendly design to create a seamless experience for both tricycle operators
+          and local government officials. Our platform ensures transparency, efficiency, and better compliance through digital
           solutions that work for everyone.
         </p>
       </div>
@@ -294,7 +293,7 @@
           </div>
           <p class="text-sm text-gray-400">Tricycle Franchising in Padre Garcia</p>
         </div>
-        
+
         <div>
           <h5 class="font-semibold mb-4">Quick Links</h5>
           <ul class="space-y-2 text-sm text-gray-400">
@@ -371,7 +370,7 @@
 
     <form id="chatbot-form" class="border-t border-gray-100 p-4">
       <div class="flex gap-2">
-        <input type="text" id="chatbot-input" placeholder="Type a message..." 
+        <input type="text" id="chatbot-input" placeholder="Type a message..."
           class="flex-1 px-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-primary-navy" required>
         <button type="submit" class="bg-primary-navy text-white p-2 rounded-xl hover:bg-primary-navy/90 transition-colors">
           <i class="bi bi-send-fill"></i>
@@ -407,7 +406,7 @@
     chatbotForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const userMsg = chatbotInput.value.trim();
-      
+
       if (userMsg) {
         // Add user message
         const userDiv = document.createElement('div');
@@ -445,7 +444,7 @@
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
+      anchor.addEventListener('click', function(e) {
         e.preventDefault();
         document.querySelector(this.getAttribute('href')).scrollIntoView({
           behavior: 'smooth'
@@ -455,4 +454,5 @@
   </script>
 
 </body>
+
 </html>

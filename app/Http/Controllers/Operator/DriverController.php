@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Driver;
 use App\Models\Operator;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 
 
 class DriverController extends Controller
@@ -16,8 +16,10 @@ class DriverController extends Controller
      */
     public function index()
     {
-        $drivers = Driver::latest()->paginate(10);
-        return view('driver.index', compact('drivers'));
+        $user = Auth::user();
+        $operator = $user ? $user->operator : null;
+        $drivers = $operator ? $operator->drivers()->latest()->get() : collect();
+        return view('operator.drivers.index', compact('drivers'));
     }
 
     /**
@@ -50,7 +52,8 @@ class DriverController extends Controller
             'license_nature' => 'required|in:Professional,Non-Professional,Student,Restriction 1,Restriction 2',
         ]);
 
-
+        $operator = Auth::user()->operator;
+        $validated['operator_id'] = $operator->operator_id;
 
         Driver::create($validated);
 

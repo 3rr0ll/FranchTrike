@@ -81,7 +81,7 @@ class Operator extends Model
     }
     public function drivers()
     {
-        return $this->hasMany(Driver::class);
+        return $this->hasMany(Driver::class, 'operator_id', 'operator_id');
     }
 
     // Boot method for auto-calculating age
@@ -95,6 +95,7 @@ class Operator extends Model
             }
         });
     }
+
 
     public function getRouteKeyName()
     {
