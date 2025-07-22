@@ -14,6 +14,37 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        {{-- Alerts Section --}}
+        @if(isset($alerts) && count($alerts))
+        <div class="mb-6 space-y-3">
+            @foreach($alerts as $alert)
+            <div class="flex items-center p-4 rounded shadow text-sm
+                        @if($alert['type'] === 'success') bg-green-100 text-green-800 border-l-4 border-green-500
+                        @elseif($alert['type'] === 'danger') bg-red-100 text-red-800 border-l-4 border-red-500
+                        @elseif($alert['type'] === 'warning') bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500
+                        @else bg-blue-100 text-blue-800 border-l-4 border-blue-500 @endif">
+                @if($alert['type'] === 'success')
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                @elseif($alert['type'] === 'danger')
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                @elseif($alert['type'] === 'warning')
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" />
+                </svg>
+                @else
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" />
+                </svg>
+                @endif
+                <span>{!! $alert['message'] !!}</span>
+            </div>
+            @endforeach
+        </div>
+        @endif
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <x-operator-dashboard-card
                 :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M12 4v16m8-8H4\' />'"
@@ -21,8 +52,7 @@
                 description="Start a new franchise application or check your application status."
                 :route="route('operator.create')"
                 color="text-blue-500"
-                buttonText="Apply Franchise"
-            />
+                buttonText="Apply Franchise" />
 
             <x-operator-dashboard-card
                 :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9\' />'"
@@ -30,8 +60,7 @@
                 description="Check the status of your submitted operator and driver documents."
                 :route="route('operator.documents.status')"
                 color="text-green-500"
-                buttonText="View Document Status"
-            />
+                buttonText="View Document Status" />
 
             <x-operator-dashboard-card
                 :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z\' />'"
@@ -39,8 +68,7 @@
                 description="View and manage your assigned drivers and their details."
                 :route="route('operator.driver.index')"
                 color="text-yellow-500"
-                buttonText="View My Drivers"
-            />
+                buttonText="View My Drivers" />
 
             <x-operator-dashboard-card
                 :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z\' />'"
@@ -48,8 +76,7 @@
                 description="Submit your final franchise application once all documents are approved."
                 :route="route('operator.franchise.index')"
                 color="text-purple-500"
-                buttonText="Franchise Applications"
-            />
+                buttonText="Franchise Applications" />
         </div>
 
         <div class="bg-white rounded-lg shadow p-6">

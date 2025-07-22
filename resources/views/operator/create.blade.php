@@ -5,10 +5,8 @@
 
     <div class="py-6 px-4">
         <div class="bg-black shadow rounded-lg p-6">
-            <a href="{{ url()->previous() }}">
-                <x-button type="button">
-                    Back
-                </x-button>
+            <a href="{{ route('operator.home') }}">
+                <x-button class="mt-4">Back</x-button>
             </a>
             @php
             $hasOperator = \App\Models\Operator::where('user_id', auth()->id())->exists();

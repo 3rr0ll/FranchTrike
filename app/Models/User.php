@@ -33,7 +33,9 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
-        // ...
+        'is_active',
+        'login_attempts',
+        'locked_until',
     ];
 
     /**
@@ -67,6 +69,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'locked_until' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 
@@ -97,5 +101,53 @@ class User extends Authenticatable
     public function statusChanges()
     {
         return $this->hasMany(ApplicationStatusHistory::class, 'changed_by');
+    }
+
+    // Login Security Methods
+    public function loginLogs()
+    {
+        return $this->hasMany(LoginLog::class);
+    }
+
+    public function isLocked()
+    {
+        return $this->locked_until && $this->locked_until->isFuture();
+    }
+
+    public function incrementLoginAttempts()
+    {
+        $this->increment('login_attempts');
+        $this->refresh();
+    }
+
+    public function resetLoginAttempts()
+    {
+        $this->update([
+            'login_attempts' => 0,
+            'locked_until' => null,
+        ]);
+    }
+
+    public function lockAccount($minutes = 30)
+    {
+        $this->update([
+            'locked_until' => now()->addMinutes($minutes),
+        ]);
+    }
+
+    public function unlockAccount()
+    {
+        $this->update([
+            'locked_until' => null,
+            'login_attempts' => 0,
+        ]);
+    }
+
+    public function getRemainingLockTime()
+    {
+        if (!$this->isLocked()) {
+            return 0;
+        }
+        return now()->diffInSeconds($this->locked_until, false);
     }
 }

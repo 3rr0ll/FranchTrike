@@ -10,7 +10,9 @@
                 {{ session('success') }}
             </div>
             @endif
-
+            <a href="{{ route('operator.home') }}">
+                <x-button class="mt-4">Back</x-button>
+            </a>
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-lg font-bold">Application History</h3>
                 @if ($canApply)

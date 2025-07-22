@@ -22,7 +22,7 @@
             </a>
 
             <a href="{{ route('admin.drivers.index') }}">
-                <x-button>
+                <x-button>  
                     Manage Drivers
                 </x-button>
             </a>

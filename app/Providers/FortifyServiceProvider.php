@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Contracts\LoginResponse;
 use App\Actions\Fortify\RedirectAuthenticatedUsers;
+use App\Services\LoginSecurityService;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -35,24 +36,46 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
         Fortify::authenticateUsing(function (Request $request) {
             $user = \App\Models\User::where('email', $request->email)->first();
+            $securityService = app(LoginSecurityService::class);
 
-            // ✅ Validate credentials first
-            if (!$user || !Hash::check($request->password, $user->password)) {
+            // Check if user exists and is active
+            if (!$user || !$user->is_active) {
+                if ($user) {
+                    $securityService->logLoginAttempt($request, $request->email, 'fail', 'User account is inactive');
+                }
                 return null;
             }
 
+            // Check if account is locked
+            $lockMessage = $securityService->checkAccountLocked($user);
+            if ($lockMessage) {
+                $securityService->logLoginAttempt($request, $request->email, 'locked', $lockMessage, $user);
+                return null;
+            }
+
+            // Validate credentials
+            if (!Hash::check($request->password, $user->password)) {
+                $securityService->handleFailedLogin($request, $user);
+                return null;
+            }
+
+            // Check role-based access
             if ($request->has('is_admin_login')) {
                 // Only allow admin or superadmin to login here
                 if (!in_array(optional($user->role)->name, ['admin', 'superadmin'])) {
+                    $securityService->logLoginAttempt($request, $request->email, 'fail', 'Unauthorized role for admin login', $user);
                     return null;
                 }
             } else {
                 // Default login (operator only)
                 if (optional($user->role)->name !== 'operator') {
+                    $securityService->logLoginAttempt($request, $request->email, 'fail', 'Unauthorized role for operator login', $user);
                     return null;
                 }
             }
 
+            // Successful login
+            $securityService->handleSuccessfulLogin($request, $user);
             return $user;
         });
 

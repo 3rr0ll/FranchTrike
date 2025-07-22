@@ -131,6 +131,33 @@ Route::middleware([
         ->name('superadmin.')
         ->group(function () {
             Route::get('/home', [SuperAdminDashboard::class, 'index'])->name('home');
-            // Add more superadmin-specific routes here
+            Route::get('/dashboard', [SuperAdminDashboard::class, 'index'])->name('dashboard');
+            
+            // Security Settings Routes (must come before resource routes)
+            Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
+            Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
+            
+            // Test route for debugging
+            Route::get('/test-superadmin', function() {
+                return 'Superadmin access working!';
+            })->name('test.superadmin');
+            
+            // User Management Routes
+            Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
+            Route::get('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'showPasswordReset'])->name('users.password-reset');
+            Route::put('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetPassword'])->name('users.reset-password');
+            Route::patch('/users/{user}/toggle-status', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+            Route::get('/users/statistics', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'statistics'])->name('users.statistics');
+            
+            // Login Security Routes
+            Route::patch('/users/{user}/reset-attempts', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetLoginAttempts'])->name('users.reset-attempts');
+            Route::patch('/users/{user}/lock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'lockAccount'])->name('users.lock');
+            Route::patch('/users/{user}/unlock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'unlockAccount'])->name('users.unlock');
+            Route::patch('/users/{user}/force-logout', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'forceLogout'])->name('users.force-logout');
+            Route::get('/users/{user}/login-history', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'loginHistory'])->name('users.login-history');
+            Route::get('/users/login-logs', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'allLoginLogs'])->name('users.login-logs');
+
+            // Global Search
+            Route::get('/search', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'search'])->name('search');
         });
 });

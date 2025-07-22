@@ -112,4 +112,16 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Login Security Settings
+    |--------------------------------------------------------------------------
+    |
+    | Configure login attempt limits and lockout settings.
+    |
+    */
+
+    'max_login_attempts' => env('MAX_LOGIN_ATTEMPTS', 5),
+    'lockout_minutes' => env('LOCKOUT_MINUTES', 30),
+
 ];

@@ -40,11 +40,6 @@ class FranchiseApplication extends Model
         'franchise_fee' => 'decimal:2',
     ];
 
-    // Optionally set default status
-    protected $attributes = [
-        'status' => 'pending',
-    ];
-
     // Relationships
     public function operator()
     {
@@ -80,6 +75,8 @@ class FranchiseApplication extends Model
     {
         return $this->hasMany(DriverDocument::class);
     }
+
+
 
     public function statusHistory()
     {
