@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-6 px-4">
-        <div class="bg-black shadow rounded-lg p-6">
+        <div class="bg-white shadow rounded-lg p-6">
             <a href="{{ route('operator.home') }}">
                 <x-button class="mt-4">Back</x-button>
             </a>

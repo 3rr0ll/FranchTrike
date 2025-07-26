@@ -33,7 +33,7 @@
                 <label class="block text-sm font-medium text-gray-700">Select Driver</label>
                 <select name="driver_id" class="mt-1 block w-full border rounded p-2" required>
                     @foreach ($drivers as $driver)
-                    <option value="{{ $driver->id }}">
+                    <option value="{{ $driver->driver_id }}" {{ old('driver_id') == $driver->driver_id ? 'selected' : '' }}>
                         {{ $driver->first_name }} {{ $driver->middle_initial }} {{ $driver->last_name }}
                     </option>
                     @endforeach
