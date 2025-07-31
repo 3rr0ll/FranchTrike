@@ -29,6 +29,7 @@ class FranchiseApplication extends Model
         'franchise_start_date',
         'franchise_end_date',
         'franchise_fee',
+        'route_id',
     ];
 
     protected $casts = [
@@ -87,7 +88,6 @@ class FranchiseApplication extends Model
     public function getStatusBadgeAttribute()
     {
         $badges = [
-            'draft' => 'secondary',
             'submitted' => 'info',
             'under_review' => 'warning',
             'approved' => 'success',
@@ -110,7 +110,7 @@ class FranchiseApplication extends Model
     // Methods
     public function isEditable()
     {
-        return in_array($this->status, ['draft', 'rejected']);
+        return in_array($this->status, ['rejected']);
     }
 
     public function canBeSubmitted()
@@ -129,7 +129,7 @@ class FranchiseApplication extends Model
             ->where('status', 'approved')
             ->count() > 0;
 
-        return $this->status === 'draft' && $hasRequiredOperatorDocs && $hasRequiredDriverDocs;
+        return $this->status === 'submitted' && $hasRequiredOperatorDocs && $hasRequiredDriverDocs;
     }
 
     public function canBeRenewed()
@@ -151,11 +151,10 @@ class FranchiseApplication extends Model
     {
         if ($this->canBeSubmitted()) {
             $this->update([
-                'status' => 'submitted',
                 'submitted_at' => now(),
             ]);
 
-            $this->logStatusChange('draft', 'submitted', 'Application submitted by operator');
+            $this->logStatusChange('submitted', 'submitted', 'Application submitted by operator');
             return true;
         }
         return false;
@@ -194,4 +193,14 @@ class FranchiseApplication extends Model
             'change_reason' => $reason,
         ]);
     }
-}
+    public function route()
+    {
+        return $this->belongsTo(Route::class);
+    }
+
+    public function motorDetail()
+    {
+        return $this->hasOne(MotorDetail::class);
+    }
+
+}       

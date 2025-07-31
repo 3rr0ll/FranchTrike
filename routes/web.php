@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
 use App\Http\Controllers\Admin\DriverController as AdminDriverController;
 use App\Http\Controllers\Admin\DocumentController;
+use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseController;
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -60,6 +61,8 @@ Route::middleware([
                 Route::get('/', [FranchiseApplicationController::class, 'index'])->name('index');
                 Route::get('/create', [FranchiseApplicationController::class, 'create'])->name('create');
                 Route::post('/', [FranchiseApplicationController::class, 'store'])->name('store');
+                Route::get('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'motorDetails'])->name('motor-details');
+                Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
             });
 
             Route::prefix('driver')->name('driver.')->group(function () {
@@ -114,6 +117,14 @@ Route::middleware([
 
             Route::get('/operators', [AdminOperatorController::class, 'index'])->name('operators.index');
             Route::get('/drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
+
+            // Franchise Applications Routes
+            Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
+            Route::get('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'show'])->name('franchise.show');
+            Route::put('/franchise/{franchiseApplication}/status', [AdminFranchiseController::class, 'updateStatus'])->name('franchise.update-status');
+            Route::post('/franchise/bulk-update', [AdminFranchiseController::class, 'bulkUpdateStatus'])->name('franchise.bulk-update');
+            Route::get('/franchise/statistics', [AdminFranchiseController::class, 'statistics'])->name('franchise.statistics');
+            Route::get('/franchise/export', [AdminFranchiseController::class, 'export'])->name('franchise.export');
 
             Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
             Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');

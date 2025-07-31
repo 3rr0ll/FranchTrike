@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('franchise_applications', function (Blueprint $table) {
             $table->id();
-            $table->string('application_number', 50)->unique();
+            $table->string('application_number', 50)->nullable()->unique();
             $table->foreignId('operator_id')->constrained()->onDelete('cascade');
             $table->foreignId('driver_id')->nullable()->constrained()->onDelete('set null');
             $table->enum('application_type', ['new', 'renewal'])->default('new');
@@ -27,12 +27,13 @@ return new class extends Migration
             $table->date('ctc_date_issued')->nullable();
             $table->string('ctc_place_issued', 100)->nullable();
 
-            $table->enum('status', ['draft', 'submitted', 'under_review', 'approved', 'rejected'])->default('draft');
+            $table->enum('status', [ 'submitted', 'under_review', 'approved', 'rejected'])->default('submitted');
             $table->text('rejection_reason')->nullable();
             $table->timestamp('submitted_at')->nullable();
             $table->timestamp('reviewed_at')->nullable();
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->onDelete('set null');
 
+            $table->foreignId('route_id')->constrained()->onDelete('cascade');
             $table->date('franchise_start_date')->nullable();
             $table->date('franchise_end_date')->nullable();
             $table->decimal('franchise_fee', 10, 2)->nullable();
