@@ -51,4 +51,12 @@ class DocumentType extends Model
     {
         return $query->where('applies_to', 'driver');
     }
+    public function operator()
+    {
+        return $this->belongsTo(Operator::class, 'operator_id', 'operator_id');
+    }
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class, 'driver_id', 'driver_id');
+    }
 }

@@ -24,10 +24,8 @@ Route::get('/', function () {
 // Default login page 
 Route::view('/login', 'auth.login')->name('login')->middleware('guest');
 
-// Custom login form for Admin and Superadmin
-Route::get('admin/login', function () {
-    return view('admins-login');
-})->name('admin.login');
+// Admin and Superadmin login form (now in auth folder)
+Route::view('admin/login', 'auth.admins-login')->name('admin.login')->middleware('guest');
 
 Route::middleware([
     'auth:sanctum',

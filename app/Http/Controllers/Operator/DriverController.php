@@ -93,7 +93,7 @@ class DriverController extends Controller
             'sex' => 'required|in:Male,Female',
             'civil_status' => 'required|in:Single,Married,Divorced,Widowed,Separated',
             'contact_no' => 'required|string|max:20',
-            'license_no' => 'required|string|max:50|unique:drivers,license_no,' . $driver->id,
+            'license_no' => 'required|string|max:50|unique:drivers,license_no,' . $driver->driver_id,
             'license_validity' => 'required|date|after:today',
             'license_nature' => 'required|in:Professional,Non-Professional,Student,Restriction 1,Restriction 2',
         ]);

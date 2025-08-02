@@ -80,7 +80,7 @@ class User extends Authenticatable
     }
     public function operator()
     {
-        return $this->hasOne(Operator::class);
+        return $this->hasOne(Operator::class, 'user_id', 'id');
     }
 
     public function reviewedApplications()

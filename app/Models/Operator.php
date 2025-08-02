@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class Operator extends Model
 {
     use HasFactory;
-
+    protected $primaryKey = 'operator_id';
     protected $fillable = [
         'user_id',
         'operator_id',
@@ -36,15 +36,14 @@ class Operator extends Model
     {
         return $this->belongsTo(User::class);
     }
-
     public function franchiseApplications()
     {
-        return $this->hasMany(FranchiseApplication::class);
+        return $this->hasMany(FranchiseApplication::class, 'operator_id', 'operator_id');
     }
-
+    
     public function documents()
     {
-        return $this->hasMany(OperatorDocument::class);
+        return $this->hasMany(OperatorDocument::class, 'operator_id', 'operator_id');
     }
 
     // Accessors
@@ -101,4 +100,6 @@ class Operator extends Model
     {
         return 'operator_id';
     }
+
+
 }

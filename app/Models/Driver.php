@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class Driver extends Model
 {
     use HasFactory;
-
+    protected $primaryKey = 'driver_id';
     protected $fillable = [
         'operator_id',
         'driver_id',

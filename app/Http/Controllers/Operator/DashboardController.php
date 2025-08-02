@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/Operator/DashboardController.php
 namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
@@ -15,14 +14,20 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Use the correct operator relationship (assuming User hasOne Operator using user_id)
         $operator = $user->operator;
+
+        if (!$operator) {
+            return redirect()->route('login')->with('error', 'Operator record not found.');
+        }
+
         $alerts = [];
 
-        // Franchise Applications
-        $applications = $operator ? $operator->franchiseApplications()->with(['operatorDocuments', 'driverDocuments'])->get() : collect();
+        $applications = $operator->franchiseApplications()->get();
+
         $latestApp = $applications->sortByDesc('created_at')->first();
 
-        // 1. Submission received
         if ($latestApp && $latestApp->status === 'submitted') {
             $alerts[] = [
                 'type' => 'info',
@@ -30,23 +35,24 @@ class DashboardController extends Controller
             ];
         }
 
-        // 2. Status update (approved/rejected)
         if ($latestApp && $latestApp->status === 'approved') {
             $alerts[] = [
                 'type' => 'success',
                 'message' => 'Congratulations! Your franchise application was approved.'
             ];
         }
+
         if ($latestApp && $latestApp->status === 'rejected') {
             $alerts[] = [
                 'type' => 'danger',
-                'message' => 'Your franchise application was rejected.' . ($latestApp->rejection_reason ? ' Reason: ' . $latestApp->rejection_reason : '')
+                'message' => 'Your franchise application was rejected.' .
+                    ($latestApp->rejection_reason ? ' Reason: ' . $latestApp->rejection_reason : '')
             ];
         }
 
-        // 3. Renewal deadlines (90 days before expiry)
         if ($latestApp && $latestApp->status === 'approved' && $latestApp->franchise_end_date) {
             $daysLeft = Carbon::now()->diffInDays($latestApp->franchise_end_date, false);
+
             if ($daysLeft <= 90 && $daysLeft > 0) {
                 $alerts[] = [
                     'type' => 'warning',
@@ -60,24 +66,29 @@ class DashboardController extends Controller
             }
         }
 
-        // 4. Missing or rejected documents
+        // Check for required operator documents
         $requiredDocTypes = DocumentType::forOperator()->get();
-        $submittedDocs = $operator ? $operator->documents : collect();
-        $missingDocs = $requiredDocTypes->filter(function($type) use ($submittedDocs) {
+        $submittedDocs = $operator->documents ?? collect();
+
+        $missingDocs = $requiredDocTypes->filter(function ($type) use ($submittedDocs) {
             return !$submittedDocs->where('document_type_id', $type->document_id)->count();
         });
+
         if ($missingDocs->count()) {
             $alerts[] = [
                 'type' => 'warning',
                 'message' => 'You have missing required documents: ' . $missingDocs->pluck('name')->implode(', ')
             ];
         }
+
         $rejectedDocs = $submittedDocs->where('status', 'rejected');
+
         if ($rejectedDocs->count()) {
             $alerts[] = [
                 'type' => 'danger',
-                'message' => 'Some documents were rejected: ' . $rejectedDocs->map(function($doc) {
-                    return $doc->documentType->name . ($doc->rejection_reason ? ' (Reason: ' . $doc->rejection_reason . ')' : '');
+                'message' => 'Some documents were rejected: ' . $rejectedDocs->map(function ($doc) {
+                    return $doc->documentType->name .
+                        ($doc->rejection_reason ? ' (Reason: ' . $doc->rejection_reason . ')' : '');
                 })->implode(', ')
             ];
         }

@@ -266,7 +266,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $event->application_number }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     @php
-                                    $operator = \App\Models\Operator::find($event->operator_id);
+                                    $operator = \App\Models\Operator::where('operator_id', $event->operator_id)->first();
                                     @endphp
                                     {{ $operator ? $operator->full_name : 'N/A' }}
                                 </td>

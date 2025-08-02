@@ -33,7 +33,7 @@ class OperatorDocument extends Model
      */
     public function operator()
     {
-        return $this->belongsTo(Operator::class);
+        return $this->belongsTo(Operator::class, 'operator_id', 'operator_id');
     }
 
     /**

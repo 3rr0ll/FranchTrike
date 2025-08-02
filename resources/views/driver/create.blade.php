@@ -8,7 +8,7 @@
     <div class="py-6 px-4">
         <div class="bg-white shadow rounded-lg p-6">
             <form action="{{ route('operator.driver.store') }}" method="POST">
-                <input type="hidden" name="operator_id" value="{{ auth()->user()->operator->id }}">
+                <input type="hidden" name="operator_id" value="{{ auth()->user()->operator->operator_id }}">
                 @csrf
 
                 {{-- Personal Information Section --}}

@@ -44,12 +44,12 @@ class FranchiseApplication extends Model
     // Relationships
     public function operator()
     {
-        return $this->belongsTo(Operator::class);
+        return $this->belongsTo(Operator::class, 'operator_id', 'operator_id');
     }
 
     public function driver()
     {
-        return $this->belongsTo(Driver::class);
+        return $this->belongsTo(Driver::class, 'driver_id', 'driver_id');
     }
 
     public function previousApplication()
@@ -202,5 +202,6 @@ class FranchiseApplication extends Model
     {
         return $this->hasOne(MotorDetail::class);
     }
+
 
 }       
