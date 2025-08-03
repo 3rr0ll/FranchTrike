@@ -103,6 +103,17 @@ Route::middleware([
                         ->name('store');
                 });
             });
+
+            // Payment Routes
+            Route::prefix('payments')->name('payments.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Operator\PaymentController::class, 'index'])->name('index');
+                Route::get('/history', [\App\Http\Controllers\Operator\PaymentController::class, 'history'])->name('history');
+                Route::get('/success', [\App\Http\Controllers\Operator\PaymentController::class, 'success'])->name('success');
+                Route::get('/cancel', [\App\Http\Controllers\Operator\PaymentController::class, 'cancel'])->name('cancel');
+                Route::get('/receipt/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'receipt'])->name('receipt');
+                Route::get('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'show'])->name('show');
+                Route::post('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayment'])->name('create');
+            });
         });
 
 
@@ -168,5 +179,24 @@ Route::middleware([
 
             // Global Search
             Route::get('/search', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'search'])->name('search');
+            
+            // Payment Management Routes
+            Route::prefix('payments')->name('payments.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'index'])->name('index');
+                Route::get('/create', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'create'])->name('create');
+                Route::post('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'store'])->name('store');
+                Route::get('/{fee}/edit', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'edit'])->name('edit');
+                Route::put('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'update'])->name('update');
+                Route::delete('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroy'])->name('destroy');
+                
+                // Payment Records Management
+                Route::get('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'payments'])->name('records');
+                Route::post('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'createPayment'])->name('create-payment');
+                Route::put('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'updatePayment'])->name('update-payment');
+                Route::delete('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroyPayment'])->name('destroy-payment');
+                
+                // Statistics
+                Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
+            });
         });
 });

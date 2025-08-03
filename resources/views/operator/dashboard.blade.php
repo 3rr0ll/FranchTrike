@@ -4,9 +4,9 @@
             <h2 class="text-2xl font-bold leading-tight text-gray-800">
                 Operator Dashboard
             </h2>
-            <form method="POST" action="{{ route('logout') }}">
+            <form id="logout-form" method="POST" action="{{ route('logout') }}">
                 @csrf
-                <x-button type="submit" class="ml-4">
+                <x-button type="button" class="ml-4" onclick="confirmLogout(event)">
                     Logout
                 </x-button>
             </form>
@@ -77,6 +77,14 @@
                 :route="route('operator.franchise.index')"
                 color="text-purple-500"
                 buttonText="Franchise Applications" />
+
+            <x-operator-dashboard-card
+                :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1\' />'"
+                title="Payment Center"
+                description="Pay fees and view your payment history for franchise applications."
+                :route="route('operator.payments.index')"
+                color="text-accent-green"
+                buttonText="Payment Center" />
         </div>
 
         <div class="bg-white rounded-lg shadow p-6">
@@ -91,4 +99,25 @@
             </ul>
         </div>
     </div>
+
+
+
+    <script>
+        function confirmLogout(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be logged out.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, logout'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>
