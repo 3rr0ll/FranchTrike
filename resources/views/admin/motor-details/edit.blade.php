@@ -25,7 +25,7 @@
             <form action="{{ route('admin.motor-details.update', $motorDetail) }}" method="POST">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="space-y-6">
                     <!-- Unit Type -->
                     <div>
@@ -33,13 +33,13 @@
                         <select name="unit_type" id="unit_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
                             <option value="">Select Unit Type</option>
                             @foreach($unitTypes as $type)
-                                <option value="{{ $type }}" {{ $motorDetail->unit_type == $type ? 'selected' : '' }}>
-                                    {{ ucfirst($type) }}
-                                </option>
+                            <option value="{{ $type }}" {{ $motorDetail->unit_type == $type ? 'selected' : '' }}>
+                                {{ ucfirst($type) }}
+                            </option>
                             @endforeach
                         </select>
                         @error('unit_type')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -49,13 +49,13 @@
                         <select name="unit_make_id" id="unit_make_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
                             <option value="">Select Unit Make</option>
                             @foreach($unitMakes as $make)
-                                <option value="{{ $make->id }}" {{ $motorDetail->unit_make_id == $make->id ? 'selected' : '' }}>
-                                    {{ $make->name }}
-                                </option>
+                            <option value="{{ $make->id }}" {{ $motorDetail->unit_make_id == $make->id ? 'selected' : '' }}>
+                                {{ $make->name }}
+                            </option>
                             @endforeach
                         </select>
                         @error('unit_make_id')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -64,7 +64,7 @@
                         <label for="motorno" class="block text-sm font-medium text-gray-700">Motor Number</label>
                         <input type="text" name="motorno" id="motorno" value="{{ $motorDetail->motorno }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
                         @error('motorno')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -73,7 +73,7 @@
                         <label for="chasisno" class="block text-sm font-medium text-gray-700">Chasis Number</label>
                         <input type="text" name="chasisno" id="chasisno" value="{{ $motorDetail->chasisno }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
                         @error('chasisno')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -82,7 +82,7 @@
                         <label for="platenumber" class="block text-sm font-medium text-gray-700">Plate Number</label>
                         <input type="text" name="platenumber" id="platenumber" value="{{ $motorDetail->platenumber }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
                         @error('platenumber')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -96,11 +96,11 @@
                             </div>
                             <div>
                                 <dt class="text-gray-500">Operator:</dt>
-                                <dd class="text-gray-900">{{ $motorDetail->franchiseApplication->operator->name ?? 'N/A' }}</dd>
+                                <dd class="text-gray-900">{{ $motorDetail->franchiseApplication->operator->last_name ?? 'N/A' }}</dd>
                             </div>
                             <div>
                                 <dt class="text-gray-500">Driver:</dt>
-                                <dd class="text-gray-900">{{ $motorDetail->franchiseApplication->driver->name ?? 'N/A' }}</dd>
+                                <dd class="text-gray-900">{{ $motorDetail->franchiseApplication->driver->last_name ?? 'N/A' }}</dd>
                             </div>
                         </dl>
                     </div>
@@ -119,4 +119,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

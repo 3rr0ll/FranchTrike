@@ -69,11 +69,11 @@
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Operator</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $motorDetail->franchiseApplication->operator->name ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $motorDetail->franchiseApplication->operator->last_name ?? 'N/A' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Driver</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $motorDetail->franchiseApplication->driver->name ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $motorDetail->franchiseApplication->driver->last_name ?? 'N/A' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Application Status</dt>

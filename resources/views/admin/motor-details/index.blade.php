@@ -155,10 +155,10 @@
                         {{ $motorDetail->franchiseApplication->application_number ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $motorDetail->franchiseApplication->operator->name ?? 'N/A' }}
+                        {{ $motorDetail->franchiseApplication->operator->last_name ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $motorDetail->franchiseApplication->driver->name ?? 'N/A' }}
+                        {{ $motorDetail->franchiseApplication->driver->last_name ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 text-xs font-medium rounded-full 
