@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
 use App\Http\Controllers\Admin\DriverController as AdminDriverController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseController;
+use App\Http\Controllers\Admin\MotorDetailsController;
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -134,6 +135,16 @@ Route::middleware([
             Route::post('/franchise/bulk-update', [AdminFranchiseController::class, 'bulkUpdateStatus'])->name('franchise.bulk-update');
             Route::get('/franchise/statistics', [AdminFranchiseController::class, 'statistics'])->name('franchise.statistics');
             Route::get('/franchise/export', [AdminFranchiseController::class, 'export'])->name('franchise.export');
+
+            // Motor Details Routes
+            Route::get('/motor-details', [MotorDetailsController::class, 'index'])->name('motor-details.index');
+            Route::get('/motor-details/{motorDetail}', [MotorDetailsController::class, 'show'])->name('motor-details.show');
+            Route::get('/motor-details/{motorDetail}/edit', [MotorDetailsController::class, 'edit'])->name('motor-details.edit');
+            Route::put('/motor-details/{motorDetail}', [MotorDetailsController::class, 'update'])->name('motor-details.update');
+            Route::delete('/motor-details/{motorDetail}', [MotorDetailsController::class, 'destroy'])->name('motor-details.destroy');
+            Route::post('/motor-details/bulk-update', [MotorDetailsController::class, 'bulkUpdate'])->name('motor-details.bulk-update');
+            Route::get('/motor-details/statistics', [MotorDetailsController::class, 'statistics'])->name('motor-details.statistics');
+            Route::get('/motor-details/export', [MotorDetailsController::class, 'export'])->name('motor-details.export');
 
             Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
             Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
