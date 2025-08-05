@@ -53,7 +53,7 @@
                     <dl class="space-y-3">
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Name</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->operator->full_name ?? $franchiseApplication->operator_name ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->full_name ?? 'N/A' }}</dd>
                         </div>
 
                         <div>
@@ -191,7 +191,7 @@
             <form action="{{ route('admin.franchise.update-status', $franchiseApplication) }}" method="POST">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="space-y-4">
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
@@ -285,4 +285,4 @@
         }
     });
 </script>
-@endsection 
+@endsection

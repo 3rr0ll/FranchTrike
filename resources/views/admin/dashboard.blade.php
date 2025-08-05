@@ -115,8 +115,9 @@
                 @forelse($recentApplications ?? [] as $application)
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div>
+
                         <p class="text-sm font-medium text-gray-900">{{ $application->application_number }}</p>
-                        <p class="text-xs text-gray-500">{{ $application->operator_name }}</p>
+                        <p class="text-xs text-gray-500">{{$application->operator->full_name }}</p>
                     </div>
                     <span class="px-2 py-1 text-xs font-medium rounded-full 
                         @if($application->status == 'approved') bg-green-100 text-green-800
@@ -136,7 +137,7 @@
 
     <!-- Quick Actions -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    
+
 
         <a href="{{ route('admin.franchise.export') }}" class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
             <div class="flex items-center">
