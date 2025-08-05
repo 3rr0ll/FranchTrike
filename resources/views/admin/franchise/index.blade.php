@@ -8,12 +8,6 @@
         </div>
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
             <div class="flex items-center mb-4 sm:mb-0">
-                <form class="sm:pr-3" action="#" method="GET">
-                    <label for="applications-search" class="sr-only">Search</label>
-                    <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
-                        <input type="text" name="search" id="applications-search" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5" placeholder="Search applications">
-                    </div>
-                </form>
                 <div class="flex items-center w-full sm:justify-end">
                     <div class="hidden pl-2 space-x-1 md:flex">
                         <a href="{{ route('admin.franchise.export') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
@@ -117,10 +111,10 @@
                         {{ $application->application_number }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $application->operator_name }}
+                        {{ $application->operator->last_name }}
                     </td>
                     <td class="px-6 py-4">
-                        {{ $application->driver->name ?? 'N/A' }}
+                        {{ $application->driver->last_name ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
                         {{ ucfirst($application->application_type) }}
@@ -238,42 +232,77 @@
 </div>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
 <script>
-    // Initialize DataTable
-    const dataTable = new simpleDatatables.DataTable("#applications-table", {
-        searchable: true,
-        fixedHeight: true,
-        perPage: 10,
-        perPageSelect: [10, 25, 50, 100],
-        labels: {
-            placeholder: "Search applications...",
-            perPage: "applications per page",
-            noRows: "No applications found",
-            info: "Showing {start} to {end} of {rows} applications",
-        },
-    });
-
-    // Checkbox functionality
-    const selectAllCheckbox = document.getElementById('select-all');
-    const applicationCheckboxes = document.querySelectorAll('.application-checkbox');
-    const bulkActions = document.getElementById('bulk-actions');
-
-    selectAllCheckbox.addEventListener('change', function() {
-        applicationCheckboxes.forEach(checkbox => {
-            checkbox.checked = this.checked;
+    $(document).ready(function() {
+        // Initialize DataTable
+        var table = $('#applications-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+            order: [[1, 'desc']], // Sort by Application # column descending
+            columnDefs: [
+                {
+                    targets: 0, // Checkbox column
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    targets: 7, // Actions column
+                    orderable: false,
+                    searchable: false
+                }
+            ],
+            language: {
+                search: "Search applications:",
+                lengthMenu: "Show _MENU_ applications per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                infoEmpty: "Showing 0 to 0 of 0 applications",
+                infoFiltered: "(filtered from _MAX_ total applications)",
+                zeroRecords: "No applications found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            dom: '<"flex flex-col sm:flex-row justify-between items-center mb-4"lf>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
+            initComplete: function() {
+                // Add custom styling to DataTable elements
+                $('.dataTables_length select').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5');
+                $('.dataTables_filter input').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5');
+            }
         });
-        toggleBulkActions();
-    });
 
-    applicationCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', toggleBulkActions);
-    });
+        // Checkbox functionality
+        const selectAllCheckbox = document.getElementById('select-all');
+        const applicationCheckboxes = document.querySelectorAll('.application-checkbox');
+        const bulkActions = document.getElementById('bulk-actions');
 
-    function toggleBulkActions() {
-        const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
-        bulkActions.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
-    }
+        selectAllCheckbox.addEventListener('change', function() {
+            applicationCheckboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            toggleBulkActions();
+        });
+
+        applicationCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', toggleBulkActions);
+        });
+
+        function toggleBulkActions() {
+            const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
+            bulkActions.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
+        }
+
+        // Redraw table when page changes to maintain checkbox functionality
+        table.on('draw', function() {
+            // Re-attach event listeners to checkboxes after table redraw
+            const newCheckboxes = document.querySelectorAll('.application-checkbox');
+            newCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', toggleBulkActions);
+            });
+        });
+    });
 
     // Status update functionality
     function updateStatus(applicationId, status) {

@@ -53,19 +53,16 @@
                     <dl class="space-y-3">
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Name</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->name ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->operator->full_name ?? $franchiseApplication->operator_name ?? 'N/A' }}</dd>
                         </div>
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Email</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->email ?? 'N/A' }}</dd>
-                        </div>
+
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Phone</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->phone ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->contact_no ?? 'N/A' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Address</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->address ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->full_address ?? 'N/A' }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -76,19 +73,19 @@
                     <dl class="space-y-3">
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Name</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->name ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->full_name ?? 'N/A' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">License Number</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->license_number ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->license_no ?? 'N/A' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Phone</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->phone ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->contact_no ?? 'N/A' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm font-medium text-gray-500">Address</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->address ?? 'N/A' }}</dd>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->full_address ?? 'N/A' }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -146,7 +143,7 @@
             </div>
 
             <!-- Motor Details -->
-            @if($franchiseApplication->motorDetails->count() > 0)
+            @if($franchiseApplication->motorDetail)
             <div class="mt-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Motor Details</h3>
                 <div class="overflow-x-auto">
@@ -161,75 +158,27 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($franchiseApplication->motorDetails as $motorDetail)
                             <tr>
-                                                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                     <span class="px-2 py-1 text-xs font-medium rounded-full 
-                                         @if($motorDetail->unit_type == 'motocab') bg-blue-100 text-blue-800
-                                         @elseif($motorDetail->unit_type == 'tricycle') bg-green-100 text-green-800
-                                         @else bg-gray-100 text-gray-800
-                                         @endif">
-                                         {{ ucfirst($motorDetail->unit_type) }}
-                                     </span>
-                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $motorDetail->unitMake->name ?? 'N/A' }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $motorDetail->platenumber }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $motorDetail->motorno }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $motorDetail->chasisno }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                        @if($franchiseApplication->motorDetail->unit_type == 'motocab') bg-blue-100 text-blue-800
+                                        @elseif($franchiseApplication->motorDetail->unit_type == 'tricycle') bg-green-100 text-green-800
+                                        @else bg-gray-100 text-gray-800
+                                        @endif">
+                                        {{ ucfirst($franchiseApplication->motorDetail->unit_type) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $franchiseApplication->motorDetail->unitMake->name ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $franchiseApplication->motorDetail->platenumber }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $franchiseApplication->motorDetail->motorno }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $franchiseApplication->motorDetail->chasisno }}</td>
                             </tr>
-                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
             @endif
 
-            <!-- Status History -->
-            @if($franchiseApplication->statusHistory->count() > 0)
-            <div class="mt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Status History</h3>
-                <div class="flow-root">
-                    <ul class="-mb-8">
-                        @foreach($franchiseApplication->statusHistory as $history)
-                        <li>
-                            <div class="relative pb-8">
-                                @if(!$loop->last)
-                                <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
-                                @endif
-                                <div class="relative flex space-x-3">
-                                    <div>
-                                        <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white 
-                                            @if($history->status == 'approved') bg-green-500
-                                            @elseif($history->status == 'rejected') bg-red-500
-                                            @elseif($history->status == 'under_review') bg-yellow-500
-                                            @else bg-gray-500
-                                            @endif">
-                                            <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                            </svg>
-                                        </span>
-                                    </div>
-                                    <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                        <div>
-                                            <p class="text-sm text-gray-500">
-                                                Status changed to <span class="font-medium text-gray-900">{{ ucfirst(str_replace('_', ' ', $history->status)) }}</span>
-                                                @if($history->notes)
-                                                <span class="text-gray-400"> - {{ $history->notes }}</span>
-                                                @endif
-                                            </p>
-                                        </div>
-                                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
-                                            <time datetime="{{ $history->created_at->format('Y-m-d H:i:s') }}">{{ $history->created_at->format('M d, Y g:i A') }}</time>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-            </div>
-            @endif
         </div>
     </div>
 </div>

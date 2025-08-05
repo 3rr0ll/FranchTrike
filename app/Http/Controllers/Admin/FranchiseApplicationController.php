@@ -52,7 +52,7 @@ class FranchiseApplicationController extends Controller
 
     public function show(FranchiseApplication $franchiseApplication)
     {
-        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'statusHistory']);
+        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route']);
         
         return view('admin.franchise.show', compact('franchiseApplication'));
     }
@@ -94,11 +94,11 @@ class FranchiseApplicationController extends Controller
         $franchiseApplication->update($updateData);
 
         // Log the status change
-        $franchiseApplication->logStatusChange(
-            $franchiseApplication->getOriginal('status'),
-            $request->status,
-            $request->status === 'rejected' ? $request->rejection_reason : 'Status updated by admin'
-        );
+        // $franchiseApplication->logStatusChange(
+        //     $franchiseApplication->getOriginal('status'),
+        //     $request->status,
+        //     $request->status === 'rejected' ? $request->rejection_reason : 'Status updated by admin'
+        // );
 
         return redirect()->route('admin.franchise.index')
             ->with('success', 'Application status updated successfully.');
@@ -129,11 +129,11 @@ class FranchiseApplicationController extends Controller
             $application->update($updateData);
 
             // Log the status change
-            $application->logStatusChange(
-                $application->getOriginal('status'),
-                $request->status,
-                $request->status === 'rejected' ? $request->rejection_reason : 'Bulk status update by admin'
-            );
+            // $application->logStatusChange(
+            //     $application->getOriginal('status'),
+            //     $request->status,
+            //     $request->status === 'rejected' ? $request->rejection_reason : 'Bulk status update by admin'
+            // );
         }
 
         return redirect()->route('admin.franchise.index')

@@ -77,12 +77,10 @@ class FranchiseApplication extends Model
         return $this->hasMany(DriverDocument::class);
     }
 
-
-
-    public function statusHistory()
-    {
-        return $this->hasMany(ApplicationStatusHistory::class);
-    }
+    // public function statusHistory()
+    // {
+    //     return $this->hasMany(ApplicationStatusHistory::class);
+    // }
 
     // Accessors
     public function getStatusBadgeAttribute()
@@ -185,13 +183,13 @@ class FranchiseApplication extends Model
 
     protected function logStatusChange($previousStatus, $newStatus, $reason = null)
     {
-        ApplicationStatusHistory::create([
-            'franchise_application_id' => $this->id,
-            'previous_status' => $previousStatus,
-            'new_status' => $newStatus,
-            'changed_by' => optional(auth())->id(),
-            'change_reason' => $reason,
-        ]);
+        // ApplicationStatusHistory::create([
+        //     'franchise_application_id' => $this->id,
+        //     'previous_status' => $previousStatus,
+        //     'new_status' => $newStatus,
+        //     'changed_by' => optional(auth())->id(),
+        //     'change_reason' => $reason,
+        // ]);
     }
     public function route()
     {

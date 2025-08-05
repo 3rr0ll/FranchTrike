@@ -4,13 +4,6 @@
 <div class="p-6 bg-white rounded-lg shadow">
     <h1 class="text-2xl font-bold mb-4">Drivers List</h1>
 
-    <div class="mb-4 flex gap-2">
-        <button id="export-csv" class="px-3 py-1 bg-blue-500 text-white rounded">Export CSV</button>
-        <button id="export-json" class="px-3 py-1 bg-green-500 text-white rounded">Export JSON</button>
-        <button id="export-txt" class="px-3 py-1 bg-yellow-500 text-white rounded">Export TXT</button>
-        <button id="export-sql" class="px-3 py-1 bg-purple-500 text-white rounded">Export SQL</button>
-    </div>
-
     <table id="drivers-table" class="table-auto w-full text-left">
         <thead>
             <tr>
@@ -33,7 +26,13 @@
                 <td>{{ $driver->license_nature }}</td>
                 <td>{{ $driver->contact_no }}</td>
                 <td>
-                    <a href="{{ route('admin.documents.driver.show', ['driver' => $driver->driver_id]) }}" class="text-sm text-blue-600 hover:underline">View Documents</a>
+                    <a href="{{ route('admin.documents.driver.show', ['driver' => $driver->driver_id]) }}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        
+                    </a>
                 </td>
             </tr>
             @endforeach
@@ -42,38 +41,12 @@
 </div>
 
 @push('scripts')
-<!-- Flowbite and simple-datatables scripts -->
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@9.0.3" defer></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Initialize DataTable
-        const table = document.querySelector("#drivers-table");
-        const dataTable = new simpleDatatables.DataTable(table);
-
-        // Export handlers
-        document.getElementById("export-csv").addEventListener("click", () => {
-            simpleDatatables.exportCSV(dataTable, {
-                download: true,
-                lineDelimiter: "\n",
-                columnDelimiter: ";"
-            });
-        });
-        document.getElementById("export-json").addEventListener("click", () => {
-            simpleDatatables.exportJSON(dataTable, {
-                download: true,
-                space: 3
-            });
-        });
-        document.getElementById("export-txt").addEventListener("click", () => {
-            simpleDatatables.exportTXT(dataTable, {
-                download: true
-            });
-        });
-        document.getElementById("export-sql").addEventListener("click", () => {
-            simpleDatatables.exportSQL(dataTable, {
-                download: true,
-                tableName: "drivers"
-            });
+    $(document).ready(function() {
+        $('#drivers-table').DataTable({
+            columnDefs: [
+                { orderable: false, targets: 5 } 
+            ]
         });
     });
 </script>
