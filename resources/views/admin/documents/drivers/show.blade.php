@@ -3,7 +3,16 @@
         <div class="mb-8">
             <h2 class="text-3xl font-bold text-gray-900 mb-2">Driver Document</h2>
         </div>
-
+        <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
+            <div class="flex items-center mb-4 sm:mb-0">
+                <a href="{{ route('admin.drivers.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Drivers
+                </a>
+            </div>
+        </div>
         <!-- Driver Info -->
         <div class="mb-8 bg-white p-6 rounded-lg shadow border border-gray-200">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Driver Information</h2>

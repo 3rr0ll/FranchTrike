@@ -79,7 +79,7 @@
                             <dt class="text-sm font-medium text-gray-500">Application Status</dt>
                             <dd class="mt-1 text-sm text-gray-900">
                                 @php
-                                    $status = $motorDetail->franchiseApplication->status ?? 'unknown';
+                                $status = $motorDetail->franchiseApplication->status ?? 'unknown';
                                 @endphp
                                 <span class="px-2 py-1 text-xs font-medium rounded-full 
                                     @if($status == 'approved') bg-green-100 text-green-800
@@ -107,7 +107,7 @@
                     </svg>
                     Edit Motor Details
                 </a>
-                
+
                 @if($motorDetail->franchiseApplication)
                 <a href="{{ route('admin.franchise.show', $motorDetail->franchiseApplication) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,13 +134,25 @@
     @method('DELETE')
 </form>
 
+
 <script>
     function deleteMotorDetail(id) {
-        if (confirm('Are you sure you want to delete this motor detail? This action cannot be undone.')) {
-            const form = document.getElementById('delete-form');
-            form.action = `/admin/motor-details/${id}`;
-            form.submit();
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('delete-form');
+                form.action = `/admin/motor-details/${id}`;
+                form.submit();
+            }
+        });
     }
 </script>
-@endsection 
+@endsection

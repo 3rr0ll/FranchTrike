@@ -43,9 +43,10 @@
 <script>
     $(document).ready(function() {
         $('#operators-table').DataTable({
-            columnDefs: [
-                { orderable: false, targets: 5 } 
-            ]
+            columnDefs: [{
+                orderable: false,
+                targets: 5
+            }]
         });
     });
 </script>

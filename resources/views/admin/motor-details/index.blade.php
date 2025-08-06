@@ -101,7 +101,7 @@
             <select name="unit_make_id" id="unit_make_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                 <option value="">All Makes</option>
                 @foreach($unitMakes as $make)
-                    <option value="{{ $make->id }}" {{ request('unit_make_id') == $make->id ? 'selected' : '' }}>{{ $make->name }}</option>
+                <option value="{{ $make->id }}" {{ request('unit_make_id') == $make->id ? 'selected' : '' }}>{{ $make->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -110,7 +110,7 @@
             <select name="application_status" id="application_status" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                 <option value="">All Statuses</option>
                 @foreach($applicationStatuses as $status)
-                    <option value="{{ $status }}" {{ request('application_status') == $status ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
+                <option value="{{ $status }}" {{ request('application_status') == $status ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
                 @endforeach
             </select>
         </div>
@@ -183,7 +183,7 @@
                     </td>
                     <td class="px-6 py-4">
                         @php
-                            $status = $motorDetail->franchiseApplication->status ?? 'unknown';
+                        $status = $motorDetail->franchiseApplication->status ?? 'unknown';
                         @endphp
                         <span class="px-2 py-1 text-xs font-medium rounded-full 
                             @if($status == 'approved') bg-green-100 text-green-800
@@ -246,7 +246,7 @@
             <select name="unit_make_id" id="bulk_unit_make_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                 <option value="">No Change</option>
                 @foreach($unitMakes as $make)
-                    <option value="{{ $make->id }}">{{ $make->name }}</option>
+                <option value="{{ $make->id }}">{{ $make->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -288,7 +288,7 @@
         const checkboxes = document.querySelectorAll('.motor-detail-checkbox:checked');
         const bulkActions = document.getElementById('bulk-actions');
         const selectedIds = document.getElementById('selected-motor-details');
-        
+
         if (checkboxes.length > 0) {
             bulkActions.style.display = 'block';
             const values = [];
@@ -301,12 +301,24 @@
         }
     }
 
+
     function deleteMotorDetail(id) {
-        if (confirm('Are you sure you want to delete this motor detail?')) {
-            const form = document.getElementById('delete-form');
-            form.action = `/admin/motor-details/${id}`;
-            form.submit();
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.getElementById('delete-form');
+                form.action = `/admin/motor-details/${id}`;
+                form.submit();
+            }
+        });
     }
 </script>
-@endsection 
+@endsection
