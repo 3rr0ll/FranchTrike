@@ -1,8 +1,4 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Apply for Franchise</h2>
-    </x-slot>
-
+<x-guest-layout>
     <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-lg shadow">
         @if (session('error'))
         <div class="mb-4 text-red-600 font-semibold">{{ session('error') }}</div>
@@ -13,11 +9,10 @@
         <form method="POST" action="{{ route('operator.franchise.store') }}">
             @csrf
             {{-- Operator Name --}}
-             <div class="mb-4">
+            <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Operator Name</label>
                 <input type="text" name="operator_name" value="{{ Auth::user()->name }}" class="mt-1 block w-full border rounded p-2" readonly>
             </div>
-
             {{-- Application Type --}}
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Application Type</label>
@@ -26,13 +21,11 @@
                     <option value="renewal">Renewal</option>
                 </select>
             </div>
-
             {{-- Previous Application ID (only visible if Renewal is selected) --}}
             <div class="mb-4" id="previousAppDiv" style="display: none;">
                 <label class="block text-sm font-medium text-gray-700">Previous Application ID</label>
                 <input type="text" name="previous_application_id" class="mt-1 block w-full border rounded p-2">
             </div>
-
             {{-- Driver --}}
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Select Driver</label>
@@ -113,4 +106,4 @@
 
         });
     </script>
-</x-app-layout>
+</x-guest-layout>

@@ -1,8 +1,4 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold text-gray-800">Add Motor Details</h2>
-    </x-slot>
-
+<x-guest-layout>
     <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-lg shadow">
         @if (session('error'))
         <div class="mb-4 text-red-600 font-semibold">{{ session('error') }}</div>
@@ -10,7 +6,6 @@
         @if (session('success'))
         <div class="mb-4 text-green-600 font-semibold">{{ session('success') }}</div>
         @endif
-
         <div class="mb-6 p-4 bg-blue-50 rounded-lg">
             <h3 class="text-lg font-medium text-blue-900 mb-2">Franchise Application Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -20,13 +15,11 @@
                 <div>
                     <span class="font-medium">Operator:</span> {{ $franchiseApplication->operator_name }}
                 </div>
-              
                 <div>
                     <span class="font-medium">Route:</span> {{ $franchiseApplication->route->name }}
                 </div>
             </div>
         </div>
-
         <form method="POST" action="{{ route('operator.franchise.store-motor-details', $franchiseApplication->id) }}">
             @csrf
             {{-- Motor Details --}}
@@ -97,4 +90,4 @@
             </div>
         </form>
     </div>
-</x-app-layout> 
+</x-guest-layout> 

@@ -1,28 +1,25 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold leading-tight text-gray-800">
-                Operator Dashboard
-            </h2>
-            <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                @csrf
-                <x-button type="button" class="ml-4" onclick="confirmLogout(event)">
-                    Logout
-                </x-button>
-            </form>
-        </div>
-    </x-slot>
+@extends('layouts.operator')
 
+@section('header')
+    <h2 class=" mt-5 text-2xl font-bold leading-tight text-gray-800">
+        Operator Dashboard
+    </h2>
+@endsection
+
+@section('content')
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {{-- Alerts Section --}}
         @if(isset($alerts) && count($alerts))
-        <div class="mb-6 space-y-3">
-            @foreach($alerts as $alert)
-            <div class="flex items-center p-4 rounded shadow text-sm
+        <div class="mb-6 space-y-3" id="alerts-container">
+            @foreach($alerts as $i => $alert)
+            <div 
+                class="flex items-center p-4 rounded shadow text-sm
                         @if($alert['type'] === 'success') bg-green-100 text-green-800 border-l-4 border-green-500
                         @elseif($alert['type'] === 'danger') bg-red-100 text-red-800 border-l-4 border-red-500
                         @elseif($alert['type'] === 'warning') bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500
-                        @else bg-blue-100 text-blue-800 border-l-4 border-blue-500 @endif">
+                        @else bg-blue-100 text-blue-800 border-l-4 border-blue-500 @endif"
+                id="alert-{{ $i }}"
+            >
                 @if($alert['type'] === 'success')
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -44,6 +41,20 @@
             </div>
             @endforeach
         </div>
+        <script>
+            // Make alerts disappear after 4 seconds
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    const alerts = document.querySelectorAll('#alerts-container > div[id^="alert-"]');
+                    alerts.forEach(function(alert) {
+                        alert.classList.add('transition', 'opacity-0');
+                        setTimeout(function() {
+                            alert.style.display = 'none';
+                        }, 500); // fade out duration
+                    });
+                }, 4000);
+            });
+        </script>
         @endif
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <x-operator-dashboard-card
@@ -99,25 +110,25 @@
             </ul>
         </div>
     </div>
+@endsection
 
-
-
-    <script>
-        function confirmLogout(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You will be logged out.",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, logout'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        }
-    </script>
-</x-app-layout>
+@push('scripts')
+<script>
+    function confirmLogout(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('logout-form').submit();
+            }
+        });
+    }
+</script>
+@endpush

@@ -1,8 +1,4 @@
-<x-app-layout>
-    <x-slot name="header">
-
-    </x-slot>
-
+<x-guest-layout>
     <div class="py-6 px-4">
         <div class="bg-white shadow rounded-lg p-6">
             <a href="{{ route('operator.home') }}">
@@ -15,7 +11,6 @@
             @if ($hasOperator)
             <div class="text-red-500 text-center font-bold">
                 You have already submitted your operator profile.
-
             </div>
             <a href="{{ route('operator.driver.create') }}">
                 <x-button class="mt-4">Proceed to Driver Registration</x-button>
@@ -138,4 +133,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>

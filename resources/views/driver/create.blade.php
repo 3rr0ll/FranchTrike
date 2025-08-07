@@ -1,10 +1,4 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight">
-            Add Driver Information
-        </h2>
-    </x-slot>
-
+<x-guest-layout>
     <div class="py-6 px-4">
         <div class="bg-white shadow rounded-lg p-6">
             <form action="{{ route('operator.driver.store') }}" method="POST">
@@ -19,25 +13,21 @@
                             label="Last Name"
                             name="last_name"
                             required />
-
                         <x-input
                             label="First Name"
                             name="first_name"
                             required />
-
                         <x-input
                             label="Middle Initial"
                             name="middle_initial"
                             maxlength="1"
                             pattern="[A-Za-z]"
                             title="Please enter a single letter" />
-
                         <x-input
                             label="Birth Date"
                             name="birth_date"
                             type="date"
                             required />
-
                         <x-input
                             label="Age"
                             name="age"
@@ -45,7 +35,6 @@
                             min="18"
                             max="100"
                             required />
-
                         <x-input
                             label="Sex"
                             name="sex"
@@ -56,7 +45,6 @@
                                 'Female' => 'Female'
                             ]"
                             required />
-
                         <x-input
                             label="Civil Status"
                             name="civil_status"
@@ -70,7 +58,6 @@
                                 'Separated' => 'Separated'
                             ]"
                             required />
-
                         <x-input
                             label="Contact Number"
                             name="contact_no"
@@ -87,12 +74,10 @@
                             label="Barangay"
                             name="barangay"
                             required />
-
                         <x-input
                             label="Municipality"
                             name="municipality"
                             required />
-
                         <x-input
                             label="Province"
                             name="province"
@@ -109,13 +94,11 @@
                             name="license_no"
                             placeholder="e.g., N01-12-123456"
                             required />
-
                         <x-input
                             label="License Validity"
                             name="license_validity"
                             type="date"
                             required />
-
                         <x-input
                             label="License Nature"
                             name="license_nature"
@@ -131,7 +114,6 @@
                             required />
                     </div>
                 </div>
-
 
                 <div class="mt-4">
                     <div class="flex justify-end">
@@ -163,8 +145,7 @@
                         });
                     });
                 </script>
+            </form>
         </div>
-        </form>
     </div>
-    </div>
-</x-app-layout>
+</x-guest-layout>

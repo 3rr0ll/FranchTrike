@@ -1,9 +1,12 @@
-<x-app-layout>
+@extends('layouts.operator')
+
+@section('header')
+    <h1 class="text-3xl font-bold mb-6">My Drivers</h1>
+@endsection
+
+@section('content')
     <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <h1 class="text-3xl font-bold mb-6">My Drivers</h1>
-        <a href="{{ route('operator.home') }}">
-            <x-button class="mt-4">Back</x-button>
-        </a>
+
         @if ($drivers->count())
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-200 rounded-lg">
@@ -39,4 +42,4 @@
         <p class="text-gray-500">You currently have no assigned drivers.</p>
         @endif
     </div>
-</x-app-layout>
+@endsection

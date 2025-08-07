@@ -1,12 +1,15 @@
-<x-app-layout>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+@extends('layouts.operator')
 
+@section('header')
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Operator & Driver Documents</h2>
+@endsection
+
+@section('content')
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         <!-- Operator Documents -->
         <div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Operators Documents</h2>
-            <a href="{{ route('operator.home') }}">
-                <x-button class="mt-4">Back</x-button>
-            </a>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Operators Documents</h2>
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($operatorDocuments as $doc)
                 <div class="bg-white p-6 rounded-lg shadow border">
@@ -49,8 +52,7 @@
 
         <!-- Driver Documents -->
         <div>
-            <h2 class="text-2xl font-bold text-gray-800 mt-4 mb-4">Drivers Documents</h2>
-
+            <h2 class="text-xl font-bold text-gray-800 mt-4 mb-4">Drivers Documents</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($driverDocuments as $doc)
                 <div class="bg-white p-6 rounded-lg shadow border">
@@ -65,7 +67,6 @@
                             {{ ucfirst($doc->status) }}
                         </span>
                     </div>
-
                     <p class="text-sm text-gray-600 mb-2">
                         Driver:
                         @if(isset($doc->driver))
@@ -79,11 +80,9 @@
                         N/A
                         @endif
                     </p>
-
                     <x-button onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
                         View Document
                     </x-button>
-
                     @if($doc->status === 'rejected')
                     @php
                     $resubmitUrl = route('operator.documents.driver.create', ['type' => $doc->document_type_id]);
@@ -105,7 +104,6 @@
             </div>
         </div>
     </div>
-
     <!-- Modal -->
     <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 hidden">
         <div class="relative mx-auto my-12 w-full max-w-6xl bg-white rounded-md shadow-lg">
@@ -122,21 +120,21 @@
             </div>
         </div>
     </div>
+@endsection
 
-    <!-- Modal JS -->
-    <script>
-        function openDocumentModal(filePath, documentName) {
-            document.getElementById('modalTitle').textContent = documentName;
-            document.getElementById('documentViewer').src = filePath;
-            document.getElementById('documentModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeDocumentModal() {
-            document.getElementById('modalTitle').textContent = '';
-            document.getElementById('documentViewer').src = '';
-            document.getElementById('documentModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-    </script>
-</x-app-layout>
+@push('scripts')
+<script>
+    function openDocumentModal(filePath, documentName) {
+        document.getElementById('modalTitle').textContent = documentName;
+        document.getElementById('documentViewer').src = filePath;
+        document.getElementById('documentModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDocumentModal() {
+        document.getElementById('modalTitle').textContent = '';
+        document.getElementById('documentViewer').src = '';
+        document.getElementById('documentModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+</script>
+@endpush
