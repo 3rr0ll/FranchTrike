@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -137,16 +137,22 @@
 
     <style>
         @media print {
-            .header, .navigation, button, a {
+
+            .header,
+            .navigation,
+            button,
+            a {
                 display: none !important;
             }
+
             body {
                 margin: 0;
                 padding: 20px;
             }
+
             .bg-white {
                 box-shadow: none !important;
             }
         }
     </style>
-</x-app-layout> 
+</x-guest-layout>

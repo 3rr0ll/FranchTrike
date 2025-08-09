@@ -32,6 +32,17 @@ class FranchiseApplicationController extends Controller
 
         $applications = FranchiseApplication::where('operator_id', $operator->operator_id)->latest()->get();
 
+        foreach ($applications as $application) {
+            if (
+                $application->status === 'approved' &&
+                $application->franchise_end_date &&
+                now()->greaterThan($application->franchise_end_date)
+            ) {
+                $application->update(['status' => 'expired']);
+            }
+        }
+
+
         // Get drivers who already have franchise applications
         $driversWithApplications = $applications->pluck('driver_id')->toArray();
 
@@ -42,18 +53,18 @@ class FranchiseApplicationController extends Controller
     {
         $user = Auth::user();
         $operator = $user ? $user->operator : null;
-        
+
         // Get all drivers for this operator
         $allDrivers = $operator ? $operator->drivers()->latest()->get() : collect();
-        
+
         // Get drivers who already have franchise applications
         $driversWithApplications = FranchiseApplication::where('operator_id', $operator->operator_id)
             ->pluck('driver_id')
             ->toArray();
-        
+
         // Filter out drivers who already have applications
         $availableDrivers = $allDrivers->whereNotIn('driver_id', $driversWithApplications);
-        
+
         $routes = \App\Models\Route::all();
 
         return view('operator.franchise.create', compact('availableDrivers', 'routes'));
@@ -90,11 +101,11 @@ class FranchiseApplicationController extends Controller
             'ctc_no' => $request->ctc_no,
             'ctc_date_issued' => $request->ctc_date_issued,
             'ctc_place_issued' => $request->ctc_place_issued,
-            'franchise_start_date' => null, 
-            'franchise_end_date' => null,  
+            'franchise_start_date' => null,
+            'franchise_end_date' => null,
             'franchise_fee' => $request->franchise_fee,
             'submitted_at' => now(),
-            'status' => 'submitted', 
+            'status' => 'submitted',
         ]);
 
         return redirect()->route('operator.franchise.motor-details', $franchiseApplication->id)->with('success', 'Franchise application submitted..');
@@ -105,7 +116,7 @@ class FranchiseApplicationController extends Controller
     {
         $franchiseApplication = FranchiseApplication::findOrFail($franchiseApplicationId);
         $unitMakes = \App\Models\UnitMake::all();
-        
+
         return view('operator.franchise.motor-details', compact('franchiseApplication', 'unitMakes'));
     }
 

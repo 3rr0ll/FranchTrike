@@ -1,10 +1,11 @@
 @extends('layouts.operator')
 
 @section('header')
-<h2 class="font-semibold text-xl text-gray-800 leading-tight">Payment Center</h2>
 @endsection
 
 @section('content')
+<h2 class="font-semibold text-xl text-gray-800 leading-tight">Payment Center</h2>
+
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <!-- Available Fees -->
     @php
