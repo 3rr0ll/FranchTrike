@@ -8,6 +8,7 @@ use App\Http\Controllers\Operator\OperatorController;
 use App\Http\Controllers\Operator\DriverController;
 use App\Http\Controllers\Operator\DocumentSubmissionController;
 use App\Http\Controllers\Operator\FranchiseApplicationController;
+use App\Http\Controllers\Operator\MotorChangeController;
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
@@ -15,6 +16,7 @@ use App\Http\Controllers\Admin\DriverController as AdminDriverController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseController;
 use App\Http\Controllers\Admin\MotorDetailsController;
+use App\Http\Controllers\Admin\MotorChangeApprovalController;
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -62,6 +64,8 @@ Route::middleware([
                 Route::post('/', [FranchiseApplicationController::class, 'store'])->name('store');
                 Route::get('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'motorDetails'])->name('motor-details');
                 Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
+                Route::get('motor-change/{franchise}', [MotorChangeController::class, 'create'])->name('motor-change.create');
+                Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
             });
 
             Route::prefix('driver')->name('driver.')->group(function () {
@@ -153,6 +157,11 @@ Route::middleware([
                 ->name('documents.operator.verify');
             Route::post('/documents/driver/{document}/verify', [DocumentController::class, 'verifyDriverDocument'])
                 ->name('documents.driver.verify');
+
+
+            Route::get('motor-change', [MotorChangeApprovalController::class, 'index'])->name('motor-change.index');
+            Route::post('motor-change/{request}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
+            Route::post('motor-change/{request}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
         });
 
 
@@ -163,23 +172,23 @@ Route::middleware([
         ->group(function () {
             Route::get('/home', [SuperAdminDashboard::class, 'index'])->name('home');
             Route::get('/dashboard', [SuperAdminDashboard::class, 'index'])->name('dashboard');
-            
+
             // Security Settings Routes (must come before resource routes)
             Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
             Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
-            
+
             // Test route for debugging
-            Route::get('/test-superadmin', function() {
+            Route::get('/test-superadmin', function () {
                 return 'Superadmin access working!';
             })->name('test.superadmin');
-            
+
             // User Management Routes
             Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
             Route::get('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'showPasswordReset'])->name('users.password-reset');
             Route::put('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetPassword'])->name('users.reset-password');
             Route::patch('/users/{user}/toggle-status', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
             Route::get('/users/statistics', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'statistics'])->name('users.statistics');
-            
+
             // Login Security Routes
             Route::patch('/users/{user}/reset-attempts', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetLoginAttempts'])->name('users.reset-attempts');
             Route::patch('/users/{user}/lock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'lockAccount'])->name('users.lock');
@@ -190,7 +199,7 @@ Route::middleware([
 
             // Global Search
             Route::get('/search', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'search'])->name('search');
-            
+
             // Payment Management Routes
             Route::prefix('payments')->name('payments.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'index'])->name('index');
@@ -199,13 +208,13 @@ Route::middleware([
                 Route::get('/{fee}/edit', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'edit'])->name('edit');
                 Route::put('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'update'])->name('update');
                 Route::delete('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroy'])->name('destroy');
-                
+
                 // Payment Records Management
                 Route::get('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'payments'])->name('records');
                 Route::post('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'createPayment'])->name('create-payment');
                 Route::put('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'updatePayment'])->name('update-payment');
                 Route::delete('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroyPayment'])->name('destroy-payment');
-                
+
                 // Statistics
                 Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
             });

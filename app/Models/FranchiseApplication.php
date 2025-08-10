@@ -77,10 +77,6 @@ class FranchiseApplication extends Model
         return $this->hasMany(DriverDocument::class);
     }
 
-    // public function statusHistory()
-    // {
-    //     return $this->hasMany(ApplicationStatusHistory::class);
-    // }
 
     // Accessors
     public function getStatusBadgeAttribute()
@@ -201,5 +197,8 @@ class FranchiseApplication extends Model
         return $this->hasOne(MotorDetail::class);
     }
 
-
-}       
+    public function motorChangeRequests()
+    {
+        return $this->hasMany(MotorChangeRequest::class, 'franchise_application_id');
+    }
+}
