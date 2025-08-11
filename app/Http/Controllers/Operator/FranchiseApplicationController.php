@@ -8,6 +8,7 @@ use App\Models\FranchiseApplication;
 use App\Models\OperatorDocument;
 use App\Models\DriverDocument;
 use App\Models\Driver;
+use App\Models\UnitMake;
 use Illuminate\Support\Facades\Auth;
 
 class FranchiseApplicationController extends Controller
@@ -41,7 +42,6 @@ class FranchiseApplicationController extends Controller
                 $application->update(['status' => 'expired']);
             }
         }
-
 
         // Get drivers who already have franchise applications
         $driversWithApplications = $applications->pluck('driver_id')->toArray();
@@ -152,5 +152,12 @@ class FranchiseApplicationController extends Controller
             'franchise_end_date' => now()->addYear(),
         ]);
         return back()->with('success', 'Application approved and dates set.');
+    }
+
+    public function show(FranchiseApplication $franchiseApplication)
+    {
+        $franchiseApplication->load(['operator', 'driver', 'route', 'motorDetail']);
+        $unitMakes = UnitMake::all();
+        return view('operator.franchise.show', compact('franchiseApplication', 'unitMakes'));
     }
 }

@@ -194,9 +194,8 @@ class FranchiseApplication extends Model
 
     public function motorDetail()
     {
-        return $this->hasOne(MotorDetail::class);
+        return $this->hasOne(MotorDetail::class, 'franchise_application_id');
     }
-
     public function motorChangeRequests()
     {
         return $this->hasMany(MotorChangeRequest::class, 'franchise_application_id');

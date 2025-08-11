@@ -66,6 +66,7 @@ Route::middleware([
                 Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
                 Route::get('motor-change/{franchise}', [MotorChangeController::class, 'create'])->name('motor-change.create');
                 Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
+                Route::get('/{franchiseApplication}', [FranchiseApplicationController::class, 'show'])->name('show');
             });
 
             Route::prefix('driver')->name('driver.')->group(function () {
@@ -150,6 +151,8 @@ Route::middleware([
             Route::get('/motor-details/statistics', [MotorDetailsController::class, 'statistics'])->name('motor-details.statistics');
             Route::get('/motor-details/export', [MotorDetailsController::class, 'export'])->name('motor-details.export');
 
+
+
             Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
             Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
 
@@ -158,10 +161,10 @@ Route::middleware([
             Route::post('/documents/driver/{document}/verify', [DocumentController::class, 'verifyDriverDocument'])
                 ->name('documents.driver.verify');
 
-
+            // Motor Change Approval Routes
             Route::get('motor-change', [MotorChangeApprovalController::class, 'index'])->name('motor-change.index');
-            Route::post('motor-change/{request}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
-            Route::post('motor-change/{request}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
+            Route::post('motor-change/{motorChange}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
+            Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
         });
 
 

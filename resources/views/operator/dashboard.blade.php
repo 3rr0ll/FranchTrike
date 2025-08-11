@@ -63,7 +63,6 @@
         </p>
     </div>
 
-
     @if($franchiseStatus)
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 mt-6">
         {{-- Franchise Status Card --}}
@@ -91,10 +90,8 @@
             </div>
         </div>
         @endif
-    </div></svg>
+    </div>
     @endif
-
-
 
     {{-- Quick Stats Section --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 mt-6">
@@ -115,9 +112,6 @@
             <p class="text-2xl font-bold text-red-600">{{ $expiringDocuments->count() ?? 0 }}</p>
         </div>
     </div>
-
-
-
 
     {{-- Action Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -160,6 +154,24 @@
             :route="route('operator.payments.index')"
             color="text-accent-green"
             buttonText="Go to Payments" />
-    </div>
 
-    @endsection
+        @php
+            // Choose the latest approved application with motor details for change request
+            $latestApprovedWithMotor = optional(Auth::user()->operator)
+                ->franchiseApplications()
+                ->where('status', 'approved')
+                ->whereHas('motorDetail')
+                ->latest()
+                ->first();
+        @endphp
+        <x-operator-dashboard-card
+            :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M4 4v16m8-8H4m8-8v16m8-8H12\' />'"
+            title="Request Motor Change"
+            description="Submit a request to update your unit details."
+            :route="$latestApprovedWithMotor ? route('operator.franchise.motor-change.create', $latestApprovedWithMotor->id) : 'javascript:void(0)'"
+            color="text-primary-navy"
+            :disabled="!$latestApprovedWithMotor"
+            buttonText="Request Change" />
+    </div>
+</div>
+@endsection

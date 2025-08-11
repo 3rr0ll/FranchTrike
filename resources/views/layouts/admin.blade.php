@@ -140,6 +140,18 @@
                         <span class="ms-3">Motor Details</span>
                     </a>
                 </li>
+                <li>
+                    @php $isActive = request()->routeIs('admin.motor-change.*'); @endphp
+                    <a href="{{ route('admin.motor-change.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                    {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 3a2 2 0 00-2 2v7a2 2 0 002 2h6l4 3v-3h2a2 2 0 002-2V5a2 2 0 00-2-2H4z"/>
+                        </svg>
+                        <span class="ms-3">Motor Change Requests</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </aside>

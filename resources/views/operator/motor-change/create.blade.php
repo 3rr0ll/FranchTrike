@@ -30,7 +30,11 @@
                     <p><strong>New Motor Details</strong></p>
                     <div class="mb-4">
                         <label class="block">Unit Type</label>
-                        <input type="text" name="new_unit_type" required class="border rounded w-full py-2 px-3">
+                        <select name="new_unit_type" required class="border rounded w-full py-2 px-3">
+                            <option value="">-- Select Unit Type --</option>
+                            <option value="tricycle">Tricycle</option>
+                            <option value="motocab">Motocab</option>
+                        </select>
                     </div>
                     <div class="mb-4">
                         <label class="block">Unit Make</label>
