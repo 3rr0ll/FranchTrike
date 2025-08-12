@@ -31,7 +31,7 @@
                         <td class="px-4 py-2 border-b">{{ $driver->license_nature }}</td>
                         <td class="px-4 py-2 border-b">{{ $driver->contact_no }}</td>
                         <td class="px-4 py-2 border-b">
-                            <a href="{{ route('operator.driver.show', ['driver' => $driver->driver_id]) }}" class="text-blue-600 hover:underline">View</a>
+                            <a href="{{ route('operator.driver.show', parameters: ['driver' => $driver->driver_id]) }}" class="inline-block bg-primary-navy text-white px-3 py-1 rounded hover:bg-primary-gold hover:text-primary-navy" >View</a>
                         </td>
                     </tr>
                     @endforeach
