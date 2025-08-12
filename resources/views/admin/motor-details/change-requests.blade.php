@@ -62,14 +62,14 @@
                 <td>{{ $request->created_at->format('Y-m-d H:i') }}</td>
                 <td>
                     @if($request->status === 'pending')
-                    <form action="{{ route('admin.motor-change.approve', $request->id) }}" method="POST" class="d-inline">
+                    <form action="{{ route('admin.motor-change.approve', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="approve">
                         @csrf
-                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Approve this request?')">Approve</button>
+                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
                     </form>
 
-                    <form action="{{ route('admin.motor-change.reject', $request->id) }}" method="POST" class="d-inline">
+                    <form action="{{ route('admin.motor-change.reject', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="reject">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Reject this request?')">Reject</button>
+                        <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                     </form>
                     @else
                     <em>No actions available</em>
@@ -81,11 +81,51 @@
     </table>
 </div>
 
-{{-- DataTables Script --}}
+{{-- DataTables and SweetAlert Script --}}
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         $('#motorChangeTable').DataTable();
+
+        // Flash messages via SweetAlert
+        @if(session('success'))
+            Swal.fire({
+                title: 'Success',
+                text: @json(session('success')),
+                icon: 'success',
+                confirmButtonColor: '#1D2761'
+            });
+        @endif
+        @if(session('error'))
+            Swal.fire({
+                title: 'Error',
+                text: @json(session('error')),
+                icon: 'error',
+                confirmButtonColor: '#E63946'
+            });
+        @endif
+
+        // Intercept approve/reject with confirmation dialogs
+        document.querySelectorAll('.js-approval-form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const action = form.getAttribute('data-action');
+                const isApprove = action === 'approve';
+                Swal.fire({
+                    title: isApprove ? 'Approve this request?' : 'Reject this request?',
+                    text: isApprove ? 'This will update the motor details.' : 'This will mark the request as rejected.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: isApprove ? '#16a34a' : '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: isApprove ? 'Yes, approve' : 'Yes, reject'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
     });
 </script>
 @endpush

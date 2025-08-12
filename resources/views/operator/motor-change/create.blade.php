@@ -11,7 +11,7 @@
                 <a href="{{ route('operator.franchise.index') }}" class="inline-block mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">
                     &larr; Back to Franchise List
                 </a>
-                <form action="{{ route('operator.franchise.motor-change.store', $application->id) }}" method="POST">
+                <form id="motor-change-form" action="{{ route('operator.franchise.motor-change.store', $application->id) }}" method="POST">
                     @csrf
                     <p><strong>Old Motor Details</strong></p>
                     @if($motorDetail)
@@ -57,9 +57,54 @@
                         <input type="text" name="new_platenumber" required class="border rounded w-full py-2 px-3">
                     </div>
 
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Request</button>
+                    <button type="button" id="submit-btn" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Request</button>
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('motor-change-form');
+            const submitBtn = document.getElementById('submit-btn');
+
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function () {
+                    Swal.fire({
+                        title: 'Submit request?',
+                        text: 'Please confirm the new motor details before submitting.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#1D2761',
+                        cancelButtonColor: '#E63946',
+                        confirmButtonText: 'Yes, submit',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            }
+
+            // Flash messages
+            @if(session('success'))
+                Swal.fire({
+                    title: 'Success',
+                    text: @json(session('success')),
+                    icon: 'success',
+                    confirmButtonColor: '#1D2761'
+                });
+            @endif
+            @if(session('error'))
+                Swal.fire({
+                    title: 'Error',
+                    text: @json(session('error')),
+                    icon: 'error',
+                    confirmButtonColor: '#E63946'
+                });
+            @endif
+        });
+    </script>
 </x-guest-layout>
