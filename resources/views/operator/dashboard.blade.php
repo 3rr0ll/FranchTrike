@@ -63,35 +63,37 @@
         </p>
     </div>
 
-    @if($franchiseStatus)
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 mt-6">
-        {{-- Franchise Status Card --}}
-        <div class="bg-white p-4 rounded shadow flex items-center">
-            <div class="flex-shrink-0">
-                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 0a8 8 0 11-16 0 8 8 0 0116 0z" />
-                </svg>
+     {{-- Your Franchises (latest 2) --}}
+     @if(isset($franchiseApplications) && $franchiseApplications->count())
+    <div class="mb-8">
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Your Franchises</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @foreach($franchiseApplications->take(2) as $app)
+            <div class="bg-white p-4 rounded shadow">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-sm text-gray-500">Application #{{ $app->id }}</div>
+                    <a href="{{ route('operator.franchise.show', $app) }}" class="text-primary-navy hover:underline text-sm">View details</a>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full
+                        @if($app->status == 'approved') bg-green-100 text-green-800
+                        @elseif($app->status == 'rejected') bg-red-100 text-red-800
+                        @elseif($app->status == 'under_review' || $app->status == 'submitted') bg-yellow-100 text-yellow-800
+                        @else bg-gray-100 text-gray-800 @endif">
+                        {{ ucfirst(str_replace('_',' ', $app->status)) }}
+                    </span>
+                    @if($app->franchise_end_date)
+                        <span class="text-sm text-gray-700">Ends: {{ \Carbon\Carbon::parse($app->franchise_end_date)->format('M d, Y') }}</span>
+                    @endif
+                </div>
+              
+               
             </div>
-            <div class="ml-4">
-                <div class="text-sm text-gray-500 font-semibold">Franchise Status</div>
-                <div class="text-lg font-bold text-gray-800">{{ $franchiseStatus }}</div>
-            </div>
+            @endforeach
         </div>
-        @if($franchiseEndDate)
-        <div class="bg-white p-4 rounded shadow flex items-center">
-            <div class="flex-shrink-0">
-                <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10m-11 8a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v12z" />
-                </svg>
-            </div>
-            <div class="ml-4">
-                <div class="text-sm text-gray-500 font-semibold">Franchise End Date</div>
-                <div class="text-lg font-bold text-gray-800">{{ $franchiseEndDate }}</div>
-            </div>
-        </div>
-        @endif
     </div>
     @endif
+
 
     {{-- Quick Stats Section --}}
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 mt-6">
@@ -113,6 +115,7 @@
         </div>
     </div>
 
+   
     {{-- Action Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <x-operator-dashboard-card
@@ -164,14 +167,5 @@
                 ->latest()
                 ->first();
         @endphp
-        <x-operator-dashboard-card
-            :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M4 4v16m8-8H4m8-8v16m8-8H12\' />'"
-            title="Request Motor Change"
-            description="Submit a request to update your unit details."
-            :route="$latestApprovedWithMotor ? route('operator.franchise.motor-change.create', $latestApprovedWithMotor->id) : 'javascript:void(0)'"
-            color="text-primary-navy"
-            :disabled="!$latestApprovedWithMotor"
-            buttonText="Request Change" />
-    </div>
 </div>
 @endsection
