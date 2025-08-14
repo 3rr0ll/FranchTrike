@@ -1,9 +1,10 @@
-<x-app-layout>
+<x-guest-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Payment Management
             </h2>
+            
             <div class="flex space-x-4">
                 <a href="{{ route('superadmin.payments.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy/90 focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 transition ease-in-out duration-150">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -19,9 +20,14 @@
                 </a>
                
             </div>
+            
         </div>
+        <a href="{{ route('superadmin.dashboard') }}" class="text-blue-600 hover:text-blue-800">
+                ← Back to Dashboard
+            </a>
     </x-slot>
 
+ 
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -88,7 +94,7 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Fee Management</h3>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table id="fees-table" class="min-w-full divide-y divide-gray-200 display nowrap" style="width:100%">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
@@ -144,7 +150,7 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Payments</h3>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table id="payments-table" class="min-w-full divide-y divide-gray-200 display nowrap" style="width:100%">
                         <thead class="bg-gray-50">
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application</th>
@@ -179,14 +185,52 @@
                         </tbody>
                     </table>
                 </div>
+                {{-- Remove Laravel pagination for DataTables --}}
+                {{-- 
                 @if($payments->hasPages())
                 <div class="mt-4">
                     {{ $payments->links() }}
                 </div>
                 @endif
+                --}}
             </div>
         </div>
     </div>
+
+    {{-- JQuery and DataTables JS --}}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#fees-table').DataTable({
+                responsive: true,
+                "order": [],
+                "language": {
+                    "search": "Search:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "paginate": {
+                        "previous": "Prev",
+                        "next": "Next"
+                    }
+                }
+            });
+            $('#payments-table').DataTable({
+                responsive: true,
+                "order": [],
+                "language": {
+                    "search": "Search:",
+                    "lengthMenu": "Show _MENU_ entries",
+                    "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                    "paginate": {
+                        "previous": "Prev",
+                        "next": "Next"
+                    }
+                }
+            });
+        });
+    </script>
 
     @if(session('success'))
     <script>
@@ -213,4 +257,4 @@
         });
     </script>
     @endif
-</x-app-layout> 
+</x-guest-layout> 
