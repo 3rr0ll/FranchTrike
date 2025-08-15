@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Payment Management
             </h2>
-            
+
             <div class="flex space-x-4">
                 <a href="{{ route('superadmin.payments.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy/90 focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 transition ease-in-out duration-150">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -18,16 +18,15 @@
                     </svg>
                     Payment Records
                 </a>
-               
+
             </div>
-            
+
         </div>
         <a href="{{ route('superadmin.dashboard') }}" class="text-blue-600 hover:text-blue-800">
-                ← Back to Dashboard
-            </a>
+            ← Back to Dashboard
+        </a>
     </x-slot>
 
- 
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -49,7 +48,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Total Payments -->
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="p-5">
@@ -68,7 +67,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Pending Payments -->
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="p-5">
@@ -186,15 +185,15 @@
                     </table>
                 </div>
                 {{-- Remove Laravel pagination for DataTables --}}
-                {{-- 
+                {{--
                 @if($payments->hasPages())
                 <div class="mt-4">
                     {{ $payments->links() }}
-                </div>
-                @endif
-                --}}
             </div>
+            @endif
+            --}}
         </div>
+    </div>
     </div>
 
     {{-- JQuery and DataTables JS --}}
@@ -257,4 +256,4 @@
         });
     </script>
     @endif
-</x-guest-layout> 
+</x-guest-layout>
