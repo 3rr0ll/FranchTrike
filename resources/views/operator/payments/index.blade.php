@@ -16,7 +16,6 @@
     $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
     @endphp
 
-
     @if($availableFees->count() > 0)
     <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
         <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center gap-3">
