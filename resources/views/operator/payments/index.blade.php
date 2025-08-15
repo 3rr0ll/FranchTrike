@@ -2,19 +2,20 @@
 
 @section('content')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
-     Payment Center
+    Payment Center
 </h2>
 
 <div class="max-w-7xl mx-auto space-y-12">
 
     {{-- Unsettled (Pending) Payments --}}
     @php
-        $paidFeeIds = $pendingPayments->pluck('fee_id')
-            ->merge($completedPayments->pluck('fee_id'))
-            ->unique();
+    $paidFeeIds = $pendingPayments->pluck('fee_id')
+    ->merge($completedPayments->pluck('fee_id'))
+    ->unique();
 
-        $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
+    $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
     @endphp
+
 
     @if($availableFees->count() > 0)
     <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
@@ -26,20 +27,20 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
             @foreach($availableFees as $fee)
-                <div class="bg-white rounded-lg p-7 border border-gray-100 shadow-sm hover:shadow transition group relative">
-                    <div class="flex items-center justify-between mb-3">
-                        <h4 class="text-lg font-semibold text-gray-900 group-hover:text-primary-navy transition">{{ $fee->description }}</h4>
-                        <span class="text-2xl font-extrabold text-primary-navy">₱{{ number_format($fee->amount, 2) }}</span>
-                    </div>
-                    <p class="text-sm text-gray-500 mb-6">Settle this fee to continue your application process.</p>
-                    <a href="{{ route('operator.payments.show', $fee) }}"
-                       class="w-full inline-flex justify-center items-center px-5 py-2.5 bg-primary-navy text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy border-2 border-primary-navy transition">
-                        Pay Now
-                    </a>
-                    <div class="absolute top-3 right-3">
-                        <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-primary-navy rounded-full font-medium">Unpaid</span>
-                    </div>
+            <div class="bg-white rounded-lg p-7 border border-gray-100 shadow-sm hover:shadow transition group relative">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-lg font-semibold text-gray-900 group-hover:text-primary-navy transition">{{ $fee->description }}</h4>
+                    <span class="text-2xl font-extrabold text-primary-navy">₱{{ number_format($fee->amount, 2) }}</span>
                 </div>
+                <p class="text-sm text-gray-500 mb-6">Settle this fee to continue your application process.</p>
+                <a href="{{ route('operator.payments.show', $fee) }}"
+                    class="w-full inline-flex justify-center items-center px-5 py-2.5 bg-primary-navy text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy border-2 border-primary-navy transition">
+                    Pay Now
+                </a>
+                <div class="absolute top-3 right-3">
+                    <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-primary-navy rounded-full font-medium">Unpaid</span>
+                </div>
+            </div>
             @endforeach
         </div>
     </div>
@@ -88,8 +89,8 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <a href="{{ route('operator.payments.receipt', $payment) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-primary-navy text-white text-xs font-bold rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy transition">
+                            <a href="{{ route('operator.payments.receipt', $payment) }}"
+                                class="inline-flex items-center px-4 py-2 bg-primary-navy text-white text-xs font-bold rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy transition">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17l4 4 4-4m-4-5v9"></path>
                                 </svg>
@@ -105,13 +106,13 @@
     @endif
 
     @if($availableFees->count() === 0 && $completedPayments->count() === 0)
-        <div class="bg-white border border-gray-200 rounded-xl shadow p-10 flex flex-col items-center justify-center">
-            <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h4 class="text-xl font-semibold text-gray-600 mb-2">No Payments Found</h4>
-            <p class="text-gray-500">You currently have no unsettled or paid payments.</p>
-        </div>
+    <div class="bg-white border border-gray-200 rounded-xl shadow p-10 flex flex-col items-center justify-center">
+        <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h4 class="text-xl font-semibold text-gray-600 mb-2">No Payments Found</h4>
+        <p class="text-gray-500">You currently have no unsettled or paid payments.</p>
+    </div>
     @endif
 
 </div>
