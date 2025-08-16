@@ -7,6 +7,24 @@
 @section('content')
 <div class="max-w-5xl mx-auto mt-6">
     <div class="bg-white shadow p-6 rounded-lg space-y-6">
+        <a href="{{ route('operator.franchise.index') }}" class="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded hover:bg-gray-200">Back</a>
+        
+        {{-- Motor Change Request Status --}}
+        @php
+        $motorChangeRequest = \App\Models\MotorChangeRequest::where('franchise_application_id', $franchiseApplication->id)->latest()->first();
+        @endphp
+        @if($motorChangeRequest)
+        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
+            <span class="font-semibold text-blue-900">Motor Change Request Status:</span>
+            <span class="ml-2 text-blue-800">
+                {{ ucfirst($motorChangeRequest->status ?? 'pending') }}
+            </span>
+            @if($motorChangeRequest->created_at)
+            <span class="ml-4 text-xs text-gray-500">(Requested: {{ $motorChangeRequest->created_at->format('M d, Y') }})</span>
+            @endif
+        </div>
+        @endif
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <h3 class="text-lg font-bold mb-2">Application Info</h3>
@@ -40,10 +58,10 @@
             @else
             <p class="text-gray-500">No motor details recorded.</p>
             @endif
+
         </div>
 
-        <div class="flex items-center gap-2">
-            <a href="{{ route('operator.franchise.index') }}" class="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded hover:bg-gray-200">Back</a>
+        <div class="flex items-center justify-end gap-2">
             @if($franchiseApplication->status === 'approved' && $franchiseApplication->motorDetail)
             <a href="{{ route('operator.franchise.motor-change.create', $franchiseApplication->id) }}" class="inline-block bg-primary-navy text-white px-4 py-2 rounded hover:bg-primary-gold hover:text-primary-navy">Request Motor Change</a>
             @endif
