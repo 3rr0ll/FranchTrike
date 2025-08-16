@@ -79,47 +79,38 @@
     </div>
 </div>
 
+
 <!-- Applications Table -->
-<div class="bg-white shadow-sm rounded-lg">
+<div class="p-6 bg-white rounded-lg shadow">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500" id="applications-table">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <table class="table-auto w-full text-left" id="applications-table">
+            <thead>
                 <tr>
-                    <th scope="col" class="px-6 py-3">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="w-4 h-4 text-primary-navy bg-gray-100 border-gray-300 rounded focus:ring-primary-navy focus:ring-2" id="select-all">
-                        </div>
-                    </th>
-                    <th scope="col" class="px-6 py-3">Application #</th>
-                    <th scope="col" class="px-6 py-3">Operator</th>
-                    <th scope="col" class="px-6 py-3">Driver</th>
-                    <th scope="col" class="px-6 py-3">Type</th>
-                    <th scope="col" class="px-6 py-3">Status</th>
-                    <th scope="col" class="px-6 py-3">Submitted</th>
-                    <th scope="col" class="px-6 py-3">Actions</th>
+                    <th scope="col" class="px-8 py-4">Application #</th>
+                    <th scope="col" class="px-8 py-4">Operator</th>
+                    <th scope="col" class="px-8 py-4">Driver</th>
+                    <th scope="col" class="px-8 py-4">Type</th>
+                    <th scope="col" class="px-8 py-4">Status</th>
+                    <th scope="col" class="px-8 py-4">Submitted</th>
+                    <th scope="col" class="px-8 py-4">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($applications as $application)
                 <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="w-4 p-4">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="w-4 h-4 text-primary-navy bg-gray-100 border-gray-300 rounded focus:ring-primary-navy focus:ring-2 application-checkbox" value="{{ $application->id }}">
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    <td class="px-8 py-5 font-medium text-gray-900 whitespace-nowrap">
                         {{ $application->application_number }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-8 py-5">
                         {{ $application->operator->last_name }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-8 py-5">
                         {{ $application->driver->last_name ?? 'N/A' }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-8 py-5">
                         {{ ucfirst($application->application_type) }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-8 py-5">
                         @php
                             $statusColors = [
                                 'submitted' => 'bg-blue-100 text-blue-800',
@@ -129,105 +120,22 @@
                             ];
                             $color = $statusColors[$application->status] ?? 'bg-gray-100 text-gray-800';
                         @endphp
-                        <span class="text-xs font-medium px-2.5 py-0.5 rounded-full {{ $color }}">
+                        <span class="text-xs font-medium px-3 py-1 rounded-full {{ $color }}">
                             {{ ucfirst(str_replace('_', ' ', $application->status)) }}
                         </span>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-8 py-5">
                         {{ $application->submitted_at ? $application->submitted_at->format('M d, Y') : 'N/A' }}
                     </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center space-x-2">
+                    <td class="px-8 py-5">
+                        <div class="flex items-center space-x-3">
                             <a href="{{ route('admin.franchise.show', $application) }}" class="font-medium text-primary-navy hover:underline">View</a>
-                            @if($application->status === 'submitted')
-                            <button type="button" class="text-yellow-600 hover:text-yellow-900" onclick="updateStatus({{ $application->id }}, 'under_review')">
-                                Review
-                            </button>
-                            @endif
                         </div>
                     </td>
                 </tr>
                 @endforeach
             </tbody>
         </table>
-    </div>
-</div>
-
-<!-- Bulk Actions -->
-<div class="mt-4 p-4 bg-white rounded-lg border border-gray-200" id="bulk-actions" style="display: none;">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Bulk Actions</h3>
-    <div class="flex items-center space-x-4">
-        <select id="bulk-status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5">
-            <option value="">Select Status</option>
-            <option value="under_review">Under Review</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-        </select>
-        <button type="button" onclick="bulkUpdateStatus()" class="text-white bg-primary-navy hover:bg-primary-gold hover:text-primary-navy focus:ring-4 focus:ring-primary-navy font-medium rounded-lg text-sm px-5 py-2.5">
-            Update Status
-        </button>
-    </div>
-</div>
-
-<!-- Status Update Modal -->
-<div id="status-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Update Application Status</h3>
-            <form id="status-form" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="mb-4">
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                    <select id="status" name="status" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5" required>
-                        <option value="">Select Status</option>
-                        <option value="under_review">Under Review</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                </div>
-                
-                <div id="rejection-reason-field" class="mb-4 hidden">
-                    <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-2">Rejection Reason</label>
-                    <textarea id="rejection_reason" name="rejection_reason" rows="3" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5"></textarea>
-                </div>
-                
-                <div id="franchise-details" class="mb-4 hidden">
-                    <h4 class="text-sm font-medium text-gray-700 mb-2">Franchise Details</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="franchise_no" class="block text-sm font-medium text-gray-700 mb-1">Franchise No</label>
-                            <input type="text" id="franchise_no" name="franchise_no" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5">
-                        </div>
-                        <div>
-                            <label for="sticker_no" class="block text-sm font-medium text-gray-700 mb-1">Sticker No</label>
-                            <input type="text" id="sticker_no" name="sticker_no" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5">
-                        </div>
-                        <div>
-                            <label for="franchise_start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                            <input type="date" id="franchise_start_date" name="franchise_start_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5">
-                        </div>
-                        <div>
-                            <label for="franchise_end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                            <input type="date" id="franchise_end_date" name="franchise_end_date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5">
-                        </div>
-                    </div>
-                    <div class="mt-2">
-                        <label for="franchise_fee" class="block text-sm font-medium text-gray-700 mb-1">Franchise Fee</label>
-                        <input type="number" step="0.01" id="franchise_fee" name="franchise_fee" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5">
-                    </div>
-                </div>
-                
-                <div class="flex justify-end space-x-3">
-                    <button type="button" onclick="closeStatusModal()" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 border border-gray-300">
-                        Cancel
-                    </button>
-                    <button type="submit" class="text-white bg-primary-navy hover:bg-primary-gold hover:text-primary-navy focus:ring-4 focus:ring-primary-navy font-medium rounded-lg text-sm px-5 py-2.5">
-                        Update Status
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 
@@ -238,15 +146,11 @@
         var table = $('#applications-table').DataTable({
             pageLength: 10,
             lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[1, 'desc']], // Sort by Application # column descending
+            order: [[1, 'desc']], 
             columnDefs: [
+
                 {
-                    targets: 0, // Checkbox column
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    targets: 7, // Actions column
+                    targets: 6, // Actions column
                     orderable: false,
                     searchable: false
                 }
@@ -270,117 +174,12 @@
                 // Add custom styling to DataTable elements
                 $('.dataTables_length select').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5');
                 $('.dataTables_filter input').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5');
+                // Add a little padding to the DataTable wrapper
+                $('#applications-table').closest('.overflow-x-auto').css('padding', '12px');
             }
         });
 
-        // Checkbox functionality
-        const selectAllCheckbox = document.getElementById('select-all');
-        const applicationCheckboxes = document.querySelectorAll('.application-checkbox');
-        const bulkActions = document.getElementById('bulk-actions');
 
-        selectAllCheckbox.addEventListener('change', function() {
-            applicationCheckboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-            toggleBulkActions();
-        });
-
-        applicationCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', toggleBulkActions);
-        });
-
-        function toggleBulkActions() {
-            const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
-            bulkActions.style.display = checkedBoxes.length > 0 ? 'block' : 'none';
-        }
-
-        // Redraw table when page changes to maintain checkbox functionality
-        table.on('draw', function() {
-            // Re-attach event listeners to checkboxes after table redraw
-            const newCheckboxes = document.querySelectorAll('.application-checkbox');
-            newCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', toggleBulkActions);
-            });
-        });
-    });
-
-    // Status update functionality
-    function updateStatus(applicationId, status) {
-        const modal = document.getElementById('status-modal');
-        const form = document.getElementById('status-form');
-        const statusSelect = document.getElementById('status');
-        
-        form.action = `/admin/franchise/${applicationId}/status`;
-        statusSelect.value = status;
-        statusSelect.dispatchEvent(new Event('change'));
-        
-        modal.classList.remove('hidden');
-    }
-
-    function closeStatusModal() {
-        document.getElementById('status-modal').classList.add('hidden');
-    }
-
-    // Status change handlers
-    document.getElementById('status').addEventListener('change', function() {
-        const rejectionField = document.getElementById('rejection-reason-field');
-        const franchiseDetails = document.getElementById('franchise-details');
-        
-        rejectionField.classList.add('hidden');
-        franchiseDetails.classList.add('hidden');
-        
-        if (this.value === 'rejected') {
-            rejectionField.classList.remove('hidden');
-        } else if (this.value === 'approved') {
-            franchiseDetails.classList.remove('hidden');
-        }
-    });
-
-    // Bulk update functionality
-    function bulkUpdateStatus() {
-        const checkedBoxes = document.querySelectorAll('.application-checkbox:checked');
-        const status = document.getElementById('bulk-status').value;
-        
-        if (!status) {
-            alert('Please select a status');
-            return;
-        }
-        
-        const applicationIds = Array.from(checkedBoxes).map(cb => cb.value);
-        
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("admin.franchise.bulk-update") }}';
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        form.appendChild(csrfToken);
-        
-        applicationIds.forEach(id => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'application_ids[]';
-            input.value = id;
-            form.appendChild(input);
-        });
-        
-        const statusInput = document.createElement('input');
-        statusInput.type = 'hidden';
-        statusInput.name = 'status';
-        statusInput.value = status;
-        form.appendChild(statusInput);
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('status-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeStatusModal();
-        }
     });
 </script>
 @endpush
