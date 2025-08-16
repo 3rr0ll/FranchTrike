@@ -41,7 +41,6 @@
         @endforeach
     </div>
     <script>
-        // Make alerts disappear after 4 seconds
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 const alerts = document.querySelectorAll('#alerts-container > div[id^="alert-"]');
@@ -49,7 +48,7 @@
                     alert.classList.add('transition', 'opacity-0');
                     setTimeout(function() {
                         alert.style.display = 'none';
-                    }, 500); // fade out duration
+                    }, 500); 
                 });
             }, 4000);
         });
@@ -62,14 +61,14 @@
             Keep track of your franchise applications, documents, and payments directly from your dashboard.
         </p>
     </div>
-
+    <div class="bg-white rounded-lg shadow p-6 mt-6">
      {{-- Your Franchises (latest 2) --}}
      @if(isset($franchiseApplications) && $franchiseApplications->count())
     <div class="mb-8">
         <h3 class="text-lg font-semibold text-gray-800 mb-3">Your Franchises</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             @foreach($franchiseApplications->take(2) as $app)
-            <div class="bg-white p-4 rounded shadow">
+            <div class="bg-white p-4 ">
                 <div class="flex items-center justify-between mb-2">
                     <div class="text-sm text-gray-500">Application #{{ $app->id }}</div>
                     <a href="{{ route('operator.franchise.show', $app) }}" class="text-primary-navy hover:underline text-sm">View details</a>
@@ -93,6 +92,7 @@
         </div>
     </div>
     @endif
+    </div>
 
 
     {{-- Quick Stats Section --}}
