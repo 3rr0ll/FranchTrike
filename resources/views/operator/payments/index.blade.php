@@ -5,7 +5,7 @@
     Payment Center
 </h2>
 
-<div class="max-w-7xl mx-auto space-y-12">
+<div class="max-w-8xl mx-auto space-y-12">
 
     {{-- Unsettled (Pending) Payments --}}
     @php
@@ -47,6 +47,7 @@
 
     {{-- Paid Payments --}}
     @if($completedPayments->count() > 0)
+
     <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
         <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center gap-3">
             <svg class="w-7 h-7 text-primary-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,16 +55,16 @@
             </svg>
             <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Paid Payments</h3>
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-100 text-sm">
+        <div class="overflow-x-auto px-6 py-6"> {{-- Added padding for breathing room --}}
+            <table id="paid-payments-table" class="min-w-full divide-y divide-gray-100 text-sm display">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left font-semibold text-primary-navy uppercase tracking-wider">Application</th>
-                        <th class="px-6 py-3 text-left font-semibold text-primary-navy uppercase tracking-wider">Fee</th>
-                        <th class="px-6 py-3 text-left font-semibold text-primary-navy uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-3 text-left font-semibold text-primary-navy uppercase tracking-wider">Paid Date</th>
-                        <th class="px-6 py-3 text-left font-semibold text-primary-navy uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left font-semibold text-primary-navy uppercase tracking-wider">Action</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Application</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Fee</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Amount</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Paid Date</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -102,10 +103,29 @@
             </table>
         </div>
     </div>
+    {{-- DataTables JS --}}
+
+    <script>
+        $(document).ready(function() {
+            $('#paid-payments-table').DataTable({
+                "order": [[ 3, "desc" ]], // Order by Paid Date descending
+                "pageLength": 10,
+                "columnDefs": [
+                    { "orderable": false, "targets": 5 } // Disable ordering on Action column
+                ],
+                "initComplete": function() {
+                    // Enhance DataTables search box spacing
+                    let searchBox = $('#paid-payments-table_filter input');
+                    searchBox.addClass('px-4 py-2 rounded border border-gray-300 focus:ring focus:ring-primary-navy/30');
+                    $('#paid-payments-table_filter').addClass('mb-4 pl-1');
+                }
+            });
+        });
+    </script>
     @endif
 
     @if($availableFees->count() === 0 && $completedPayments->count() === 0)
-    <div class="bg-white border border-gray-200 rounded-xl shadow p-10 flex flex-col items-center justify-center">
+    <div class="bg-white border border-gray-200 rounded-xl shadow p-10 flex flex-col items-center justify-center mt-8 mb-8">
         <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
