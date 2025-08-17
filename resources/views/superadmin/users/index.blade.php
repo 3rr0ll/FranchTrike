@@ -1,15 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                User Management
-            </h2>
-            <a href="{{ route('superadmin.dashboard') }}" class="text-blue-600 hover:text-blue-800">
-                ← Back to Dashboard
-            </a>
-        </div>
-    </x-slot>
+@extends('layouts.superadmin')
 
+@section('content')
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         @if (session('success'))
             <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
@@ -110,105 +101,97 @@
             </div>
         </div>
         <div class="py-6">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white shadow p-6 rounded-lg">
-        <table id="users-table" class="table-auto w-full text-left">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name }}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ ucfirst($user->role->name) }}</td>
-                    <td>
-                        @if($user->is_active ?? true)
-                            <span class="text-green-600">Active</span>
-                        @else
-                            <span class="text-red-600">Inactive</span>
-                        @endif
-                    </td>
-                    <td>{{ $user->created_at->format('M d, Y') }}</td>
-                    <td>
-                        <a href="{{ route('superadmin.users.edit', $user) }}" 
-                           class="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50" 
-                           title="Edit User">
-                            <!-- Edit Icon -->
-                            <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                            </svg>
-                        </a>
-                        <a href="{{ route('superadmin.users.password-reset', $user) }}" 
-                           class="text-yellow-600 hover:text-yellow-900 p-1 rounded-full hover:bg-yellow-50" 
-                           title="Reset Password">
-                            <!-- Reset Password Icon -->
-                            <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                            </svg>
-                        </a>
-                        <a href="{{ route('superadmin.users.login-history', $user) }}" 
-                           class="text-purple-600 hover:text-purple-900 p-1 rounded-full hover:bg-purple-50" 
-                           title="Login History">
-                            <!-- History Icon -->
-                            <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                            </svg>
-                        </a>
-                        @if($user->role->name !== 'superadmin')
-                        <form method="POST" action="{{ route('superadmin.users.toggle-status', $user) }}" class="inline">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" 
-                                    class="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-50" 
-                                    title="{{ ($user->is_active ?? true) ? 'Deactivate' : 'Activate' }} User">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white shadow p-6 rounded-lg">
+                <table id="users-table" class="table-auto w-full text-left">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $user)
+                        <tr>
+                            <td>{{ $user->name }}</td>
+                            <td>{{ $user->email }}</td>
+                            <td>{{ ucfirst($user->role->name) }}</td>
+                            <td>
                                 @if($user->is_active ?? true)
-                                    <!-- Deactivate Icon -->
-                                    <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
-                                    </svg>
+                                    <span class="text-green-600">Active</span>
                                 @else
-                                    <!-- Activate Icon -->
-                                    <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
+                                    <span class="text-red-600">Inactive</span>
                                 @endif
-                            </button>
-                        </form>
-                        <form method="POST" action="{{ route('superadmin.users.destroy', $user) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" 
-                                    class="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50" 
-                                    title="Delete User">
-                                <!-- Delete Icon -->
-                                <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
-                        </form>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-
-@push('scripts')
-<script>
-    $(document).ready(function() {
-        $('#users-table').DataTable();
-    });
-</script>
-@endpush
+                            </td>
+                            <td>{{ $user->created_at->format('M d, Y') }}</td>
+                            <td>
+                                <a href="{{ route('superadmin.users.edit', $user) }}" 
+                                   class="text-blue-600 hover:text-blue-900 p-1 rounded-full hover:bg-blue-50" 
+                                   title="Edit User">
+                                    <!-- Edit Icon -->
+                                    <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{{ route('superadmin.users.password-reset', $user) }}" 
+                                   class="text-yellow-600 hover:text-yellow-900 p-1 rounded-full hover:bg-yellow-50" 
+                                   title="Reset Password">
+                                    <!-- Reset Password Icon -->
+                                    <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{{ route('superadmin.users.login-history', $user) }}" 
+                                   class="text-purple-600 hover:text-purple-900 p-1 rounded-full hover:bg-purple-50" 
+                                   title="Login History">
+                                    <!-- History Icon -->
+                                    <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </a>
+                                @if($user->role->name !== 'superadmin')
+                                <form method="POST" action="{{ route('superadmin.users.toggle-status', $user) }}" class="inline">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" 
+                                            class="text-orange-600 hover:text-orange-900 p-1 rounded-full hover:bg-orange-50" 
+                                            title="{{ ($user->is_active ?? true) ? 'Deactivate' : 'Activate' }} User">
+                                        @if($user->is_active ?? true)
+                                            <!-- Deactivate Icon -->
+                                            <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                            </svg>
+                                        @else
+                                            <!-- Activate Icon -->
+                                            <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        @endif
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('superadmin.users.destroy', $user) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50" 
+                                            title="Delete User">
+                                        <!-- Delete Icon -->
+                                        <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                                @endif
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
         <!-- Security Actions -->
         <div class="mt-8 bg-white overflow-hidden shadow rounded-lg">
@@ -231,25 +214,17 @@
                 </div>
             </div>
         </div>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Statistics Summary -->
-       
     </div>
-</x-app-layout>  
+@endsection
 
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#usersTable').DataTable({
+        $('#users-table').DataTable({
             "order": [[ 0, "asc" ]],
             "pageLength": 10,
             "responsive": true
         });
     });
 </script>
-@endpush  
+@endpush
