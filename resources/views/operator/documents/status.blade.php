@@ -108,15 +108,17 @@
     <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 hidden">
         <div class="relative mx-auto my-12 w-full max-w-6xl bg-white rounded-md shadow-lg">
             <div class="flex flex-col h-[90vh] p-6">
-                <h2 id="modalTitle" class="text-xl font-bold text-gray-800"></h2>
-                <button onclick="closeDocumentModal()" class="text-gray-400 hover:text-gray-600 transition duration-200">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <div class="flex-1 overflow-hidden">
-                <iframe id="documentViewer" class="w-full h-full rounded-md border border-gray-300" style="min-height:600px;" frameborder="0"></iframe>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="modalTitle" class="text-xl font-semibold text-gray-900"></h3>
+                    <button onclick="closeDocumentModal()" class="text-gray-400 hover:text-gray-600 transition duration-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-hidden">
+                    <iframe id="documentViewer" class="w-full h-full rounded-md border border-gray-300" style="min-height:600px;" frameborder="0"></iframe>
+                </div>
             </div>
         </div>
     </div>
