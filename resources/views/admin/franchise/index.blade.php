@@ -112,13 +112,13 @@
                     </td>
                     <td class="px-8 py-5">
                         @php
-                            $statusColors = [
-                                'submitted' => 'bg-blue-100 text-blue-800',
-                                'under_review' => 'bg-yellow-100 text-yellow-800',
-                                'approved' => 'bg-green-100 text-green-800',
-                                'rejected' => 'bg-red-100 text-red-800',
-                            ];
-                            $color = $statusColors[$application->status] ?? 'bg-gray-100 text-gray-800';
+                        $statusColors = [
+                        'submitted' => 'bg-blue-100 text-blue-800',
+                        'under_review' => 'bg-yellow-100 text-yellow-800',
+                        'approved' => 'bg-green-100 text-green-800',
+                        'rejected' => 'bg-red-100 text-red-800',
+                        ];
+                        $color = $statusColors[$application->status] ?? 'bg-gray-100 text-gray-800';
                         @endphp
                         <span class="text-xs font-medium px-3 py-1 rounded-full {{ $color }}">
                             {{ ucfirst(str_replace('_', ' ', $application->status)) }}
@@ -145,8 +145,13 @@
         // Initialize DataTable
         var table = $('#applications-table').DataTable({
             pageLength: 10,
-            lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
-            order: [[1, 'desc']], 
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [
+                [1, 'desc']
+            ],
             columnDefs: [
 
                 {
@@ -183,4 +188,4 @@
     });
 </script>
 @endpush
-@endsection 
+@endsection
