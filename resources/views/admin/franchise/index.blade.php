@@ -79,7 +79,6 @@
     </div>
 </div>
 
-
 <!-- Applications Table -->
 <div class="p-6 bg-white rounded-lg shadow">
     <div class="overflow-x-auto">
