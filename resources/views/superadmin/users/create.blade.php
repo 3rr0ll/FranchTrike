@@ -1,15 +1,6 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Create New User
-            </h2>
-            <a href="{{ route('superadmin.users.index') }}" class="text-blue-600 hover:text-blue-800">
-                Back to Users
-            </a>
-        </div>
-    </x-slot>
+@extends('layouts.superadmin')
 
+@section('content')
     <div class="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
         @if ($errors->any())
         <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -20,6 +11,12 @@
             </ul>
         </div>
         @endif
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Create New User
+            </h2>
+        </div>
 
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
             <div class="px-4 py-5 sm:p-6">
@@ -94,4 +91,4 @@
             </ul>
         </div>
     </div>
-</x-app-layout>
+@endsection

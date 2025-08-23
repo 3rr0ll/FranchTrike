@@ -2,6 +2,13 @@
 
 @section('content')
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+
+        <div class="mb-6">
+            <a href="{{ route('superadmin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy border border-primary-navy rounded-md text-sm font-medium text-white hover:bg-primary-navy-dark hover:border-primary-navy-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
+                &larr; Back to Users List
+            </a>
+        </div>
+
     
         <!-- Security Settings Form -->
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
