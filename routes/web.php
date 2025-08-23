@@ -49,7 +49,7 @@ Route::middleware([
             // Operator dashboard
             Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
             Route::get('/dashboard', [OperatorDashboard::class, 'index'])->name('dashboard');
-            Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
+
             // Operator resource routes
             Route::get('/', [OperatorController::class, 'index'])->name('index');
             Route::get('/create', [OperatorController::class, 'create'])->name('create');
@@ -71,13 +71,20 @@ Route::middleware([
 
             Route::prefix('driver')->name('driver.')->group(function () {
                 Route::get('/', [DriverController::class, 'index'])->name('index');
-                Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
                 Route::get('/create', [DriverController::class, 'create'])->name('create');
                 Route::post('/', [DriverController::class, 'store'])->name('store');
+                Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
                 Route::get('/{driver}/edit', [DriverController::class, 'edit'])->name('edit');
                 Route::put('/{driver}', [DriverController::class, 'update'])->name('update');
                 Route::delete('/{driver}', [DriverController::class, 'destroy'])->name('destroy');
             });
+
+            // If /operator/driver/create is not found, show a 404 page
+            // (Handled by Laravel automatically if no route matches)
+            // If you want a custom 404, you can define a fallback route:
+            // Route::fallback(function () {
+            //     abort(404, 'Page not found');
+            // });
 
             // Document Submission Routes 
             Route::prefix('documents')->name('documents.')->group(function () {
