@@ -8,12 +8,6 @@
         </div>
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
             <div class="flex items-center mb-4 sm:mb-0">
-                <form class="sm:pr-3" action="{{ route('admin.motor-details.index') }}" method="GET">
-                    <label for="motor-search" class="sr-only">Search</label>
-                    <div class="relative w-48 mt-1 sm:w-64 xl:w-96">
-                        <input type="text" name="search" id="motor-search" value="{{ request('search') }}" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block w-full p-2.5" placeholder="Search motor details">
-                    </div>
-                </form>
                 <div class="flex items-center w-full sm:justify-end">
                     <div class="hidden pl-2 space-x-1 md:flex">
                         <a href="{{ route('admin.motor-details.export') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
@@ -85,73 +79,28 @@
     </div>
 </div>
 
-<!-- Filters -->
-<div class="bg-white p-4 rounded-lg border border-gray-200 mb-4">
-    <form action="{{ route('admin.motor-details.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div>
-            <label for="unit_type" class="block text-sm font-medium text-gray-700 mb-1">Unit Type</label>
-            <select name="unit_type" id="unit_type" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                <option value="">All Types</option>
-                <option value="motocab" {{ request('unit_type') == 'motocab' ? 'selected' : '' }}>Motocab</option>
-                <option value="tricycle" {{ request('unit_type') == 'tricycle' ? 'selected' : '' }}>Tricycle</option>
-            </select>
-        </div>
-        <div>
-            <label for="unit_make_id" class="block text-sm font-medium text-gray-700 mb-1">Unit Make</label>
-            <select name="unit_make_id" id="unit_make_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                <option value="">All Makes</option>
-                @foreach($unitMakes as $make)
-                <option value="{{ $make->id }}" {{ request('unit_make_id') == $make->id ? 'selected' : '' }}>{{ $make->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div>
-            <label for="application_status" class="block text-sm font-medium text-gray-700 mb-1">Application Status</label>
-            <select name="application_status" id="application_status" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                <option value="">All Statuses</option>
-                @foreach($applicationStatuses as $status)
-                <option value="{{ $status }}" {{ request('application_status') == $status ? 'selected' : '' }}>{{ ucfirst(str_replace('_', ' ', $status)) }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="flex items-end">
-            <button type="submit" class="w-full bg-primary-navy text-white px-4 py-2 rounded-md hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy">
-                Apply Filters
-            </button>
-        </div>
-    </form>
-</div>
-
 <!-- Motor Details Table -->
 <div class="bg-white shadow-sm rounded-lg">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-gray-500" id="motor-details-table">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+        <table class="w-full text-sm text-left text-black" id="motor-details-table">
+            <thead class="text-xs  bg-gray-50 text-black">
                 <tr>
-                    <th scope="col" class="px-6 py-3">
-                        <div class="flex items-center">
-                            <input type="checkbox" class="w-4 h-4 text-primary-navy bg-gray-100 border-gray-300 rounded focus:ring-primary-navy focus:ring-2" id="select-all">
-                        </div>
-                    </th>
-                    <th scope="col" class="px-6 py-3">Application #</th>
-                    <th scope="col" class="px-6 py-3">Operator</th>
-                    <th scope="col" class="px-6 py-3">Driver</th>
-                    <th scope="col" class="px-6 py-3">Unit Type</th>
-                    <th scope="col" class="px-6 py-3">Unit Make</th>
-                    <th scope="col" class="px-6 py-3">Plate Number</th>
-                    <th scope="col" class="px-6 py-3">Motor No</th>
-                    <th scope="col" class="px-6 py-3">Chasis No</th>
-                    <th scope="col" class="px-6 py-3">Status</th>
-                    <th scope="col" class="px-6 py-3">Actions</th>
+                    <th><strong>Application #</strong></th>
+                    <th><strong>Operator</strong></th>
+                    <th><strong>Driver</strong></th>
+                    <th><strong>Unit type</strong></th>
+                    <th><strong>Unit make</strong></th>
+                    <th><strong>Plate number</strong></th>
+                    <th><strong>Motor no</strong></th>
+                    <th><strong>Chasis no</strong></th>
+                    <th><strong>Status</strong></th>
+                    <th><strong>Actions</strong></th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($motorDetails as $motorDetail)
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <input type="checkbox" class="w-4 h-4 text-primary-navy bg-gray-100 border-gray-300 rounded focus:ring-primary-navy focus:ring-2 motor-detail-checkbox" value="{{ $motorDetail->id }}">
-                    </td>
-                    <td class="px-6 py-4 font-medium text-gray-900">
+                <tr class="bg-white border-b hover:bg-gray-50 text-black">
+                    <td class="px-6 py-4 font-medium">
                         {{ $motorDetail->franchiseApplication->application_number ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
@@ -161,10 +110,10 @@
                         {{ $motorDetail->franchiseApplication->driver->last_name ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full 
+                        <span class="px-2 py-1 text-xs font-medium rounded-full
                             @if($motorDetail->unit_type == 'motocab') bg-blue-100 text-blue-800
                             @elseif($motorDetail->unit_type == 'tricycle') bg-green-100 text-green-800
-                            @else bg-gray-100 text-gray-800
+                            @else bg-gray-100 text-black
                             @endif">
                             {{ ucfirst($motorDetail->unit_type) }}
                         </span>
@@ -185,11 +134,11 @@
                         @php
                         $status = $motorDetail->franchiseApplication->status ?? 'unknown';
                         @endphp
-                        <span class="px-2 py-1 text-xs font-medium rounded-full 
+                        <span class="px-2 py-1 text-xs font-medium rounded-full
                             @if($status == 'approved') bg-green-100 text-green-800
                             @elseif($status == 'rejected') bg-red-100 text-red-800
                             @elseif($status == 'under_review') bg-yellow-100 text-yellow-800
-                            @else bg-gray-100 text-gray-800
+                            @else bg-gray-100 text-black
                             @endif">
                             {{ ucfirst(str_replace('_', ' ', $status)) }}
                         </span>
@@ -217,7 +166,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="11" class="px-6 py-4 text-center text-gray-500">
+                    <td colspan="10" class="px-6 py-4 text-center text-black">
                         No motor details found.
                     </td>
                 </tr>
@@ -227,42 +176,6 @@
     </div>
 </div>
 
-<!-- Bulk Actions -->
-<div class="mt-4 p-4 bg-white rounded-lg border border-gray-200" id="bulk-actions" style="display: none;">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">Bulk Actions</h3>
-    <form action="{{ route('admin.motor-details.bulk-update') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        @csrf
-        <input type="hidden" name="motor_detail_ids" id="selected-motor-details">
-        <div>
-            <label for="bulk_unit_type" class="block text-sm font-medium text-gray-700 mb-1">Update Unit Type</label>
-            <select name="unit_type" id="bulk_unit_type" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                <option value="">No Change</option>
-                <option value="motocab">Motocab</option>
-                <option value="tricycle">Tricycle</option>
-            </select>
-        </div>
-        <div>
-            <label for="bulk_unit_make_id" class="block text-sm font-medium text-gray-700 mb-1">Update Unit Make</label>
-            <select name="unit_make_id" id="bulk_unit_make_id" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                <option value="">No Change</option>
-                @foreach($unitMakes as $make)
-                <option value="{{ $make->id }}">{{ $make->name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="flex items-end">
-            <button type="submit" class="w-full bg-primary-navy text-white px-4 py-2 rounded-md hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy">
-                Update Selected
-            </button>
-        </div>
-    </form>
-</div>
-
-<!-- Pagination -->
-<div class="mt-4">
-    {{ $motorDetails->links() }}
-</div>
-
 <!-- Delete Form -->
 <form id="delete-form" method="POST" style="display: none;">
     @csrf
@@ -270,37 +183,20 @@
 </form>
 
 <script>
-    // Select all functionality
-    document.getElementById('select-all').addEventListener('change', function() {
-        const checkboxes = document.querySelectorAll('.motor-detail-checkbox');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.checked = this.checked;
+    $(document).ready(function() {
+        $('#motor-details-table').DataTable({
+            "order": [],
+            "language": {
+                "search": "Search:",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "paginate": {
+                    "previous": "Prev",
+                    "next": "Next"
+                }
+            }
         });
-        updateBulkActions();
     });
-
-    // Individual checkbox functionality
-    document.querySelectorAll('.motor-detail-checkbox').forEach(function(checkbox) {
-        checkbox.addEventListener('change', updateBulkActions);
-    });
-
-    function updateBulkActions() {
-        const checkboxes = document.querySelectorAll('.motor-detail-checkbox:checked');
-        const bulkActions = document.getElementById('bulk-actions');
-        const selectedIds = document.getElementById('selected-motor-details');
-
-        if (checkboxes.length > 0) {
-            bulkActions.style.display = 'block';
-            const values = [];
-            checkboxes.forEach(function(cb) {
-                values.push(cb.value);
-            });
-            selectedIds.value = values.join(',');
-        } else {
-            bulkActions.style.display = 'none';
-        }
-    }
-
 
     function deleteMotorDetail(id) {
         Swal.fire({
