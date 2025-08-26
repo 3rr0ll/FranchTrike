@@ -102,8 +102,9 @@
         </div>
         <div class="py-6">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 bg-white shadow p-6 rounded-lg">
-                <table id="users-table" class="table-auto w-full text-left">
-                    <thead>
+                <div class="overflow-auto">
+                    <table id="users-table" class="table-auto w-full text-left">
+                        <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
