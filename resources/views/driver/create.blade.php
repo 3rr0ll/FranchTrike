@@ -1,4 +1,6 @@
-<x-guest-layout>
+@extends('layouts.operator')
+
+@section('content')
     <div class="py-6 px-4">
         <div class="bg-white shadow rounded-lg p-6">
             <form action="{{ route('operator.driver.store') }}" method="POST">
@@ -148,4 +150,4 @@
             </form>
         </div>
     </div>
-</x-guest-layout>
+@endsection
