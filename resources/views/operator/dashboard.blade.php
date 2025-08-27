@@ -8,6 +8,23 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <!-- Success Message -->
+      @if(session('success'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '{{ session('success') }}',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('operator.home') }}";
+                    }
+                });
+            });
+        </script>
+        @endif
     {{-- Alerts Section --}}
     @if(isset($alerts) && count($alerts))
     <div class="mb-6 space-y-3" id="alerts-container">
