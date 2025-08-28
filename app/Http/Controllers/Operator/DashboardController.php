@@ -119,7 +119,14 @@ class DashboardController extends Controller
         // Payments
         $pendingPayments = Payment::whereHas('franchiseApplication', function ($q) use ($operator) {
             $q->where('operator_id', $operator->operator_id);
-        })->whereNull('paid_at')->with(['fee', 'franchiseApplication'])->get();
+        })
+            ->whereNull('paid_at')
+            ->where(function ($q) {
+                $q->whereNull('stripe_payment_status')
+                  ->orWhere('stripe_payment_status', '!=', 'cancelled');
+            })
+            ->with(['fee', 'franchiseApplication'])
+            ->get();
 
         $completedPayments = Payment::whereHas('franchiseApplication', function ($q) use ($operator) {
             $q->where('operator_id', $operator->operator_id);
@@ -172,6 +179,18 @@ class DashboardController extends Controller
             }
         }
 
+        // Dynamic counts for quick stats
+        $pendingPaymentsCount = $pendingPayments->count();
+        $completedPaymentsCount = Payment::whereHas('franchiseApplication', function ($q) use ($operator) {
+            $q->where('operator_id', $operator->operator_id);
+        })->whereNotNull('paid_at')->count();
+
+        $applicationsInProgressCount = $franchiseApplications
+            ? $franchiseApplications->whereIn('status', ['submitted', 'pending', 'under_review'])->count()
+            : 0;
+
+        $expiringDocumentsCount = $expiringDocuments->count();
+
         return view('operator.dashboard', compact(
             'alerts',
             'pendingPayments',
@@ -180,7 +199,11 @@ class DashboardController extends Controller
             'expiringDocuments',
             'franchiseStatus',
             'franchiseEndDate',
-            'franchiseApplications'
+            'franchiseApplications',
+            'pendingPaymentsCount',
+            'completedPaymentsCount',
+            'applicationsInProgressCount',
+            'expiringDocumentsCount'
         ));
     }
 }
