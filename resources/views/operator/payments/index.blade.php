@@ -11,6 +11,7 @@
     @php
     $paidFeeIds = $pendingPayments->pluck('fee_id')
     ->merge($completedPayments->pluck('fee_id'))
+    ->merge(($cancelledPayments ?? collect())->pluck('fee_id'))
     ->unique();
 
     $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
@@ -41,6 +42,55 @@
                 </div>
             </div>
             @endforeach
+        </div>
+    </div>
+    @endif
+
+    {{-- Cancelled (Unpaid) Payments --}}
+    @if(isset($cancelledPayments) && $cancelledPayments->count() > 0)
+    <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
+        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center gap-3">
+            <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Cancelled Payments</h3>
+        </div>
+        <div class="overflow-x-auto px-6 py-6">
+            <table class="min-w-full divide-y divide-gray-100 text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Application</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Fee</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Amount</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @foreach($cancelledPayments as $payment)
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-semibold text-gray-900">
+                            {{ $payment->franchiseApplication->application_number ?? ('#' . $payment->franchise_application_id) }}
+                        </td>
+                        <td class="px-6 py-4 text-gray-700">{{ $payment->fee->description }}</td>
+                        <td class="px-6 py-4 font-bold text-primary-navy">
+                            ₱{{ number_format($payment->amount_paid, 2) }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full">Cancelled</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <form method="POST" action="{{ route('operator.payments.resume', $payment) }}">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-navy text-white text-xs font-bold rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy transition">
+                                    Pay
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
     @endif
