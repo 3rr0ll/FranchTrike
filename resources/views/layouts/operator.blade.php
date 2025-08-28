@@ -38,7 +38,7 @@
                             </button>
                         </div>
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm" id="dropdown-user">
-                            <div class="px-4 py-3" role="none">
+                            <div class="px-4 py-3 rounded-sm cursor-pointer" role="menuitem" id="open-profile-modal">
                                 <p class="text-sm text-gray-900" role="none">
                                     {{ Auth::user()->name ?? 'Operator User' }}
                                 </p>
@@ -51,7 +51,7 @@
                                     <a href="{{ route('operator.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Dashboard</a>
                                 </li>
                                 <li>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Settings</a>
+                                    <a href="{{ route('operator.settings') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Settings</a>
                                 </li>
                                 <li>
                                     <form id="logout-form" method="POST" action="{{ route('logout') }}">
@@ -155,6 +155,62 @@
     <div class="p-4 sm:ml-64 mt-16">
         @yield('content')
     </div>
+    
+    {{-- Profile Modal --}}
+    <div id="profile-modal" class="fixed inset-0 z-[60] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-black/50"></div>
+        <div class="relative bg-white rounded-sm shadow w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between px-4 py-3 border-b">
+                <h3 class="text-lg font-semibold text-primary-navy">My Profile</h3>
+                <button id="close-profile-modal" class="text-gray-500 hover:text-gray-700">&times;</button>
+            </div>
+            <div class="p-4">
+                <div class="flex items-start gap-4 mb-4">
+                    <img src="{{ Auth::user()->profile_photo_url ?? asset('images/logo.png') }}" alt="Profile" class="w-16 h-16 rounded-full object-cover">
+                    <div>
+                        <p class="text-lg font-semibold text-primary-navy">{{ optional(Auth::user()->operator)->full_name ?? Auth::user()->name }}</p>
+                        <p class="text-sm text-gray-600">{{ Auth::user()->email }}</p>
+                        <p class="text-sm text-gray-600">{{ Auth::user()->role->name ?? (Auth::user()->getRoleNames()->first() ?? 'Operator') }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Contact No.</p>
+                        <p class="text-gray-900">{{ optional(Auth::user()->operator)->contact_no ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Address</p>
+                        <p class="text-gray-900">{{ optional(Auth::user()->operator)->full_address ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Sex</p>
+                        <p class="text-gray-900">{{ optional(Auth::user()->operator)->sex ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Civil Status</p>
+                        <p class="text-gray-900">{{ optional(Auth::user()->operator)->civil_status ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Birth Date</p>
+                        <p class="text-gray-900">{{ optional(optional(Auth::user()->operator)->birth_date)->format('M d, Y') ?? (optional(Auth::user()->operator)->birth_date ?: '—') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Age</p>
+                        <p class="text-gray-900">{{ optional(Auth::user()->operator)->age ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Member Since</p>
+                        <p class="text-gray-900">{{ Auth::user()->created_at?->format('M d, Y') }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end gap-3">
+                    <a href="{{ route('operator.settings') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy text-white rounded-sm hover:bg-primary-gold hover:text-primary-navy">Change Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
     @livewireScripts
     @stack('scripts')
     <script>
@@ -174,6 +230,31 @@
                 }
             });
         }
+
+        // Profile modal open/close handlers
+        document.addEventListener('DOMContentLoaded', function () {
+            var openBtn = document.getElementById('open-profile-modal');
+            var modal = document.getElementById('profile-modal');
+            var closeBtn = document.getElementById('close-profile-modal');
+            var dismissBtn = document.getElementById('dismiss-profile-modal');
+            var backdrop = modal ? modal.querySelector('.absolute.inset-0') : null;
+
+            function openModal() {
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+            function closeModal() {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            if (openBtn) openBtn.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (dismissBtn) dismissBtn.addEventListener('click', closeModal);
+            if (backdrop) backdrop.addEventListener('click', closeModal);
+        });
     </script>
 </body>
 </html>
