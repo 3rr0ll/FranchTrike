@@ -1,19 +1,11 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Complete Payment
-            </h2>
-            <a href="{{ route('operator.payments.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Cancel Payment
-            </a>
-        </div>
-    </x-slot>
+@extends('layouts.operator')
+
+
+
+@section('content')
 
     <div class="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
+
         <div class="bg-white overflow-hidden shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
                 <!-- Payment Summary -->
@@ -61,6 +53,10 @@
                                     </svg>
                                 </div>
                             </button>
+                            <a href="{{ route('operator.payments.index') }}" class="w-full inline-flex justify-center items-center px-4 py-3 bg-white border border-gray-300 rounded-md font-semibold text-sm text-gray-700 uppercase tracking-widest hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 mt-3">
+                                
+                                Cancel Payment
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -84,7 +80,9 @@
             </div>
         </div>
     </div>
+@endsection
 
+@push('scripts')
     <!-- Stripe Scripts -->
     <script src="https://js.stripe.com/v3/"></script>
     <script>
@@ -139,7 +137,7 @@
                 const errorElement = document.getElementById('card-errors');
                 errorElement.textContent = error.message;
                 console.error('Payment error:', error);
-                
+
                 // Re-enable button
                 submitButton.disabled = false;
                 buttonText.style.display = 'inline';
@@ -156,7 +154,7 @@
                     console.log('Payment not succeeded, status:', paymentIntent.status);
                     const errorElement = document.getElementById('card-errors');
                     errorElement.textContent = 'Payment was not completed successfully.';
-                    
+
                     // Re-enable button
                     submitButton.disabled = false;
                     buttonText.style.display = 'inline';
@@ -175,4 +173,4 @@
             }
         });
     </script>
-</x-app-layout> 
+@endpush
