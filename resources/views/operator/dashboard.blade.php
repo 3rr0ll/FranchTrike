@@ -116,19 +116,19 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 mt-6">
         <div class="bg-white p-4 rounded shadow text-center">
             <h4 class="text-sm text-gray-500">Pending Payments</h4>
-            <p class="text-2xl font-bold text-yellow-600">{{ $pendingPayments->count() }}</p>
+            <p class="text-2xl font-bold text-yellow-600">{{ $pendingPaymentsCount }}</p>
         </div>
         <div class="bg-white p-4 rounded shadow text-center">
             <h4 class="text-sm text-gray-500">Completed Payments</h4>
-            <p class="text-2xl font-bold text-green-600">{{ $completedPayments->count() }}</p>
+            <p class="text-2xl font-bold text-green-600">{{ $completedPaymentsCount }}</p>
         </div>
         <div class="bg-white p-4 rounded shadow text-center">
             <h4 class="text-sm text-gray-500">Applications in Progress</h4>
-            <p class="text-2xl font-bold text-blue-600">{{ $incompleteApplications->count() ?? 0 }}</p>
+            <p class="text-2xl font-bold text-blue-600">{{ $applicationsInProgressCount }}</p>
         </div>
         <div class="bg-white p-4 rounded shadow text-center">
             <h4 class="text-sm text-gray-500">Expiring Documents</h4>
-            <p class="text-2xl font-bold text-red-600">{{ $expiringDocuments->count() ?? 0 }}</p>
+            <p class="text-2xl font-bold text-red-600">{{ $expiringDocumentsCount }}</p>
         </div>
     </div>
 
