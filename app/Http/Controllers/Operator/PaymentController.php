@@ -32,13 +32,27 @@ class PaymentController extends Controller
         $fees = Fee::where('is_active', true)->get();
         $pendingPayments = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
             $query->where('operator_id', $operator->operator_id);
-        })->whereNull('paid_at')->with(['fee', 'franchiseApplication'])->get();
+        })
+        ->whereNull('paid_at')
+        ->whereNotNull('stripe_payment_status')
+        ->where('stripe_payment_status', '!=', 'cancelled')
+        ->with(['fee', 'franchiseApplication'])->get();
+
+        $cancelledPayments = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
+            $query->where('operator_id', $operator->operator_id);
+        })
+        ->whereNull('paid_at')
+        ->where(function ($q) {
+            $q->whereNull('stripe_payment_status')
+              ->orWhere('stripe_payment_status', 'cancelled');
+        })
+        ->with(['fee', 'franchiseApplication'])->get();
         
         $completedPayments = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
             $query->where('operator_id', $operator->operator_id);
         })->whereNotNull('paid_at')->with(['fee', 'franchiseApplication'])->latest()->take(10)->get();
         
-        return view('operator.payments.index', compact('fees', 'pendingPayments', 'completedPayments'));
+        return view('operator.payments.index', compact('fees', 'pendingPayments', 'cancelledPayments', 'completedPayments'));
     }
 
     /**
@@ -180,6 +194,51 @@ class PaymentController extends Controller
         
         return redirect()->route('operator.payments.index')
             ->with('error', 'Payment was cancelled.');
+    }
+
+    /**
+     * Resume a cancelled payment by creating a new intent and returning to process page
+     */
+    public function resume(Request $request, Payment $payment)
+    {
+        $operator = Auth::user()->operator;
+        if ($payment->franchiseApplication->operator_id !== $operator->operator_id) {
+            abort(403);
+        }
+
+        if ($payment->paid_at) {
+            return redirect()->route('operator.payments.index')->with('success', 'This payment was already completed.');
+        }
+
+        try {
+            $intent = PaymentIntent::create([
+                'amount' => $payment->amount_paid * 100,
+                'currency' => 'php',
+                'metadata' => [
+                    'fee_id' => $payment->fee_id,
+                    'franchise_application_id' => $payment->franchise_application_id,
+                    'operator_id' => $operator->operator_id,
+                    'resumed_from_payment_id' => $payment->id,
+                ],
+            ]);
+
+            $payment->update([
+                'stripe_payment_intent_id' => $intent->id,
+                'stripe_payment_status' => null,
+            ]);
+
+            $fee = $payment->fee;
+            $application = $payment->franchiseApplication;
+
+            return view('operator.payments.process', [
+                'paymentIntent' => $intent,
+                'payment' => $payment,
+                'fee' => $fee,
+                'application' => $application,
+            ]);
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to resume payment: ' . $e->getMessage()]);
+        }
     }
 
     /**
