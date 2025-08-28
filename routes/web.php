@@ -49,7 +49,7 @@ Route::middleware([
             // Operator dashboard
             Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
             Route::get('/dashboard', [OperatorDashboard::class, 'index'])->name('dashboard');
-
+            Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
             // Operator resource routes
             Route::get('/', [OperatorController::class, 'index'])->name('index');
             Route::get('/create', [OperatorController::class, 'create'])->name('create');
@@ -66,7 +66,6 @@ Route::middleware([
                 Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
                 Route::get('motor-change/{franchise}', [MotorChangeController::class, 'create'])->name('motor-change.create');
                 Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
-                Route::get('/{franchiseApplication}', [FranchiseApplicationController::class, 'show'])->name('show');
             });
 
             Route::prefix('driver')->name('driver.')->group(function () {
@@ -78,13 +77,6 @@ Route::middleware([
                 Route::put('/{driver}', [DriverController::class, 'update'])->name('update');
                 Route::delete('/{driver}', [DriverController::class, 'destroy'])->name('destroy');
             });
-
-            // If /operator/driver/create is not found, show a 404 page
-            // (Handled by Laravel automatically if no route matches)
-            // If you want a custom 404, you can define a fallback route:
-            // Route::fallback(function () {
-            //     abort(404, 'Page not found');
-            // });
 
             // Document Submission Routes 
             Route::prefix('documents')->name('documents.')->group(function () {
@@ -172,61 +164,62 @@ Route::middleware([
             Route::get('motor-change', [MotorChangeApprovalController::class, 'index'])->name('motor-change.index');
             Route::post('motor-change/{motorChange}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
             Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
-        });
 
 
-    // SuperAdmin routes
-    Route::middleware([RoleMiddleware::class . ':superadmin'])
-        ->prefix('superadmin')
-        ->name('superadmin.')
-        ->group(function () {
-            Route::get('/home', [SuperAdminDashboard::class, 'index'])->name('home');
-            Route::get('/dashboard', [SuperAdminDashboard::class, 'index'])->name('dashboard');
 
-            // Security Settings Routes (must come before resource routes)
-            Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
-            Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
+            // SuperAdmin routes
+            Route::middleware([RoleMiddleware::class . ':superadmin'])
+                ->prefix('superadmin')
+                ->name('superadmin.')
+                ->group(function () {
+                    Route::get('/home', [SuperAdminDashboard::class, 'index'])->name('home');
+                    Route::get('/dashboard', [SuperAdminDashboard::class, 'index'])->name('dashboard');
 
-            // Test route for debugging
-            Route::get('/test-superadmin', function () {
-                return 'Superadmin access working!';
-            })->name('test.superadmin');
+                    // Security Settings Routes (must come before resource routes)
+                    Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
+                    Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
 
-            // User Management Routes
-            Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
-            Route::get('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'showPasswordReset'])->name('users.password-reset');
-            Route::put('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetPassword'])->name('users.reset-password');
-            Route::patch('/users/{user}/toggle-status', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
-            Route::get('/users/statistics', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'statistics'])->name('users.statistics');
+                    // Test route for debugging
+                    Route::get('/test-superadmin', function () {
+                        return 'Superadmin access working!';
+                    })->name('test.superadmin');
 
-            // Login Security Routes
-            Route::patch('/users/{user}/reset-attempts', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetLoginAttempts'])->name('users.reset-attempts');
-            Route::patch('/users/{user}/lock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'lockAccount'])->name('users.lock');
-            Route::patch('/users/{user}/unlock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'unlockAccount'])->name('users.unlock');
-            Route::patch('/users/{user}/force-logout', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'forceLogout'])->name('users.force-logout');
-            Route::get('/users/{user}/login-history', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'loginHistory'])->name('users.login-history');
-            Route::get('/users/login-logs', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'allLoginLogs'])->name('users.login-logs');
+                    // User Management Routes
+                    Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
+                    Route::get('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'showPasswordReset'])->name('users.password-reset');
+                    Route::put('/users/{user}/password-reset', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetPassword'])->name('users.reset-password');
+                    Route::patch('/users/{user}/toggle-status', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
+                    Route::get('/users/statistics', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'statistics'])->name('users.statistics');
 
-            // Global Search
-            Route::get('/search', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'search'])->name('search');
+                    // Login Security Routes
+                    Route::patch('/users/{user}/reset-attempts', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'resetLoginAttempts'])->name('users.reset-attempts');
+                    Route::patch('/users/{user}/lock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'lockAccount'])->name('users.lock');
+                    Route::patch('/users/{user}/unlock', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'unlockAccount'])->name('users.unlock');
+                    Route::patch('/users/{user}/force-logout', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'forceLogout'])->name('users.force-logout');
+                    Route::get('/users/{user}/login-history', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'loginHistory'])->name('users.login-history');
+                    Route::get('/users/login-logs', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'allLoginLogs'])->name('users.login-logs');
 
-            // Payment Management Routes
-            Route::prefix('payments')->name('payments.')->group(function () {
-                Route::get('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'index'])->name('index');
-                Route::get('/create', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'create'])->name('create');
-                Route::post('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'store'])->name('store');
-                Route::get('/{fee}/edit', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'edit'])->name('edit');
-                Route::put('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'update'])->name('update');
-                Route::delete('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroy'])->name('destroy');
+                    // Global Search
+                    Route::get('/search', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'search'])->name('search');
 
-                // Payment Records Management
-                Route::get('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'payments'])->name('records');
-                Route::post('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'createPayment'])->name('create-payment');
-                Route::put('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'updatePayment'])->name('update-payment');
-                Route::delete('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroyPayment'])->name('destroy-payment');
+                    // Payment Management Routes
+                    Route::prefix('payments')->name('payments.')->group(function () {
+                        Route::get('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'index'])->name('index');
+                        Route::get('/create', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'create'])->name('create');
+                        Route::post('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'store'])->name('store');
+                        Route::get('/{fee}/edit', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'edit'])->name('edit');
+                        Route::put('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'update'])->name('update');
+                        Route::delete('/{fee}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroy'])->name('destroy');
 
-                // Statistics
-                Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
-            });
+                        // Payment Records Management
+                        Route::get('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'payments'])->name('records');
+                        Route::post('/records', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'createPayment'])->name('create-payment');
+                        Route::put('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'updatePayment'])->name('update-payment');
+                        Route::delete('/records/{payment}', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'destroyPayment'])->name('destroy-payment');
+
+                        // Statistics
+                        Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
+                    });
+                });
         });
 });
