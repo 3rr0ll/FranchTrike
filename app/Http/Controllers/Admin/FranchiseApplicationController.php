@@ -9,6 +9,9 @@ use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FranchiseStatusUpdated;
+use App\Services\NotificationService;
 
 class FranchiseApplicationController extends Controller
 {
@@ -92,6 +95,36 @@ class FranchiseApplicationController extends Controller
         }
 
         $franchiseApplication->update($updateData);
+
+        // Send email notification to operator user
+        try {
+            $franchiseApplication->loadMissing(['operator.user']);
+            $recipient = optional($franchiseApplication->operator->user)->email;
+            if ($recipient) {
+                Mail::to($recipient)->send(new FranchiseStatusUpdated($franchiseApplication));
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore email failures but keep request flow
+        }
+
+        // Create in-app notification (template-based)
+        try {
+            if ($franchiseApplication->operator && $franchiseApplication->operator->user) {
+                $user = $franchiseApplication->operator->user;
+                $templateKey = match ($request->status) {
+                    'approved' => 'franchise_approved',
+                    'rejected' => 'franchise_rejected',
+                    default => 'franchise_under_review',
+                };
+                app(NotificationService::class)->sendToUser($user, $templateKey, [
+                    'application_number' => $franchiseApplication->application_number,
+                    'rejection_reason' => $franchiseApplication->rejection_reason ?? 'N/A',
+                    'status' => $request->status,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
 
         // Log the status change
         // $franchiseApplication->logStatusChange(
