@@ -30,6 +30,36 @@
                     </a>
                 </div>
                 <div class="flex items-center">
+                    {{-- Notifications bell --}}
+                    <div class="relative mr-4">
+                        <button type="button" data-dropdown-toggle="dropdown-notifications" class="relative text-white hover:text-primary-gold focus:outline-none" id="open-notifs">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            @php
+                                $notifCount = Auth::user()->siteNotifications()->whereNull('read_at')->count();
+                            @endphp
+                            @if($notifCount > 0)
+                                <span id="notif-badge" class="absolute -top-2 -right-2 inline-flex items-center justify-center w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                            @endif
+                        </button>
+                        <div id="dropdown-notifications" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-sm shadow z-50">
+                            <div class="px-4 py-2 border-b font-semibold text-primary-navy">Notifications</div>
+                            <div class="max-h-80 overflow-y-auto">
+                                @php
+                                    $latestNotifs = Auth::user()->siteNotifications()->latest()->take(10)->get();
+                                @endphp
+                                @forelse($latestNotifs as $n)
+                                    <div class="px-4 py-3 border-b text-sm">
+                                        <div class="text-gray-800">{{ $n->message }}</div>
+                                        <div class="text-xs text-gray-500">{{ optional($n->created_at)->diffForHumans() }}</div>
+                                    </div>
+                                @empty
+                                    <div class="px-4 py-6 text-sm text-gray-500">No notifications</div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex items-center ms-3">
                         <div>
                             <button type="button" class="flex text-sm" aria-expanded="false" data-dropdown-toggle="dropdown-user">
@@ -238,6 +268,8 @@
             var closeBtn = document.getElementById('close-profile-modal');
             var dismissBtn = document.getElementById('dismiss-profile-modal');
             var backdrop = modal ? modal.querySelector('.absolute.inset-0') : null;
+            var openNotifs = document.getElementById('open-notifs');
+            var notifBadge = document.getElementById('notif-badge');
 
             function openModal() {
                 if (!modal) return;
@@ -254,6 +286,21 @@
             if (closeBtn) closeBtn.addEventListener('click', closeModal);
             if (dismissBtn) dismissBtn.addEventListener('click', closeModal);
             if (backdrop) backdrop.addEventListener('click', closeModal);
+
+            // Mark notifications as read when opening the dropdown
+            if (openNotifs) {
+                openNotifs.addEventListener('click', function () {
+                    fetch('{{ route('operator.notifications.read') }}', {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    }).then(function() {
+                        if (notifBadge) notifBadge.remove();
+                    }).catch(function() {});
+                });
+            }
         });
     </script>
 </body>
