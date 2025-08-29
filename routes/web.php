@@ -64,12 +64,15 @@ Route::middleware([
                 Route::post('/', [FranchiseApplicationController::class, 'store'])->name('store');
                 Route::get('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'motorDetails'])->name('motor-details');
                 Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
+                Route::get('/{franchiseApplication}', [FranchiseApplicationController::class, 'show'])->name('show');
                 Route::get('motor-change/{franchise}', [MotorChangeController::class, 'create'])->name('motor-change.create');
                 Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
             });
 
+
             Route::prefix('driver')->name('driver.')->group(function () {
                 Route::get('/', [DriverController::class, 'index'])->name('index');
+                Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
                 Route::get('/create', [DriverController::class, 'create'])->name('create');
                 Route::post('/', [DriverController::class, 'store'])->name('store');
                 Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
@@ -77,6 +80,11 @@ Route::middleware([
                 Route::put('/{driver}', [DriverController::class, 'update'])->name('update');
                 Route::delete('/{driver}', [DriverController::class, 'destroy'])->name('destroy');
             });
+
+            // Operator settings page (password change)
+            Route::get('/settings', function () {
+                return view('operator.settings');
+            })->name('settings');
 
             // Document Submission Routes 
             Route::prefix('documents')->name('documents.')->group(function () {
@@ -119,6 +127,15 @@ Route::middleware([
                 Route::get('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'show'])->name('show');
                 Route::post('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayment'])->name('create');
             });
+
+            // Notifications: mark all as read
+            Route::patch('/notifications/read', function () {
+                $user = \Illuminate\Support\Facades\Auth::user();
+                if ($user) {
+                    $user->siteNotifications()->whereNull('read_at')->update(['read_at' => now()]);
+                }
+                return response()->noContent();
+            })->name('notifications.read');
         });
 
 
