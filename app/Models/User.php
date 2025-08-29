@@ -98,6 +98,11 @@ class User extends Authenticatable
         return $this->hasMany(DriverDocument::class, 'verified_by');
     }
 
+    public function siteNotifications()
+    {
+        return $this->hasMany(SiteNotification::class);
+    }
+
     public function statusChanges()
     {
         return $this->hasMany(ApplicationStatusHistory::class, 'changed_by');
