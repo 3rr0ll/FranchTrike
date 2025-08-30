@@ -43,7 +43,7 @@
                                 <span id="notif-badge" class="absolute -top-2 -right-2 inline-flex items-center justify-center w-2.5 h-2.5 bg-red-600 rounded-full"></span>
                             @endif
                         </button>
-                        <div id="dropdown-notifications" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-sm shadow z-50">
+                        <div id="dropdown-notifications" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-sm shadow-lg ring-1 ring-black ring-opacity-10 z-50">
                             <div class="px-4 py-2 border-b font-semibold text-primary-navy">Notifications</div>
                             <div class="max-h-80 overflow-y-auto">
                                 @php
@@ -124,7 +124,7 @@
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 0a10 10 0 1 0 10 10A10.009 10.009 0 0 0 10 0Zm6.613 4.614a8.523 8.523 0 0 1 1.93 2.302 8.243 8.243 0 0 1-.778 2.104l-.004-.007a4.786 4.786 0 0 0-1.01 2.805 4.49 4.49 0 0 0-1.858 2.024 4.504 4.504 0 0 0-1.858-2.024 4.49 4.49 0 0 0-1.01-2.805l-.004.007a8.243 8.243 0 0 1-.778-2.104 8.523 8.523 0 0 1 1.93-2.302A8.523 8.523 0 0 1 10 4.614a8.523 8.523 0 0 1 6.613 0Z" />
                         </svg>
-                        <span class="ms-3">Franchise Application</span>
+                        <span class="ms-3">Register Driver</span>
                     </a>
                 </li>
                 <li>
@@ -236,7 +236,11 @@
                 </div>
 
                 <div class="mt-6 flex justify-end gap-3">
-                    <a href="{{ route('operator.settings') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy text-white rounded-sm hover:bg-primary-gold hover:text-primary-navy">Change Password</a>
+                    <a href="{{ route('operator.settings') }}">
+                        <x-button>
+                            Change Password
+                        </x-button>
+                    </a>
                 </div>
             </div>
         </div>
