@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FranchTrike | Tricycle Franchising System</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -25,8 +26,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="css/components.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
 </head>
-
 <body class="bg-white text-primary-navy font-['Inter']">
 
   <!-- Navbar -->
@@ -107,18 +108,9 @@
       <div class="max-w-xl">
         <h2 class="text-5xl font-bold mb-6 leading-tight">Tricycle Franchising in Padre Garcia</h2>
         <p class="text-lg mb-8 text-gray-700">Apply, renew, and track your franchise status—all in one place. FranchTrike makes the process faster and easier than ever before.</p>
-        <div class="flex flex-col sm:flex-row gap-4">
-          <a href="register.html" class="btn-primary flex items-center justify-center gap-2 text-lg px-8 py-3 rounded-full">
-            Get Started <i class="bi bi-arrow-right"></i>
-          </a>
-          <a href="#features" class="btn-outline flex items-center justify-center gap-2 text-lg px-8 py-3 rounded-full">
-            Learn More <i class="bi bi-info-circle"></i>
-          </a>
-        </div>
       </div>
-      <div class="relative">
-        <div class="absolute -inset-4 bg-primary-gold/20 rounded-full blur-xl"></div>
-        <img src="logo.png" alt="Tricycle" class="w-full max-w-lg relative">
+      <div class="relative flex items-center justify-center min-w-[80px] min-h-[80px]">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-120 w-120 object-contain mx-auto">
       </div>
     </div>
   </section>
