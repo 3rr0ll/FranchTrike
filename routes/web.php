@@ -72,7 +72,6 @@ Route::middleware([
 
             Route::prefix('driver')->name('driver.')->group(function () {
                 Route::get('/', [DriverController::class, 'index'])->name('index');
-                Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
                 Route::get('/create', [DriverController::class, 'create'])->name('create');
                 Route::post('/', [DriverController::class, 'store'])->name('store');
                 Route::get('/{driver}', [DriverController::class, 'show'])->name('show');
