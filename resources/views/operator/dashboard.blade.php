@@ -15,7 +15,7 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
-                    text: '{{ session('success') }}',
+                    text: `{{ session('success') }}`,
                     confirmButtonText: 'OK'
                 }).then((result) => {
                     if (result.isConfirmed) {
