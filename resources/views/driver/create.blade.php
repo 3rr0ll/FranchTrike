@@ -119,7 +119,7 @@
 
                 <div class="mt-4">
                     <div class="flex justify-end">
-                        <a href="{{ url()->previous() }}">
+                        <a href="{{ route('operator.dashboard') }}">
                             <x-button type="button">
                                 Back
                             </x-button>
