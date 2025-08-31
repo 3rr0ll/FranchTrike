@@ -1,25 +1,6 @@
 <x-guest-layout>
     <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-lg shadow">
-        @if (session('error'))
-        <div class="mb-4 text-red-600 font-semibold">{{ session('error') }}</div>
-        @endif
-        @if (session('success'))
-        <div class="mb-4 text-green-600 font-semibold">{{ session('success') }}</div>
-        @endif
-        <div class="mb-6 p-4 bg-blue-50 rounded-lg">
-            <h3 class="text-lg font-medium text-blue-900 mb-2">Franchise Application Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                    <span class="font-medium">Application ID:</span> {{ $franchiseApplication->id }}
-                </div>
-                <div>
-                    <span class="font-medium">Operator:</span> {{ $franchiseApplication->operator_name }}
-                </div>
-                <div>
-                    <span class="font-medium">Route:</span> {{ $franchiseApplication->route->name }}
-                </div>
-            </div>
-        </div>
+
         <form method="POST" action="{{ route('operator.franchise.store-motor-details', $franchiseApplication->id) }}">
             @csrf
             {{-- Motor Details --}}
@@ -75,19 +56,11 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center">
-                <div class="flex gap-4">
-                    <a href="{{ route('operator.franchise.index') }}" class="text-gray-600 hover:text-gray-800">
-                        ← Back to Applications
-                    </a>
-                    <a href="{{ route('operator.franchise.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Create New Franchise
-                    </a>
-                </div>
-                <x-button type="submit" class="justify-center">
-                    Submit Motor Details
-                </x-button>
-            </div>
         </form>
+        <div class="flex justify-end mt-4">
+            <x-button type="submit">
+                Submit Motor Details
+            </x-button>
+        </div>
     </div>
 </x-guest-layout> 
