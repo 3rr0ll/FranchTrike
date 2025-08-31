@@ -156,8 +156,85 @@ class FranchiseApplicationController extends Controller
 
     public function show(FranchiseApplication $franchiseApplication)
     {
+        // Check if the application should be marked as expired
+        if (
+            $franchiseApplication->status === 'approved' &&
+            $franchiseApplication->franchise_end_date &&
+            now()->greaterThan($franchiseApplication->franchise_end_date)
+        ) {
+            $franchiseApplication->update(['status' => 'expired']);
+        }
+
         $franchiseApplication->load(['operator', 'driver', 'route', 'motorDetail']);
         $unitMakes = UnitMake::all();
         return view('operator.franchise.show', compact('franchiseApplication', 'unitMakes'));
     }
+
+    /**
+     * Renew an expired franchise application by creating a new one with the same information
+     */
+    public function renew(FranchiseApplication $franchiseApplication)
+    {
+        // Allow renewal if status is approved or expired
+        if (!in_array($franchiseApplication->status, ['approved', 'expired'])) {
+            return back()->with('error', 'Only approved or expired applications can be renewed.');
+        }
+    
+        // Check if the operator owns this application
+        $operator = Auth::user()->operator;
+        if ($franchiseApplication->operator_id !== $operator->operator_id) {
+            abort(403, 'Unauthorized access to this application.');
+        }
+    
+        // Check if there's already a pending renewal application
+        $existingRenewal = FranchiseApplication::where('previous_application_id', $franchiseApplication->id)
+            ->whereIn('status', ['submitted', 'under_review', 'approved'])
+            ->first();
+    
+        if ($existingRenewal) {
+            return back()->with('error', 'A renewal application already exists for this franchise.');
+        }
+    
+        try {
+            // Create a new renewal application with the same information
+            $renewalApplication = FranchiseApplication::create([
+                'operator_id' => $franchiseApplication->operator_id,
+                'driver_id' => $franchiseApplication->driver_id,
+                'route_id' => $franchiseApplication->route_id,
+                'application_type' => 'renewal',
+                'previous_application_id' => $franchiseApplication->id,
+                'franchise_no' => $franchiseApplication->franchise_no,
+                'sticker_no' => $franchiseApplication->sticker_no,
+                'operator_name' => $franchiseApplication->operator_name,
+                'ctc_no' => $franchiseApplication->ctc_no,
+                'ctc_date_issued' => $franchiseApplication->ctc_date_issued,
+                'ctc_place_issued' => $franchiseApplication->ctc_place_issued,
+                'franchise_fee' => $franchiseApplication->franchise_fee,
+                'status' => 'submitted',
+                'submitted_at' => now(),
+                // reset franchise dates for new application
+                'franchise_start_date' => now(),
+                'franchise_end_date' => now()->addYear(),
+            ]);
+    
+            // Copy motor details if they exist
+            if ($franchiseApplication->motorDetail) {
+                \App\Models\MotorDetail::create([
+                    'franchise_application_id' => $renewalApplication->id,
+                    'unit_type' => $franchiseApplication->motorDetail->unit_type,
+                    'unit_make_id' => $franchiseApplication->motorDetail->unit_make_id,
+                    'motorno' => $franchiseApplication->motorDetail->motorno,
+                    'chasisno' => $franchiseApplication->motorDetail->chasisno,
+                    'platenumber' => $franchiseApplication->motorDetail->platenumber,
+                ]);
+            }
+    
+            return redirect()->route('operator.franchise.show', $renewalApplication->id)
+                ->with('success', 'Renewal application created successfully! The application has been submitted for review.');
+    
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to create renewal application: ' . $e->getMessage());
+        }
+    }
+    
 }

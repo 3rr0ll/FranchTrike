@@ -40,7 +40,20 @@
                         <tr class="border-t">
                             <td class="p-2">{{ $app->id }}</td>
                             <td class="p-2 capitalize">{{ $app->application_type }}</td>
-                            <td class="p-2">{{ ucfirst($app->status ?? 'pending') }}</td>
+                            <td class="p-2">
+                                <span class="px-2 py-1 text-xs font-medium rounded-full
+                                    @if($app->status == 'approved') bg-green-100 text-green-800
+                                    @elseif($app->status == 'rejected') bg-red-100 text-red-800
+                                    @elseif($app->status == 'expired') bg-red-100 text-red-800
+                                    @elseif($app->status == 'under_review' || $app->status == 'submitted') bg-yellow-100 text-yellow-800
+                                    @else bg-gray-100 text-gray-800 @endif">
+                                    @if($app->status === 'under_review')
+                                        Under review
+                                    @else
+                                        {{ ucfirst($app->status ?? 'pending') }}
+                                    @endif
+                                </span>
+                            </td>
                             <td class="p-2">{{ $app->franchise_no ?? '-' }}</td>
                             <td class="p-2">{{ $app->submitted_at ? $app->submitted_at->format('M d, Y') : '-' }}</td>
                             <td class="p-2 space-x-2">

@@ -135,13 +135,33 @@
    
     {{-- Action Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <x-operator-dashboard-card
-            :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M12 4v16m8-8H4\' />'"
-            title="Apply for Franchise"
-            description="Start or continue your franchise application."
-            :route="route('operator.create')"
-            color="text-blue-500"
-            buttonText="Apply Franchise" />
+        {{-- Add Driver Card with Limit Check --}}
+        <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center">
+            <div class="mb-4">
+                <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold mb-2">Add Driver</h3>
+            <p class="text-gray-500 text-sm mb-4 text-center">
+                @if($driversCount >= 2)
+                    Driver limit reached ({{ $driversCount }}/2)
+                @else
+                    Register a new driver for your franchise.
+                @endif
+            </p>
+            @if($driversCount >= 2)
+                <button onclick="showDriverLimitAlert()" class="inline-flex items-center px-4 py-2 bg-gray-400 text-white text-sm font-bold rounded-lg shadow cursor-not-allowed">
+                    Add Driver
+                </button>
+            @else
+                <a href="{{ route('operator.driver.create') }}">
+                    <x-button>
+                        Add Driver
+                    </x-button>
+                </a>
+            @endif
+        </div>
 
         <x-operator-dashboard-card
             :icon="'<path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9\' />'"
@@ -184,5 +204,18 @@
                 ->latest()
                 ->first();
         @endphp
-</div>
+    </div>
+
+    {{-- Driver Limit Alert Script --}}
+    <script>
+        function showDriverLimitAlert() {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Driver Limit Reached',
+                text: 'You have reached the maximum limit of 2 drivers. Please contact the administrator if you need to add more drivers.',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#3085d6'
+            });
+        }
+    </script>
 @endsection

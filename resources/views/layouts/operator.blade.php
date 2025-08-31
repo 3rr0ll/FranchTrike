@@ -115,18 +115,7 @@
                         <span class="ms-3">Dashboard</span>
                     </a>
                 </li>
-                <li>
-                    @php $isActive = request()->routeIs('operator.create'); @endphp
-                    <a href="{{ route('operator.create') }}"
-                        class="flex items-center p-2 rounded-lg group 
-                    {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
-                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
-                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 0a10 10 0 1 0 10 10A10.009 10.009 0 0 0 10 0Zm6.613 4.614a8.523 8.523 0 0 1 1.93 2.302 8.243 8.243 0 0 1-.778 2.104l-.004-.007a4.786 4.786 0 0 0-1.01 2.805 4.49 4.49 0 0 0-1.858 2.024 4.504 4.504 0 0 0-1.858-2.024 4.49 4.49 0 0 0-1.01-2.805l-.004.007a8.243 8.243 0 0 1-.778-2.104 8.523 8.523 0 0 1 1.93-2.302A8.523 8.523 0 0 1 10 4.614a8.523 8.523 0 0 1 6.613 0Z" />
-                        </svg>
-                        <span class="ms-3">Register Driver</span>
-                    </a>
-                </li>
+                
                 <li>
                     @php $isActive = request()->routeIs('operator.documents.status'); @endphp
                     <a href="{{ route('operator.documents.status') }}"

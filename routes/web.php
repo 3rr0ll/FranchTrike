@@ -65,6 +65,7 @@ Route::middleware([
                 Route::get('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'motorDetails'])->name('motor-details');
                 Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
                 Route::get('/{franchiseApplication}', [FranchiseApplicationController::class, 'show'])->name('show');
+                Route::post('/{franchiseApplication}/renew', [FranchiseApplicationController::class, 'renew'])->name('renew');
                 Route::get('motor-change/{franchise}', [MotorChangeController::class, 'create'])->name('motor-change.create');
                 Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
             });
@@ -123,6 +124,7 @@ Route::middleware([
                 Route::get('/success', [\App\Http\Controllers\Operator\PaymentController::class, 'success'])->name('success');
                 Route::get('/cancel', [\App\Http\Controllers\Operator\PaymentController::class, 'cancel'])->name('cancel');
                 Route::get('/receipt/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'receipt'])->name('receipt');
+                Route::post('/resume/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'resume'])->name('resume');
                 Route::get('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'show'])->name('show');
                 Route::post('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayment'])->name('create');
             });
