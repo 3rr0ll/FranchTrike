@@ -16,15 +16,8 @@
             {{-- Application Type --}}
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Application Type</label>
-                <select name="application_type" class="mt-1 block w-full border rounded p-2">
-                    <option value="new">New</option>
-                    <option value="renewal">Renewal</option>
-                </select>
-            </div>
-            {{-- Previous Application ID (only visible if Renewal is selected) --}}
-            <div class="mb-4" id="previousAppDiv" style="display: none;">
-                <label class="block text-sm font-medium text-gray-700">Previous Application ID</label>
-                <input type="text" name="previous_application_id" class="mt-1 block w-full border rounded p-2">
+                <input type="text" value="New" class="mt-1 block w-full border rounded p-2 bg-gray-100" readonly>
+                <input type="hidden" name="application_type" value="new">
             </div>
             {{-- Driver --}}
             <div class="mb-4">
@@ -61,9 +54,6 @@
                 </select>
             </div>
 
-
-
-           
             {{-- CTC Details --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
@@ -79,9 +69,6 @@
                     <input type="text" name="ctc_place_issued" class="mt-1 block w-full border rounded p-2">
                 </div>
             </div>
-
-
-
            
             <div class="flex gap-4">
                 <x-button type="submit" class="flex-1 justify-center">
@@ -94,16 +81,5 @@
         </form>
     </div>
 
-    <script>
-        // Show/hide previous app field if renewal
-        document.addEventListener('DOMContentLoaded', function() {
-            const appType = document.querySelector('select[name="application_type"]');
-            const prevAppDiv = document.getElementById('previousAppDiv');
-            appType.addEventListener('change', function() {
-                prevAppDiv.style.display = this.value === 'renewal' ? 'block' : 'none';
-            });
 
-
-        });
-    </script>
 </x-guest-layout>
