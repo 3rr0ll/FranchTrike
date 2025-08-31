@@ -148,11 +148,11 @@
                 [10, 25, 50, 100],
                 [10, 25, 50, 100]
             ],
+            // Order by the "Submitted" column (index 5) descending, so most recent is on top
             order: [
-                [1, 'desc']
+                [5, 'desc']
             ],
             columnDefs: [
-
                 {
                     targets: 6, // Actions column
                     orderable: false,
@@ -182,8 +182,6 @@
                 $('#applications-table').closest('.overflow-x-auto').css('padding', '12px');
             }
         });
-
-
     });
 </script>
 @endpush
