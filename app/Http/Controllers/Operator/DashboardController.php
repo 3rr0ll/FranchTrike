@@ -203,7 +203,8 @@ class DashboardController extends Controller
             'pendingPaymentsCount',
             'completedPaymentsCount',
             'applicationsInProgressCount',
-            'expiringDocumentsCount'
+            'expiringDocumentsCount',
+            'driversCount'
         ));
     }
 }
