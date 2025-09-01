@@ -171,70 +171,63 @@ class FranchiseApplicationController extends Controller
     }
 
     /**
-     * Renew an expired franchise application by creating a new one with the same information
+     * Renew an expired franchise application by creating a new one, including motor details.
      */
     public function renew(FranchiseApplication $franchiseApplication)
     {
-        // Allow renewal if status is approved or expired
-        if (!in_array($franchiseApplication->status, ['approved', 'expired'])) {
-            return back()->with('error', 'Only approved or expired applications can be renewed.');
+        // Only allow renewal if status is 'expired'
+        if ($franchiseApplication->status !== 'expired') {
+            return back()->with('error', 'Only expired applications can be renewed.');
         }
-    
-        // Check if the operator owns this application
+
+        // Ensure the operator owns this application
         $operator = Auth::user()->operator;
         if ($franchiseApplication->operator_id !== $operator->operator_id) {
             abort(403, 'Unauthorized access to this application.');
         }
-    
-        // Check if there's already a pending renewal application
-        $existingRenewal = FranchiseApplication::where('previous_application_id', $franchiseApplication->id)
+
+        // Prevent multiple active applications for the same driver
+        $activeApp = FranchiseApplication::where('driver_id', $franchiseApplication->driver_id)
             ->whereIn('status', ['submitted', 'under_review', 'approved'])
             ->first();
-    
-        if ($existingRenewal) {
-            return back()->with('error', 'A renewal application already exists for this franchise.');
+
+        if ($activeApp) {
+            return back()->with('error', 'This driver already has an active application.');
         }
-    
+
         try {
-            // Create a new renewal application with the same information
-            $renewalApplication = FranchiseApplication::create([
-                'operator_id' => $franchiseApplication->operator_id,
-                'driver_id' => $franchiseApplication->driver_id,
-                'route_id' => $franchiseApplication->route_id,
-                'application_type' => 'renewal',
-                'previous_application_id' => $franchiseApplication->id,
-                'franchise_no' => $franchiseApplication->franchise_no,
-                'sticker_no' => $franchiseApplication->sticker_no,
-                'operator_name' => $franchiseApplication->operator_name,
-                'ctc_no' => $franchiseApplication->ctc_no,
-                'ctc_date_issued' => $franchiseApplication->ctc_date_issued,
-                'ctc_place_issued' => $franchiseApplication->ctc_place_issued,
-                'franchise_fee' => $franchiseApplication->franchise_fee,
-                'status' => 'submitted',
-                'submitted_at' => now(),
-                // reset franchise dates for new application
-                'franchise_start_date' => now(),
-                'franchise_end_date' => now()->addYear(),
-            ]);
-    
-            // Copy motor details if they exist
+            // Replicate the old application for renewal, but do NOT save yet
+            $renewalApplication = $franchiseApplication->replicate();
+
+            // Set application_number to null for the new renewal application
+            $renewalApplication->application_number = null;
+
+            // Set renewal-specific fields
+            $renewalApplication->status = 'submitted';
+            $renewalApplication->application_type = 'renewal';
+            $renewalApplication->previous_application_id = $franchiseApplication->id;
+            $renewalApplication->submitted_at = now();
+            $renewalApplication->franchise_start_date = now();
+            $renewalApplication->franchise_end_date = now()->addYear();
+
+            // Save as a new record first (so the old one is still 'expired' during insert)
+            $renewalApplication->save();
+
+            // Also replicate the motor details if they exist
             if ($franchiseApplication->motorDetail) {
-                \App\Models\MotorDetail::create([
-                    'franchise_application_id' => $renewalApplication->id,
-                    'unit_type' => $franchiseApplication->motorDetail->unit_type,
-                    'unit_make_id' => $franchiseApplication->motorDetail->unit_make_id,
-                    'motorno' => $franchiseApplication->motorDetail->motorno,
-                    'chasisno' => $franchiseApplication->motorDetail->chasisno,
-                    'platenumber' => $franchiseApplication->motorDetail->platenumber,
-                ]);
+                $motorDetail = $franchiseApplication->motorDetail->replicate();
+                $motorDetail->franchise_application_id = $renewalApplication->id;
+                $motorDetail->save();
             }
-    
+
+            // Now, safely mark the old application as renewed (status change)
+            $franchiseApplication->update(['status' => 'renewed']);
+
             return redirect()->route('operator.franchise.show', $renewalApplication->id)
-                ->with('success', 'Renewal application created successfully! The application has been submitted for review.');
-    
+                ->with('success', 'Renewal application created successfully! The application has been submitted for review, including motor details.');
+
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to create renewal application: ' . $e->getMessage());
         }
     }
-    
 }

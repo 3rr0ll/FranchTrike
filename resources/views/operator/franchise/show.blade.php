@@ -9,6 +9,7 @@
     <div class="bg-white shadow p-6 rounded-lg space-y-6">
         <a href="{{ route('operator.franchise.index') }}" class="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded hover:bg-gray-200">Back</a>
         
+       
         {{-- Motor Change Request Status --}}
         @php
         $motorChangeRequest = \App\Models\MotorChangeRequest::where('franchise_application_id', $franchiseApplication->id)->latest()->first();
@@ -99,7 +100,7 @@
 
 {{-- Renewal Confirmation Script --}}
 <script>
-   function confirmRenewal() {
+function confirmRenewal() {
     Swal.fire({
         title: 'Confirm Franchise Renewal',
         text: 'Are you sure you want to renew this franchise?',
@@ -112,12 +113,7 @@
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.getElementById('renewalForm');
-            
-            // Add error handling
-            form.addEventListener('submit', function(e) {
-                console.log('Form is being submitted');
-            });
-            
+
             // Show loading
             Swal.fire({
                 title: 'Processing Renewal...',
@@ -127,10 +123,29 @@
                     Swal.showLoading();
                 }
             });
-            
+
             form.submit();
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    @if(session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: `{{ session('success') }}`,
+            confirmButtonColor: '#10B981'
+        });
+    @endif
+    @if(session('error'))
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: `{{ session('error') }}`,
+            confirmButtonColor: '#EF4444'
+        });
+    @endif
+});
 </script>
 @endsection
