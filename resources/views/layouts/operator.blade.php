@@ -172,6 +172,13 @@
     </aside>
     {{-- Main content --}}
     <div class="p-4 sm:ml-64 mt-16">
+        {{-- This will render the "header" section if defined in the child view --}}
+        @hasSection('header')
+            <div>
+                @yield('header')
+            </div>
+        @endif
+
         @yield('content')
     </div>
     
