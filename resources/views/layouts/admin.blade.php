@@ -159,6 +159,11 @@
 
     {{-- Main content --}}
     <div class="p-4 sm:ml-64 mt-16">
+        @hasSection('header')
+            <div class="mb-4">
+                @yield('header')
+            </div>
+        @endif
         @yield('content')
     </div>
 
