@@ -1,7 +1,9 @@
 @extends('layouts.operator')
 
 @section('header')
-<h2 class="text-xl font-semibold text-gray-800">Franchise #{{ $franchiseApplication->id }} Details</h2>
+<h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
+    Franchise #{{ $franchiseApplication->franchise_no ?? '-' }} Details
+</h2>
 @endsection
 
 @section('content')

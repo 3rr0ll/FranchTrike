@@ -1,8 +1,14 @@
 @extends('layouts.operator')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+    Account Settings
+</h2>
+@endsection
+
 @section('content')
 <div class="max-w-2xl mx-auto">
-    <h1 class="text-2xl font-semibold text-primary-navy mb-6">Account Settings</h1>
+    
 
     <div class="bg-white shadow rounded-sm p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Change Password</h2>

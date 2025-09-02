@@ -1,11 +1,13 @@
 @extends('layouts.operator')
 
 @section('header')
-    <h1 class="text-3xl font-bold mb-6">My Drivers</h1>
+    <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+        Drivers
+    </h2>
 @endsection
 
 @section('content')
-    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="w-full py-8 px-4 sm:px-6 lg:px-8">
         @if ($drivers->count())
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @foreach ($drivers as $driver)

@@ -1,30 +1,30 @@
 @extends('layouts.operator')
 
-@section('header')
-<h2 class="mt-5 text-2xl font-bold leading-tight text-gray-800">
-    Operator Dashboard
+@section('header')  
+<h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
+    Operator Dashboard  
 </h2>
 @endsection
 
 @section('content')
-<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <!-- Success Message -->
-      @if(session('success'))
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: `{{ session('success') }}`,
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "{{ route('operator.home') }}";
-                    }
-                });
+<div class="w-full py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Success Message -->
+    @if(session('success'))
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: `{{ session('success') }}`,
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('operator.home') }}";
+                }
             });
-        </script>
-        @endif
+        });
+    </script>
+    @endif
     {{-- Alerts Section --}}
     @if(isset($alerts) && count($alerts))
     <div class="mb-6 space-y-3" id="alerts-container">
@@ -65,7 +65,7 @@
                     alert.classList.add('transition', 'opacity-0');
                     setTimeout(function() {
                         alert.style.display = 'none';
-                    }, 500); 
+                    }, 500);
                 });
             }, 4000);
         });
@@ -79,36 +79,36 @@
         </p>
     </div>
     <div class="bg-white rounded-lg shadow p-6 mt-6">
-     {{-- Your Franchises (latest 2) --}}
-     @if(isset($franchiseApplications) && $franchiseApplications->count())
-    <div class="mb-8">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">Your Franchises</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @foreach($franchiseApplications->take(2) as $app)
-            <div class="bg-white p-4 ">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="text-sm text-gray-500">Application #{{ $app->id }}</div>
-                    <a href="{{ route('operator.franchise.show', $app) }}" class="text-primary-navy hover:underline text-sm">View details</a>
+        {{-- Active Franchise(s) (latest 2) --}}
+        @php
+            $activeFranchises = isset($franchiseApplications)
+                ? $franchiseApplications->where('status', 'approved')->sortByDesc('submitted_at')->take(2)
+                : collect();
+        @endphp
+        @if($activeFranchises->count())
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">Active Franchise(s)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @foreach($activeFranchises as $app)
+                <div class="border rounded-lg shadow p-5 bg-white flex flex-col gap-2">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Active</span>
+                    </div>
+                    <div class="mt-2">
+                        <div class="text-2xl font-bold text-primary-navy mb-1">Franchise #{{ $app->franchise_no ?? '-' }}</div>
+                        <div class="text-sm text-gray-600 mb-2">Submitted: {{ $app->submitted_at ? $app->submitted_at->format('M d, Y') : '-' }}</div>
+                        @if($app->franchise_end_date)
+                        <div class="text-sm text-gray-700">Ends: {{ \Carbon\Carbon::parse($app->franchise_end_date)->format('M d, Y') }}</div>
+                        @endif
+                    </div>
+                    <div class="flex gap-2 mt-2 justify-end">
+                        <a href="{{ route('operator.franchise.show', $app) }}" class="inline-block bg-primary-navy text-white px-4 py-2 rounded hover:bg-primary-gold hover:text-primary-navy text-sm">View</a>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="px-2 py-1 text-xs font-medium rounded-full
-                        @if($app->status == 'approved') bg-green-100 text-green-800
-                        @elseif($app->status == 'rejected') bg-red-100 text-red-800
-                        @elseif($app->status == 'under_review' || $app->status == 'submitted') bg-yellow-100 text-yellow-800
-                        @else bg-gray-100 text-gray-800 @endif">
-                        {{ ucfirst(str_replace('_',' ', $app->status)) }}
-                    </span>
-                    @if($app->franchise_end_date)
-                        <span class="text-sm text-gray-700">Ends: {{ \Carbon\Carbon::parse($app->franchise_end_date)->format('M d, Y') }}</span>
-                    @endif
-                </div>
-              
-               
+                @endforeach
             </div>
-            @endforeach
         </div>
-    </div>
-    @endif
+        @endif
     </div>
 
 
@@ -132,7 +132,7 @@
         </div>
     </div>
 
-   
+
     {{-- Action Cards --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {{-- Add Driver Card with Limit Check --}}
@@ -145,21 +145,21 @@
             <h3 class="text-lg font-semibold mb-2">Add Driver</h3>
             <p class="text-gray-500 text-sm mb-4 text-center">
                 @if($driversCount >= 2)
-                    Driver limit reached ({{ $driversCount }}/2)
+                Driver limit reached ({{ $driversCount }}/2)
                 @else
-                    Register a new driver for your franchise.
+                Register a new driver for your franchise.
                 @endif
             </p>
             @if($driversCount >= 2)
-                <button onclick="showDriverLimitAlert()" class="inline-flex items-center px-4 py-2 bg-gray-400 text-white text-sm font-bold rounded-lg shadow cursor-not-allowed">
-                    Add Driver
-                </button>
+            <button onclick="showDriverLimitAlert()" class="inline-flex items-center px-4 py-2 bg-gray-400 text-white text-sm font-bold rounded-lg shadow cursor-not-allowed">
+                Add Driver
+            </button>
             @else
-                <a href="{{ route('operator.driver.create') }}">
-                    <x-button>
-                        Add Driver
-                    </x-button>
-                </a>
+            <a href="{{ route('operator.driver.create') }}">
+                <x-button>
+                    Add Driver
+                </x-button>
+            </a>
             @endif
         </div>
 
@@ -196,13 +196,13 @@
             buttonText="Go to Payments" />
 
         @php
-            // Choose the latest approved application with motor details for change request
-            $latestApprovedWithMotor = optional(Auth::user()->operator)
-                ->franchiseApplications()
-                ->where('status', 'approved')
-                ->whereHas('motorDetail')
-                ->latest()
-                ->first();
+        // Choose the latest approved application with motor details for change request
+        $latestApprovedWithMotor = optional(Auth::user()->operator)
+        ->franchiseApplications()
+        ->where('status', 'approved')
+        ->whereHas('motorDetail')
+        ->latest()
+        ->first();
         @endphp
     </div>
 
@@ -218,4 +218,4 @@
             });
         }
     </script>
-@endsection
+    @endsection

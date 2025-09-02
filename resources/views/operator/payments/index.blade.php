@@ -1,11 +1,13 @@
 @extends('layouts.operator')
 
-@section('content')
-<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
     Payment Center
 </h2>
+@endsection
+@section('content')
 
-<div class="max-w-8xl mx-auto space-y-12">
+<div class="w-full px-0 sm:px-0 lg:px-0 py-8 space-y-12">
 
     {{-- Unsettled (Pending) Payments --}}
     @php
@@ -34,7 +36,7 @@
                 </div>
                 <p class="text-sm text-gray-500 mb-6">Settle this fee to continue your application process.</p>
                 <a href="{{ route('operator.payments.show', $fee) }}"
-                    class="w-full inline-flex justify-center items-center px-5 py-2.5 bg-primary-navy text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy border-2 border-primary-navy transition">
+                    class="w-full flex justify-center items-center px-6 py-3 bg-primary-navy border border-transparent rounded-lg font-semibold text-base text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
                     Pay Now
                 </a>
                 <div class="absolute top-3 right-3">

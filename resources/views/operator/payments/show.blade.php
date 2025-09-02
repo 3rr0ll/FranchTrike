@@ -1,6 +1,9 @@
 @extends('layouts.operator')
-
-
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
+    Payment Center
+</h2>
+@endsection
 
 @section('content')
 
