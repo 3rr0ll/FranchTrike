@@ -1,16 +1,18 @@
 @extends('layouts.operator')
 
 @section('header')
-<h2 class="text-2xl font-bold text-gray-800 mb-4">Operator & Driver Documents</h2>
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+    Operator & Driver Documents
+</h2>
 @endsection
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+<div class="w-full px-0 sm:px-0 lg:px-0 py-8 space-y-12">
     <!-- Operator Documents -->
     <div>
         <h2 class="text-xl font-bold text-gray-800 mb-4">Operators Documents</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             @forelse ($operatorDocuments as $doc)
             <div class="bg-white p-6 rounded-lg shadow border">
                 <div class="flex items-center justify-between mb-4">
@@ -53,7 +55,7 @@
     <!-- Driver Documents -->
     <div>
         <h2 class="text-xl font-bold text-gray-800 mt-4 mb-4">Drivers Documents</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
             @forelse ($driverDocuments as $doc)
             <div class="bg-white p-6 rounded-lg shadow border">
                 <div class="flex items-center justify-between mb-2">
