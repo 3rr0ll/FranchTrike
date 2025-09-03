@@ -22,7 +22,7 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('landing'); 
 
 // Default login page 
 Route::view('/login', 'auth.login')->name('login')->middleware('guest');
@@ -36,11 +36,30 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
-    // Optional: shared fallback dashboard route
-    Route::get('/', function () {
-        return view('dashboard');
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+        // Determine dashboard view based on user type/role
+        if (method_exists($user, 'hasRole')) {
+            if ($user->hasRole('operator')) {
+                return redirect()->route('operator.dashboard');
+            } elseif ($user->hasRole('admin')) {
+                return redirect()->route('admin.dashboard');
+            } elseif ($user->hasRole('superadmin')) {
+                return redirect()->route('superadmin.dashboard');
+            }
+        } elseif (property_exists($user, 'usertype')) {
+            switch ($user->usertype) {
+                case 'operator':
+                    return redirect()->route('operator.dashboard');
+                case 'admin':
+                    return redirect()->route('admin.dashboard');
+                case 'superadmin':
+                    return redirect()->route('superadmin.dashboard');
+            }
+        }
+        // Default fallback
+        return view('welcome');
     })->name('dashboard');
-
 
     Route::middleware([RoleMiddleware::class . ':operator'])
         ->prefix('operator')
