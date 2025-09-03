@@ -1,11 +1,15 @@
 @extends('layouts.admin')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+Franchise Applications
+</h2>
+@endsection
+
 @section('content')
 <div class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5">
     <div class="w-full mb-1">
-        <div class="mb-4">
-            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">Franchise Applications</h1>
-        </div>
+
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
             <div class="flex items-center mb-4 sm:mb-0">
                 <div class="flex items-center w-full sm:justify-end">
