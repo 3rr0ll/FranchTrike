@@ -27,7 +27,7 @@
                         class="inline-flex items-center justify-center w-10 h-10 text-white bg-primary-gold rounded-full shadow-lg sm:hidden hover:bg-primary-navy hover:text-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold transition-all duration-200"
                         title="Open sidebar">
                         <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                         <span class="sr-only">Open sidebar</span>
                     </button>
@@ -77,43 +77,58 @@
 
     {{-- Sidebar --}}
     <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-primary-navy border-r border-primary-gold sm:translate-x-0" aria-label="Sidebar">
-        <div class="h-full flex flex-col justify-between">
-            <nav class="flex-1 px-3 py-4">
-                <ul class="space-y-2">
-                    <li>
-                        <a href="{{ route('superadmin.dashboard') }}" class="flex items-center p-2 text-base font-medium text-white rounded-lg hover:bg-primary-gold hover:text-primary-navy transition">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m4-8v8m5 0a2 2 0 002-2V7a2 2 0 00-2-2h-3.5"></path>
-                            </svg>
-                            Dashboard
-                        </a>
-                    </li>
-                    <li>
-                        <a href="{{ route('superadmin.users.index') }}" class="flex items-center p-2 text-base font-medium text-white rounded-lg hover:bg-primary-gold hover:text-primary-navy transition">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            Manage Users
-                        </a>
-                    </li>
-                   
-                    <li>
-                        <a href="{{ route('superadmin.payments.index') }}" class="flex items-center p-2 text-base font-medium text-white rounded-lg hover:bg-primary-gold hover:text-primary-navy transition">
-                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                            </svg>
-                            Payment Management
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-           
+        <div class="h-full px-3 pb-4 overflow-y-auto bg-primary-navy">
+            <ul class="space-y-2 font-medium">
+                <li>
+                    @php $isActive = request()->routeIs('superadmin.dashboard'); @endphp
+                    <a href="{{ route('superadmin.dashboard') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                        {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
+                            <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z" />
+                            <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z" />
+                        </svg>
+                        <span class="ms-3">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    @php $isActive = request()->routeIs('superadmin.users.*'); @endphp
+                    <a href="{{ route('superadmin.users.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                        {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 0a10 10 0 1 0 10 10A10.009 10.009 0 0 0 10 0Zm6.613 4.614a8.523 8.523 0 0 1 1.93 2.302 8.243 8.243 0 0 1-.778 2.104l-.004-.007a4.786 4.786 0 0 0-1.01 2.805 4.49 4.49 0 0 0-1.858 2.024 4.504 4.504 0 0 0-1.858-2.024 4.49 4.49 0 0 0-1.01-2.805l-.004.007a8.243 8.243 0 0 1-.778-2.104 8.523 8.523 0 0 1 1.93-2.302A8.523 8.523 0 0 1 10 4.614a8.523 8.523 0 0 1 6.613 0Z" />
+                        </svg>
+                        <span class="ms-3">Manage Users</span>
+                    </a>
+                </li>
+                <li>
+                    @php $isActive = request()->routeIs('superadmin.payments.*'); @endphp
+                    <a href="{{ route('superadmin.payments.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                        {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="ms-3">Payment Management</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </aside>
 
 
     {{-- Main content --}}
     <div class="p-4 sm:ml-64 mt-16">
+        @hasSection('header')
+        <div>
+            @yield('header')
+        </div>
+        @endif
         @yield('content')
     </div>
 
