@@ -1,29 +1,22 @@
-    @extends('layouts.superadmin')
+@extends('layouts.superadmin')
+
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2" >
+Super Admin Dashboard
+</h2>
+@endsection
 
 @section('content')
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Super Admin Dashboard
-            </h2>
-            <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                @csrf
-                <x-button type="button" class="ml-4" onclick="confirmLogout(event)">
-                    Logout
-                </x-button>
-            </form>
-        </div>
-    </x-slot>
 
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="w-full mx-auto py-2 sm:px-6 lg:px-2">
         <!-- Welcome Section -->
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6 mb-6">
-            <h3 class="text-2xl font-bold text-gray-900 mb-2">Welcome, {{ Auth::user()->name }}!</h3>
-            <p class="text-gray-600">Manage users, monitor system activity, and oversee the entire FranchTrike platform.</p>
+            <h3 class="text-2xl font-bold text-primary-navy mb-2">Welcome, {{ Auth::user()->name }}!</h3>
+            <p class="text-primary-navy">Manage users, monitor system activity, and oversee the entire FranchTrike platform.</p>
         </div>
 
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
             <!-- Total Users -->
             <div class="bg-white overflow-hidden shadow rounded-lg">
                 <div class="p-5">
