@@ -1,8 +1,14 @@
 @extends('layouts.admin')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+Motor Change Requests
+</h2>
+@endsection
+
 @section('content')
-<div class="container mt-4">
-    <h2 class="mb-4">Motor Change Requests</h2>
+<div class="w-full mt-4">
+
 
     {{-- Statistics Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
@@ -152,7 +158,7 @@
         @if(session('success'))
             Swal.fire({
                 title: 'Success',
-                text: @json(session('success')),
+                text: `{{ session('success') }}`,
                 icon: 'success',
                 confirmButtonColor: '#1D2761'
             });
@@ -160,7 +166,7 @@
         @if(session('error'))
             Swal.fire({
                 title: 'Error',
-                text: @json(session('error')),
+                text: `{{ session('error') }}`,
                 icon: 'error',
                 confirmButtonColor: '#E63946'
             });

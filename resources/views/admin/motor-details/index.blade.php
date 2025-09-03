@@ -1,27 +1,13 @@
 @extends('layouts.admin')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+Motor Details Management
+</h2>
+@endsection
+
 @section('content')
-<div class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5">
-    <div class="w-full mb-1">
-        <div class="mb-4">
-            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">Motor Details Management</h1>
-        </div>
-        <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
-            <div class="flex items-center mb-4 sm:mb-0">
-                <div class="flex items-center w-full sm:justify-end">
-                    <div class="hidden pl-2 space-x-1 md:flex">
-                        <a href="{{ route('admin.motor-details.export') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
-                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                            </svg>
-                            Export
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <!-- Statistics Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">

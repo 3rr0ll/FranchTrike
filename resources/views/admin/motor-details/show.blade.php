@@ -1,11 +1,14 @@
 @extends('layouts.admin')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+Motor Details
+</h2>
+@endsection
+
 @section('content')
 <div class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5">
     <div class="w-full mb-1">
-        <div class="mb-4">
-            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl">Motor Details</h1>
-        </div>
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
             <div class="flex items-center mb-4 sm:mb-0">
                 <a href="{{ route('admin.motor-details.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">

@@ -1,8 +1,13 @@
 @extends('layouts.admin')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+Operators List
+</h2>
+@endsection
+
 @section('content')
-<div class="container mt-4">
-    <h1 class="text-2xl font-bold mb-4">Operators List</h1>
+<div class="w-full mt-4">
 
     {{-- Statistics Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -66,7 +71,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-0" style="overflow:auto;">
+    <div class="bg-white rounded-lg shadow p-4" style="overflow:auto;">
         <table id="operators-table" class="table-auto w-full text-left">
             <thead>
                 <tr>
