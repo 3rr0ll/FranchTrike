@@ -56,48 +56,18 @@
         <a href="#faq" class="hover:text-primary-gold transition-colors">FAQ</a>
       </nav>
 
-      @if (Route::has('login'))
-      @auth
-      @php
-      $user = Auth::user();
-      switch ($user->role->name) {
-      case 'admin':
-      $dashboardUrl = route('admin.dashboard');
-      break;
-      case 'operator':
-      $dashboardUrl = route('operator.dashboard');
-      break;
-      case 'superadmin':
-      $dashboardUrl = route('superadmin.dashboard');
-      break;
-      default:
-      $dashboardUrl = url('/home');
-      }
-      @endphp
       <nav class="hidden md:flex gap-4 items-center justify-end">
-        <a
-          href="{{ $dashboardUrl }}"
-          class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
-          Dashboard
-        </a>
-      </nav>
-      @else
-      <nav class="hidden md:flex gap-4 items-center justify-end">
-        @if (Route::has('register'))
         <a
           href="{{ route('register') }}"
           class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
           Register
         </a>
-        @endif
         <a
           href="{{ route('login') }}"
           class="border-2 border-white text-white font-semibold px-6 py-2 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-sm">
           Login
         </a>
       </nav>
-      @endauth
-      @endif
     </div>
 
     <!-- Mobile Navigation -->
@@ -140,7 +110,6 @@
       <div class="text-center max-w-2xl mx-auto mb-16">
         <span class="text-primary-gold font-semibold">KEY FEATURES</span>
         <h3 class="text-3xl font-bold mt-2 mb-4">Everything you need to manage your franchise</h3>
-        <p class="text-gray-600">Streamlined features designed to make tricycle franchising simple and efficient</p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -299,7 +268,7 @@
       <div class="grid md:grid-cols-4 gap-8 mb-8">
         <div>
           <div class="flex items-center gap-2 mb-4">
-            <img src="logo.png" alt="FranchTrike Logo" class="h-8 w-auto">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-8 w-auto">
             <h4 class="font-bold">FranchTrike</h4>
           </div>
           <p class="text-sm text-gray-400">Tricycle Franchising in Padre Garcia</p>
