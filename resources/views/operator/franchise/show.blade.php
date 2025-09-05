@@ -100,6 +100,7 @@
     @csrf
 </form>
 
+
 {{-- Renewal Confirmation Script --}}
 <script>
 function confirmRenewal() {
