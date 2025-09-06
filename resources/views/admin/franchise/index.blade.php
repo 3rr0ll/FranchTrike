@@ -2,19 +2,27 @@
 
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
-Franchise Applications
+    Franchise Applications
 </h2>
 @endsection
 
 @section('content')
+
 <div class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5">
     <div class="w-full mb-1">
-
         <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
             <div class="flex items-center mb-4 sm:mb-0">
                 <div class="flex items-center w-full sm:justify-end">
                     <div class="hidden pl-2 space-x-1 md:flex">
-                        <a href="{{ route('admin.franchise.export') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
+                        <a href="{{ route('admin.franchise.create') }}"
+                           class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150 ml-2">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Add Franchise
+                        </a>
+                        <a href="{{ route('admin.franchise.export') }}"
+                           class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
@@ -128,7 +136,7 @@ Franchise Applications
                         </span>
                     </td>
                     <td class="px-8 py-5">
-                        {{ $application->submitted_at ? $application->submitted_at->format('M d, Y') : 'N/A' }}
+                        {{ $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i:s') : 'N/A' }}
                     </td>
                     <td class="px-8 py-5">
                         <div class="flex items-center space-x-3">
@@ -143,6 +151,8 @@ Franchise Applications
 </div>
 
 @push('scripts')
+<!-- Include Flowbite Datepicker -->
+<script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.1/dist/datepicker.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize DataTable
@@ -152,17 +162,14 @@ Franchise Applications
                 [10, 25, 50, 100],
                 [10, 25, 50, 100]
             ],
-            // Order by the "Submitted" column (index 5) descending, so most recent is on top
             order: [
-                [5, 'desc']
+                [5, 'desc'] // Order by Submitted column
             ],
-            columnDefs: [
-                {
-                    targets: 6, // Actions column
-                    orderable: false,
-                    searchable: false
-                }
-            ],
+            columnDefs: [{
+                targets: 6, // Actions column
+                orderable: false,
+                searchable: false
+            }],
             language: {
                 search: "Search applications:",
                 lengthMenu: "Show _MENU_ applications per page",
@@ -179,12 +186,84 @@ Franchise Applications
             },
             dom: '<"flex flex-col sm:flex-row justify-between items-center mb-4"lf>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
             initComplete: function() {
-                // Add custom styling to DataTable elements
+                // Styling
                 $('.dataTables_length select').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5');
                 $('.dataTables_filter input').addClass('bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5');
-                // Add a little padding to the DataTable wrapper
                 $('#applications-table').closest('.overflow-x-auto').css('padding', '12px');
             }
+        });
+
+        // --- Date Range Filter Function ---
+        function dateRangeFilter(settings, data) {
+            if (settings.nTable.id !== 'applications-table') return true;
+
+            var startDate = $('#datepicker-range-start').val();
+            var endDate = $('#datepicker-range-end').val();
+            var submittedDate = data[5]; // Submitted column value (e.g. "2025-08-23 14:30:00")
+
+            if (!submittedDate || submittedDate === 'N/A') return false;
+
+            var submittedDateOnly = submittedDate.split(' ')[0]; // "2025-08-23"
+            var submittedDateObj = new Date(submittedDateOnly);
+
+            if (!startDate && !endDate) return true;
+            if (startDate && submittedDateObj < new Date(startDate)) return false;
+            if (endDate && submittedDateObj > new Date(endDate)) return false;
+
+            return true;
+        }
+
+        // Remove any previous custom search
+        function clearDateRangeFilter() {
+            $.fn.dataTable.ext.search = $.fn.dataTable.ext.search.filter(function(fn) {
+                return fn.name !== 'dateRangeFilter';
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            var applicationType = $('#application_type').val();
+            var status = $('#status').val();
+            var startDate = $('#datepicker-range-start').val();
+            var endDate = $('#datepicker-range-end').val();
+
+            clearDateRangeFilter();
+
+            // Text filters
+            var searchString = '';
+            if (applicationType) searchString += applicationType + ' ';
+            if (status) searchString += status + ' ';
+            table.search(searchString);
+
+            // Date filter
+            if (startDate || endDate) {
+                $.fn.dataTable.ext.search.push(dateRangeFilter);
+            }
+
+            table.draw();
+        }
+
+        // Form submit
+        $('#filter-form').on('submit', function(e) {
+            e.preventDefault();
+            applyFilters();
+        });
+
+        // Clear filters
+        $('#clear-filters').on('click', function() {
+            $('#filter-form')[0].reset();
+            $('#datepicker-range-start').val('');
+            $('#datepicker-range-end').val('');
+            clearDateRangeFilter();
+            table.search('').draw();
+        });
+
+        // Auto-apply on changes
+        $('#application_type, #status, #datepicker-range-start, #datepicker-range-end').on('change', function() {
+            applyFilters();
+        });
+        $('#datepicker-range-start, #datepicker-range-end').on('input', function() {
+            applyFilters();
         });
     });
 </script>
