@@ -6,10 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\FranchiseApplication;
 use App\Models\Operator;
 use App\Models\Driver;
+use App\Models\Route;
+use App\Models\DocumentType;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Mail\FranchiseStatusUpdated;
 use App\Services\NotificationService;
 
@@ -240,5 +245,202 @@ class FranchiseApplicationController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function create()
+    {
+        $routes = Route::all();
+        $documentTypes = DocumentType::all();
+        
+        return view('admin.franchise.create', compact('routes', 'documentTypes'));
+    }
+
+    public function store(Request $request)
+    {
+        $validationRules = [
+            // Operator details
+            'operator_last_name' => 'required|string|max:255',
+            'operator_first_name' => 'required|string|max:255',
+            'operator_middle_initial' => 'nullable|string|max:1',
+            'operator_barangay' => 'required|string|max:255',
+            'operator_municipality' => 'required|string|max:255',
+            'operator_province' => 'required|string|max:255',
+            'operator_birth_date' => 'required|date',
+            'operator_age' => 'required|integer|min:18',
+            'operator_sex' => 'required|string|in:male,female',
+            'operator_civil_status' => 'required|string',
+            'operator_contact_no' => 'required|string|max:20',
+            'operator_email' => 'required|email|unique:users,email',
+            'operator_password' => 'required|string|min:8',
+            
+            // Driver details
+            'driver_last_name' => 'required|string|max:255',
+            'driver_first_name' => 'required|string|max:255',
+            'driver_middle_initial' => 'nullable|string|max:1',
+            'driver_barangay' => 'required|string|max:255',
+            'driver_municipality' => 'required|string|max:255',
+            'driver_province' => 'required|string|max:255',
+            'driver_birth_date' => 'required|date',
+            'driver_age' => 'required|integer|min:18',
+            'driver_sex' => 'required|string|in:male,female',
+            'driver_civil_status' => 'required|string',
+            'driver_contact_no' => 'required|string|max:20',
+            'driver_license_no' => 'required|string|max:50',
+            'driver_license_validity' => 'required|date|after:today',
+            
+            // Franchise application details
+            'application_type' => 'required|in:new,renewal',
+            'route_id' => 'required|exists:routes,id',
+            'ctc_no' => 'required|string|max:50',
+            'ctc_date_issued' => 'required|date',
+            'ctc_place_issued' => 'required|string|max:255',
+            'franchise_fee' => 'nullable|numeric|min:0',
+            
+            // Previous franchise details (for renewal)
+            'previous_franchise_no' => 'nullable|string|max:50',
+            'previous_sticker_no' => 'nullable|string|max:50',
+            'previous_application_id' => 'nullable|integer',
+            'previous_franchise_end_date' => 'nullable|date',
+            
+            // Document checkboxes
+            'operator_documents' => 'required|array',
+            'operator_documents.*' => 'exists:document_types,document_id',  
+            'driver_documents' => 'required|array',
+            'driver_documents.*' => 'exists:document_types,document_id',
+        ];
+
+        // Add conditional validation for renewal applications
+        if ($request->application_type === 'renewal') {
+            $validationRules['previous_franchise_no'] = 'required|string|max:50';
+            $validationRules['previous_sticker_no'] = 'required|string|max:50';
+            $validationRules['previous_franchise_end_date'] = 'required|date';
+        }
+
+        $request->validate($validationRules);
+
+        // Custom validation for previous application ID if provided
+        if ($request->previous_application_id) {
+            $previousApplication = FranchiseApplication::find($request->previous_application_id);
+            if (!$previousApplication) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['previous_application_id' => 'The selected previous application ID does not exist.']);
+            }
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            // Create user account for operator
+            $user = User::create([
+                'name' => $request->operator_first_name . ' ' . $request->operator_last_name,
+                'email' => $request->operator_email,
+                'password' => Hash::make($request->operator_password),
+                'role' => 'operator',
+                'email_verified_at' => now(),
+            ]);
+
+            // Create operator
+            $operator = Operator::create([
+                'user_id' => $user->id,
+                'last_name' => $request->operator_last_name,
+                'first_name' => $request->operator_first_name,
+                'middle_initial' => $request->operator_middle_initial,
+                'barangay' => $request->operator_barangay,
+                'municipality' => $request->operator_municipality,
+                'province' => $request->operator_province,
+                'birth_date' => $request->operator_birth_date,
+                'age' => $request->operator_age,
+                'sex' => $request->operator_sex,
+                'civil_status' => $request->operator_civil_status,
+                'contact_no' => $request->operator_contact_no,
+            ]);
+
+            // Create driver
+            $driver = Driver::create([
+                'operator_id' => $operator->operator_id,
+                'last_name' => $request->driver_last_name,
+                'first_name' => $request->driver_first_name,
+                'middle_initial' => $request->driver_middle_initial,
+                'barangay' => $request->driver_barangay,
+                'municipality' => $request->driver_municipality,
+                'province' => $request->driver_province,
+                'birth_date' => $request->driver_birth_date,
+                'age' => $request->driver_age,
+                'sex' => $request->driver_sex,
+                'civil_status' => $request->driver_civil_status,
+                'contact_no' => $request->driver_contact_no,
+                'license_no' => $request->driver_license_no,
+                'license_validity' => $request->driver_license_validity,
+            ]);
+
+            // Generate application number
+            $applicationNumber = 'FA-' . date('Y') . '-' . str_pad(FranchiseApplication::count() + 1, 6, '0', STR_PAD_LEFT);
+
+            // Create franchise application
+            $franchiseApplicationData = [
+                'application_number' => $applicationNumber,
+                'operator_id' => $operator->operator_id,
+                'driver_id' => $driver->driver_id,
+                'application_type' => $request->application_type,
+                'operator_name' => $request->operator_first_name . ' ' . $request->operator_last_name,
+                'ctc_no' => $request->ctc_no,
+                'ctc_date_issued' => $request->ctc_date_issued,
+                'ctc_place_issued' => $request->ctc_place_issued,
+                'franchise_fee' => $request->franchise_fee,
+                'route_id' => $request->route_id,
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ];
+
+            // Add previous application ID for renewals
+            if ($request->application_type === 'renewal' && $request->previous_application_id) {
+                $franchiseApplicationData['previous_application_id'] = $request->previous_application_id;
+            }
+
+            $franchiseApplication = FranchiseApplication::create($franchiseApplicationData);
+
+            // Create operator documents (as checkboxes - marked as approved since physically submitted)
+            foreach ($request->operator_documents as $documentTypeId) {
+                $documentType = DocumentType::find($documentTypeId);
+                $operator->operatorDocuments()->create([
+                    'document_type_id' => $documentTypeId,
+                    'document_name' => $documentType ? $documentType->name . ' - Physically Submitted' : 'Document - Physically Submitted',
+                    'file_path' => 'admin-uploaded/' . Str::uuid() . '.pdf',
+                    'file_type' => 'application/pdf',
+                    'file_size' => 0,
+                    'status' => 'approved',
+                    'verified_at' => now(),
+                    'verified_by' => Auth::id(),
+                ]);
+            }
+
+            // Create driver documents (as checkboxes - marked as approved since physically submitted)
+            foreach ($request->driver_documents as $documentTypeId) {
+                $documentType = DocumentType::find($documentTypeId);
+                $driver->driverDocuments()->create([
+                    'document_type_id' => $documentTypeId,
+                    'document_name' => $documentType ? $documentType->name . ' - Physically Submitted' : 'Document - Physically Submitted',
+                    'file_path' => 'admin-uploaded/' . Str::uuid() . '.pdf',
+                    'file_type' => 'application/pdf',
+                    'file_size' => 0,
+                    'status' => 'approved',
+                    'verified_at' => now(),
+                    'verified_by' => Auth::id(),
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.franchise.index')
+                ->with('success', 'Franchise application created successfully for walk-in client.');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create franchise application: ' . $e->getMessage());
+        }
     }
 } 
