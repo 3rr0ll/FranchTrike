@@ -21,11 +21,28 @@
 
     @if($availableFees->count() > 0)
     <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
-        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center gap-3">
-            <svg class="w-7 h-7 text-primary-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 5a7 7 0 11-0 14 7 7 0 010-14z" />
-            </svg>
-            <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Unsettled Fees</h3>
+        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-7 h-7 text-primary-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 5a7 7 0 11-0 14 7 7 0 010-14z" />
+                </svg>
+                <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Unsettled Fees</h3>
+            </div>
+            @if($availableFees->count() > 1)
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Total Amount:</p>
+                    <p class="text-2xl font-bold text-primary-navy">₱{{ number_format($availableFees->sum('amount'), 2) }}</p>
+                </div>
+                <a href="{{ route('operator.payments.pay-all') }}" 
+                   class="inline-flex items-center px-6 py-3 bg-primary-gold text-primary-navy border border-transparent rounded-lg font-bold text-base tracking-widest hover:bg-primary-gold/90 focus:bg-primary-gold/90 active:bg-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2 transition ease-in-out duration-150">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Pay All ({{ $availableFees->count() }} fees)
+                </a>
+            </div>
+            @endif
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
             @foreach($availableFees as $fee)
@@ -51,11 +68,28 @@
     {{-- Cancelled (Unpaid) Payments --}}
     @if(isset($cancelledPayments) && $cancelledPayments->count() > 0)
     <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
-        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center gap-3">
-            <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Cancelled Payments</h3>
+        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Cancelled Payments</h3>
+            </div>
+            @if($cancelledPayments->count() > 1)
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Total Amount:</p>
+                    <p class="text-2xl font-bold text-primary-navy">₱{{ number_format($cancelledPayments->sum('amount_paid'), 2) }}</p>
+                </div>
+                <a href="{{ route('operator.payments.pay-all') }}" 
+                   class="inline-flex items-center px-6 py-3 bg-primary-gold text-primary-navy border border-transparent rounded-lg font-bold text-base tracking-widest hover:bg-primary-gold/90 focus:bg-primary-gold/90 active:bg-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2 transition ease-in-out duration-150">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    Pay All ({{ $cancelledPayments->count() }} cancelled)
+                </a>
+            </div>
+            @endif
         </div>
         <div class="overflow-x-auto px-6 py-6">
             <table class="min-w-full divide-y divide-gray-100 text-sm">
