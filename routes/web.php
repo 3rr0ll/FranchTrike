@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\RoleMiddleware;
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
@@ -60,6 +61,8 @@ Route::middleware([
         // Default fallback
         return view('welcome');
     })->name('dashboard');
+
+   
 
     Route::middleware([RoleMiddleware::class . ':operator'])
         ->prefix('operator')
@@ -144,6 +147,12 @@ Route::middleware([
                 Route::get('/cancel', [\App\Http\Controllers\Operator\PaymentController::class, 'cancel'])->name('cancel');
                 Route::get('/receipt/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'receipt'])->name('receipt');
                 Route::post('/resume/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'resume'])->name('resume');
+                
+                // Pay All functionality (must come before /{fee} route)
+                Route::get('/pay-all', [\App\Http\Controllers\Operator\PaymentController::class, 'payAll'])->name('pay-all');
+                Route::post('/pay-all', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayAllPayment'])->name('create-pay-all');
+                Route::get('/pay-all/receipt/{paymentIntentId}', [\App\Http\Controllers\Operator\PaymentController::class, 'payAllReceipt'])->name('pay-all.receipt');
+                
                 Route::get('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'show'])->name('show');
                 Route::post('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayment'])->name('create');
             });
@@ -171,6 +180,8 @@ Route::middleware([
 
             // Franchise Applications Routes
             Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
+            Route::get('/franchise/create', [AdminFranchiseController::class, 'create'])->name('franchise.create');
+            Route::post('/franchise', [AdminFranchiseController::class, 'store'])->name('franchise.store');
             Route::get('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'show'])->name('franchise.show');
             Route::put('/franchise/{franchiseApplication}/status', [AdminFranchiseController::class, 'updateStatus'])->name('franchise.update-status');
             Route::post('/franchise/bulk-update', [AdminFranchiseController::class, 'bulkUpdateStatus'])->name('franchise.bulk-update');
