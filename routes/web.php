@@ -208,6 +208,8 @@ Route::middleware([
 
             // Motor Change Approval Routes
             Route::get('motor-change', [MotorChangeApprovalController::class, 'index'])->name('motor-change.index');
+            Route::get('motor-change/{motorChange}/input-details', [MotorChangeApprovalController::class, 'inputDetails'])->name('motor-change.input-details');
+            Route::post('motor-change/{motorChange}/input-details', [MotorChangeApprovalController::class, 'storeNewDetails'])->name('motor-change.input-details');
             Route::post('motor-change/{motorChange}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
             Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
         });

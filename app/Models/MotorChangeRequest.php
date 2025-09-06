@@ -21,6 +21,11 @@ class MotorChangeRequest extends Model
         'status',
     ];
 
+    protected $casts = [
+        'new_unit_make_id' => 'integer',
+        'old_unit_make_id' => 'integer',
+    ];
+
     public function franchiseApplication()
     {
         return $this->belongsTo(FranchiseApplication::class, 'franchise_application_id');

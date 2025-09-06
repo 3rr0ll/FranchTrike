@@ -106,7 +106,7 @@ Franchise Applications
                                 <td class="p-2 space-x-2">
                                     <a href="{{ route('operator.franchise.show', $app) }}" class="inline-block bg-primary-navy text-white px-3 py-1 rounded hover:bg-primary-gold hover:text-primary-navy">View</a>
                                     @if($app->status === 'approved' && $app->motorDetail)
-                                    <a href="{{ route('operator.franchise.motor-change.create', $app->id) }}" class="inline-block bg-accent-purple text-white px-3 py-1 rounded hover:bg-accent-purple/90">Request Motor Change</a>
+                                    <button onclick="requestMotorChange({{ $app->id }})" class="inline-block bg-accent-purple text-white px-3 py-1 rounded hover:bg-accent-purple/90">Request Motor Change</button>
                                     @endif
                                 </td>
                             </tr>
@@ -132,6 +132,8 @@ Franchise Applications
     <!-- jQuery and DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('#renewedFranchiseTable').DataTable({
@@ -142,5 +144,73 @@ Franchise Applications
                 ]
             });
         });
+
+        function requestMotorChange(franchiseId) {
+            Swal.fire({
+                title: 'Request Motor Change?',
+                html: `
+                    <div class="text-left">
+                        <p class="mb-3">Are you sure you want to request a motor change for this franchise?</p>
+                        <div class="bg-blue-50 p-3 rounded mb-3">
+                            <h4 class="font-semibold text-blue-800 mb-2">Physical Evaluation Requirements:</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• Valid Driver's License</li>
+                                <li>• Vehicle Registration (OR/CR)</li>
+                                <li>• Insurance Certificate</li>
+                                <li>• LTO Certificate of Registration</li>
+                                <li>• Valid Franchise Permit</li>
+                                <li>• Vehicle Inspection Report</li>
+                                <li>• Tax Clearance</li>
+                                <li>• Barangay Clearance</li>
+                            </ul>
+                        </div>
+                        <p class="text-sm text-gray-600">Please bring all required documents for physical evaluation.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1D2761',
+                cancelButtonColor: '#E63946',
+                confirmButtonText: 'Yes, Submit Request',
+                cancelButtonText: 'Cancel',
+                width: '500px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Submitting Request...',
+                        text: 'Please wait while we process your request.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Submit the request
+                    window.location.href = `/operator/franchise/motor-change/${franchiseId}`;
+                }
+            });
+        }
+
+        // Flash messages
+        @if(session('success'))
+            Swal.fire({
+                title: 'Success!',
+                text: {!! json_encode(session('success')) !!},
+                icon: 'success',
+                confirmButtonColor: '#1D2761',
+                confirmButtonText: 'OK'
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                title: 'Error!',
+                text: {!! json_encode(session('error')) !!},
+                icon: 'error',
+                confirmButtonColor: '#E63946',
+                confirmButtonText: 'OK'
+            });
+        @endif
     </script>
 @endpush

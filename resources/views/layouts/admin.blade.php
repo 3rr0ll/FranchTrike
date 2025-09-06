@@ -38,7 +38,7 @@
                             <button type="button" class="flex text-sm aria-expanded=" false" data-dropdown-toggle="dropdown-user">
                                 <span class="sr-only">Open user menu</span>
                                 <img src="{{ asset('images/logo.png') }}" alt="User" class="w-10 h-10 rounded-full">
-                                \ </button>
+                                 </button>
                         </div>
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm" id="dropdown-user">
                             <div class="px-4 py-3" role="none">

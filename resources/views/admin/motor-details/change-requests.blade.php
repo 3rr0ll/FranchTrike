@@ -9,7 +9,6 @@ Motor Change Requests
 @section('content')
 <div class="w-full mt-4">
 
-
     {{-- Statistics Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div class="p-4 bg-white rounded-lg border border-gray-200">
@@ -89,7 +88,7 @@ Motor Change Requests
             <thead>
                 <tr>
                     <th>Franchise No</th>
-                    <th>Old Motor Details</th>
+                    <th>Current Motor Details</th>
                     <th>New Motor Details</th>
                     <th>Status</th>
                     <th>Submitted At</th>
@@ -108,11 +107,15 @@ Motor Change Requests
                         <strong>Plate:</strong> {{ $request->old_platenumber }}
                     </td>
                     <td>
-                        <strong>Type:</strong> {{ $request->new_unit_type }} <br>
-                        <strong>Make:</strong> {{ $request->newUnitMake->name ?? 'N/A' }} <br>
-                        <strong>Motor No:</strong> {{ $request->new_motorno }} <br>
-                        <strong>Chassis No:</strong> {{ $request->new_chasisno }} <br>
-                        <strong>Plate:</strong> {{ $request->new_platenumber }}
+                        @if($request->new_unit_type)
+                            <strong>Type:</strong> {{ $request->new_unit_type }} <br>
+                            <strong>Make:</strong> {{ $request->newUnitMake->name ?? 'N/A' }} <br>
+                            <strong>Motor No:</strong> {{ $request->new_motorno }} <br>
+                            <strong>Chassis No:</strong> {{ $request->new_chasisno }} <br>
+                            <strong>Plate:</strong> {{ $request->new_platenumber }}
+                        @else
+                            <span class="text-gray-500 italic">Not yet specified</span>
+                        @endif
                     </td>
                     <td>
                         <span class="badge 
@@ -126,17 +129,23 @@ Motor Change Requests
                     <td>{{ $request->created_at->format('Y-m-d H:i') }}</td>
                     <td>
                         @if($request->status === 'pending')
-                        <form action="{{ route('admin.motor-change.approve', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="approve">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                        </form>
+                            @if(!$request->new_unit_type)
+                                <a href="{{ route('admin.motor-change.input-details', $request->id) }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
+                                    Input New Details
+                                </a>
+                            @else
+                                <form action="{{ route('admin.motor-change.approve', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="approve">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
 
-                        <form action="{{ route('admin.motor-change.reject', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="reject">
-                            @csrf
-                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                        </form>
+                                <form action="{{ route('admin.motor-change.reject', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="reject">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            @endif
                         @else
-                        <em>No actions available</em>
+                            <em>No actions available</em>
                         @endif
                     </td>
                 </tr>
@@ -146,13 +155,117 @@ Motor Change Requests
     </div>
 </div>
 
+{{-- History Table for Approved and Rejected Requests --}}
+@if($historyRequests && $historyRequests->count() > 0)
+<div class="bg-white shadow-sm rounded-lg mt-8">
+    <div class="p-4 border-b font-semibold text-lg text-primary-navy">
+        Motor Change Request History (Approved &amp; Rejected)
+    </div>
+    <div class="overflow-x-auto">
+        <table id="motorChangeHistoryTable" class="w-full text-sm text-left text-black">
+            <thead class="text-xs bg-gray-50 text-black">
+                <tr>
+                    <th class="px-6 py-3">Franchise No</th>
+                    <th class="px-6 py-3">Current Motor Details</th>
+                    <th class="px-6 py-3">New Motor Details</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3">Submitted At</th>
+                    <th class="px-6 py-3">Processed At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($historyRequests as $request)
+                    <tr class="bg-white border-b hover:bg-gray-50 text-black">
+                        <td class="px-6 py-4 font-medium">
+                            {{ $request->franchiseApplication->franchise_no ?? 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">
+                                <div><strong>Type:</strong> {{ ucfirst($request->old_unit_type) }}</div>
+                                <div><strong>Make:</strong> {{ $request->oldUnitMake->name ?? 'N/A' }}</div>
+                                <div><strong>Motor No:</strong> {{ $request->old_motorno }}</div>
+                                <div><strong>Chassis No:</strong> {{ $request->old_chasisno }}</div>
+                                <div><strong>Plate:</strong> {{ $request->old_platenumber }}</div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            @if($request->new_unit_type)
+                                <div class="text-sm">
+                                    <div><strong>Type:</strong> {{ ucfirst($request->new_unit_type) }}</div>
+                                    <div><strong>Make:</strong> {{ $request->newUnitMake->name ?? 'N/A' }}</div>
+                                    <div><strong>Motor No:</strong> {{ $request->new_motorno }}</div>
+                                    <div><strong>Chassis No:</strong> {{ $request->new_chasisno }}</div>
+                                    <div><strong>Plate:</strong> {{ $request->new_platenumber }}</div>
+                                </div>
+                            @else
+                                <span class="text-gray-500 italic">Not specified</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full
+                                @if($request->status == 'approved') bg-green-100 text-green-800
+                                @elseif($request->status == 'rejected') bg-red-100 text-red-800
+                                @else bg-yellow-100 text-yellow-800
+                                @endif">
+                                {{ ucfirst($request->status) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            {{ $request->created_at->format('M d, Y H:i') }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-600">
+                            @if($request->status == 'approved' && $request->updated_at)
+                                {{ $request->updated_at->format('M d, Y H:i') }}
+                            @elseif($request->status == 'rejected' && $request->updated_at)
+                                {{ $request->updated_at->format('M d, Y H:i') }}
+                            @else
+                                <span class="text-gray-400">-</span>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+@else
+<div class="bg-white shadow-sm rounded-lg mt-8 p-6">
+    <div class="text-center text-gray-500">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No History</h3>
+        <p class="mt-1 text-sm text-gray-500">No approved or rejected motor change requests yet.</p>
+    </div>
+</div>
+@endif
+
 {{-- DataTables and SweetAlert Script --}}
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         $('#motorChangeTable').DataTable({
-            responsive: true
+            responsive: true,
+            order: [[4, 'desc']],
+            pageLength: 10
         });
+        
+        @if($historyRequests && $historyRequests->count() > 0)
+        $('#motorChangeHistoryTable').DataTable({
+            responsive: true,
+            order: [[4, 'desc']],
+            pageLength: 10,
+            language: {
+                search: "Search history:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ history entries",
+                paginate: {
+                    previous: "Prev",
+                    next: "Next"
+                }
+            }
+        });
+        @endif
 
         // Flash messages via SweetAlert
         @if(session('success'))

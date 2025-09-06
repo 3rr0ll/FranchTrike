@@ -17,11 +17,11 @@ return new class extends Migration {
             $table->string('old_chasisno');
             $table->string('old_platenumber');
 
-            $table->string('new_unit_type');
-            $table->unsignedBigInteger('new_unit_make_id');
-            $table->string('new_motorno');
-            $table->string('new_chasisno');
-            $table->string('new_platenumber');
+            $table->string('new_unit_type')->nullable();
+            $table->unsignedBigInteger('new_unit_make_id')->nullable();
+            $table->string('new_motorno')->nullable();
+            $table->string('new_chasisno')->nullable();
+            $table->string('new_platenumber')->nullable();
 
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->timestamps();

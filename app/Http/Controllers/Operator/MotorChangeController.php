@@ -23,29 +23,17 @@ class MotorChangeController extends Controller
                 ->with('error', 'No motor details found for this franchise.');
         }
 
-        $unitMakes = UnitMake::all();
+        // Check if there's already a pending request for this franchise
+        $existingRequest = MotorChangeRequest::where('franchise_application_id', $application->id)
+            ->where('status', 'pending')
+            ->first();
 
-        return view('operator.motor-change.create', compact('application', 'motorDetail', 'unitMakes'));
-    }
-
-    public function store(Request $request, $franchiseId)
-    {
-        $application = FranchiseApplication::findOrFail($franchiseId);
-
-        $motorDetail = $application->motorDetail;
-        if (!$motorDetail) {
+        if ($existingRequest) {
             return redirect()->route('operator.franchise.index')
-                ->with('error', 'Cannot request change. No existing motor details found.');
+                ->with('error', 'You already have a pending motor change request for this franchise.');
         }
 
-        $request->validate([
-            'new_unit_type' => 'required|string|max:255',
-            'new_unit_make_id' => 'required|exists:unit_makes,id',
-            'new_motorno' => 'required|string|max:255',
-            'new_chasisno' => 'required|string|max:255',
-            'new_platenumber' => 'required|string|max:255',
-        ]);
-
+        // Directly create the motor change request with only old details
         MotorChangeRequest::create([
             'franchise_application_id' => $application->id,
             'old_unit_type' => $motorDetail->unit_type,
@@ -53,15 +41,16 @@ class MotorChangeController extends Controller
             'old_motorno' => $motorDetail->motorno,
             'old_chasisno' => $motorDetail->chasisno,
             'old_platenumber' => $motorDetail->platenumber,
-            'new_unit_type' => $request->new_unit_type,
-            'new_unit_make_id' => $request->new_unit_make_id,
-            'new_motorno' => $request->new_motorno,
-            'new_chasisno' => $request->new_chasisno,
-            'new_platenumber' => $request->new_platenumber,
+            'new_unit_type' => null, // Admin will input this
+            'new_unit_make_id' => null, // Admin will input this
+            'new_motorno' => null, // Admin will input this
+            'new_chasisno' => null, // Admin will input this
+            'new_platenumber' => null, // Admin will input this
             'status' => 'pending',
         ]);
 
         return redirect()->route('operator.franchise.index')
-            ->with('success', 'Motor change request submitted and awaiting admin approval.');
+            ->with('success', 'Motor change request submitted successfully! Please prepare for physical evaluation.');
     }
+
 }
