@@ -83,6 +83,11 @@ class Operator extends Model
         return $this->hasMany(Driver::class, 'operator_id', 'operator_id');
     }
 
+    public function operatorDocuments()
+    {
+        return $this->hasMany(OperatorDocument::class, 'operator_id', 'operator_id');
+    }
+
     // Boot method for auto-calculating age
     protected static function boot()
     {
