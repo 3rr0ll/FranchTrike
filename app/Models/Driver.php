@@ -102,4 +102,9 @@ class Driver extends Model
     {
         return $this->belongsTo(Operator::class, 'operator_id');
     }
+
+    public function driverDocuments()
+    {
+        return $this->hasMany(DriverDocument::class, 'driver_id', 'driver_id');
+    }
 }
