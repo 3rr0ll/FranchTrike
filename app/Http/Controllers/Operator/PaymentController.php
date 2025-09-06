@@ -50,7 +50,7 @@ class PaymentController extends Controller
         
         $completedPayments = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
             $query->where('operator_id', $operator->operator_id);
-        })->whereNotNull('paid_at')->with(['fee', 'franchiseApplication'])->latest()->take(10)->get();
+        })->whereNotNull('paid_at')->with(['fee', 'franchiseApplication'])->latest()->get();
         
         return view('operator.payments.index', compact('fees', 'pendingPayments', 'cancelledPayments', 'completedPayments'));
     }
@@ -149,20 +149,38 @@ class PaymentController extends Controller
             ]);
             
             if ($paymentIntent->status === 'succeeded') {
-                $payment = Payment::where('stripe_payment_intent_id', $paymentIntentId)->first();
+                $payments = Payment::where('stripe_payment_intent_id', $paymentIntentId)->get();
                 
-                if ($payment) {
-                    $payment->update([
-                        'paid_at' => now(),
-                        'stripe_payment_status' => 'succeeded',
+                if ($payments->isNotEmpty()) {
+                    // Update all payments with the same payment intent
+                    $payments->each(function ($payment) {
+                        $payment->update([
+                            'paid_at' => now(),
+                            'stripe_payment_status' => 'succeeded',
+                        ]);
+                    });
+                    
+                    Log::info('Payments updated successfully', [
+                        'payment_count' => $payments->count(),
+                        'payment_intent_id' => $paymentIntentId
                     ]);
                     
-                    Log::info('Payment updated successfully', ['payment_id' => $payment->id]);
+                    // Check if this was a Pay All payment
+                    $isPayAll = $payments->count() > 1 || 
+                               ($paymentIntent->metadata['payment_type'] ?? '') === 'pay_all';
                     
-                    return redirect()->route('operator.payments.index')
-                        ->with('success', 'Payment completed successfully!');
+                    if ($isPayAll) {
+                        // Redirect to Pay All receipt
+                        return redirect()->route('operator.payments.pay-all.receipt', $paymentIntentId)
+                            ->with('success', "All payments completed successfully! ({$payments->count()} fees paid)");
+                    } else {
+                        // Single payment - redirect to regular receipt
+                        $singlePayment = $payments->first();
+                        return redirect()->route('operator.payments.receipt', $singlePayment)
+                            ->with('success', 'Payment completed successfully!');
+                    }
                 } else {
-                    Log::error('Payment record not found', ['payment_intent_id' => $paymentIntentId]);
+                    Log::error('Payment records not found', ['payment_intent_id' => $paymentIntentId]);
                 }
             }
             
@@ -267,5 +285,161 @@ class PaymentController extends Controller
         }
         
         return view('operator.payments.receipt', compact('payment'));
+    }
+
+    /**
+     * Show Pay All page with all unpaid fees
+     */
+    public function payAll()
+    {
+        $operator = Auth::user()->operator;
+        $fees = Fee::where('is_active', true)->get();
+        
+        // Get all franchise applications for this operator
+        $applications = FranchiseApplication::where('operator_id', $operator->operator_id)->latest()->get();
+        
+        // Get paid fee IDs to exclude them
+        $paidFeeIds = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
+            $query->where('operator_id', $operator->operator_id);
+        })
+        ->whereNotNull('paid_at')
+        ->pluck('fee_id')
+        ->unique();
+        
+        // Get available fees (not yet paid) - includes both unpaid and cancelled
+        $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
+        
+        // Calculate total amount
+        $totalAmount = $availableFees->sum('amount');
+        
+        return view('operator.payments.pay-all', compact('availableFees', 'applications', 'totalAmount'));
+    }
+
+    /**
+     * Create payment intent for all unpaid fees
+     */
+    public function createPayAllPayment(Request $request)
+    {
+        $operator = Auth::user()->operator;
+        $fees = Fee::where('is_active', true)->get();
+        
+        // Get paid fee IDs to exclude them
+        $paidFeeIds = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
+            $query->where('operator_id', $operator->operator_id);
+        })
+        ->whereNotNull('paid_at')
+        ->pluck('fee_id')
+        ->unique();
+        
+        // Get available fees (not yet paid) - includes both unpaid and cancelled
+        $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
+        
+        if ($availableFees->isEmpty()) {
+            return redirect()->route('operator.payments.index')
+                ->with('info', 'No unpaid fees found.');
+        }
+        
+        $request->validate([
+            'franchise_application_id' => 'required|exists:franchise_applications,id',
+        ]);
+        
+        // Verify the application belongs to the operator
+        $application = FranchiseApplication::where('id', $request->franchise_application_id)
+            ->where('operator_id', $operator->operator_id)
+            ->firstOrFail();
+        
+        $totalAmount = $availableFees->sum('amount');
+        
+        try {
+            // Create payment intent with Stripe for the total amount
+            $paymentIntent = PaymentIntent::create([
+                'amount' => $totalAmount * 100, // Convert to cents
+                'currency' => 'php',
+                'metadata' => [
+                    'operator_id' => $operator->operator_id,
+                    'franchise_application_id' => $application->id,
+                    'payment_type' => 'pay_all',
+                    'fee_count' => $availableFees->count(),
+                ],
+            ]);
+            
+            Log::info('Pay All payment intent created', [
+                'payment_intent_id' => $paymentIntent->id,
+                'total_amount' => $totalAmount,
+                'fee_count' => $availableFees->count(),
+                'application_id' => $application->id
+            ]);
+
+            // Handle payment records - update existing or create new
+            $payments = [];
+            foreach ($availableFees as $fee) {
+                // Check if there's an existing payment record for this fee
+                $existingPayment = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
+                    $query->where('operator_id', $operator->operator_id);
+                })
+                ->where('fee_id', $fee->id)
+                ->whereNull('paid_at')
+                ->first();
+                
+                if ($existingPayment) {
+                    // Update existing payment record
+                    $existingPayment->update([
+                        'stripe_payment_intent_id' => $paymentIntent->id,
+                        'amount_paid' => $fee->amount,
+                    ]);
+                    $payments[] = $existingPayment;
+                } else {
+                    // Create new payment record
+                    $payment = Payment::create([
+                        'franchise_application_id' => $application->id,
+                        'fee_id' => $fee->id,
+                        'amount_paid' => $fee->amount,
+                        'stripe_payment_intent_id' => $paymentIntent->id,
+                    ]);
+                    $payments[] = $payment;
+                }
+            }
+
+            return view('operator.payments.process-pay-all', [
+                'paymentIntent' => $paymentIntent,
+                'payments' => $payments,
+                'fees' => $availableFees,
+                'application' => $application,
+                'totalAmount' => $totalAmount,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Pay All payment setup failed', ['error' => $e->getMessage()]);
+            return back()->withErrors(['error' => 'Payment setup failed: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Show Pay All receipt for multiple payments
+     */
+    public function payAllReceipt($paymentIntentId)
+    {
+        $operator = Auth::user()->operator;
+        
+        // Get all payments with this payment intent ID
+        $payments = Payment::whereHas('franchiseApplication', function($query) use ($operator) {
+            $query->where('operator_id', $operator->operator_id);
+        })
+        ->where('stripe_payment_intent_id', $paymentIntentId)
+        ->whereNotNull('paid_at')
+        ->with(['fee', 'franchiseApplication'])
+        ->get();
+        
+        if ($payments->isEmpty()) {
+            abort(404, 'Payment receipt not found.');
+        }
+        
+        // Get the first payment to get common details
+        $firstPayment = $payments->first();
+        $application = $firstPayment->franchiseApplication;
+        $totalAmount = $payments->sum('amount_paid');
+        $paymentDate = $firstPayment->paid_at;
+        
+        return view('operator.payments.pay-all-receipt', compact('payments', 'application', 'totalAmount', 'paymentDate', 'paymentIntentId'));
     }
 } 
