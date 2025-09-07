@@ -58,8 +58,30 @@
             <div>
                 <h3 class="text-lg font-bold mb-2">Parties</h3>
                 <ul class="text-sm space-y-1">
-                    <li><span class="text-gray-600">Operator:</span> {{ $franchiseApplication->operator->last_name ?? 'N/A' }}</li>
-                    <li><span class="text-gray-600">Driver:</span> {{ $franchiseApplication->driver->last_name ?? 'N/A' }}</li>
+                    <li><span class="text-gray-600">Operator:</span> 
+                        {{ 
+                            $franchiseApplication->operator 
+                                ? trim(
+                                    $franchiseApplication->operator->first_name . 
+                                    ' ' . 
+                                    ($franchiseApplication->operator->middle_initial ? $franchiseApplication->operator->middle_initial . ' ' : '') . 
+                                    $franchiseApplication->operator->last_name
+                                )
+                                : 'N/A' 
+                        }}
+                    </li>
+                    <li><span class="text-gray-600">Driver:</span> 
+                        {{ 
+                            $franchiseApplication->driver 
+                                ? trim(
+                                    $franchiseApplication->driver->first_name . 
+                                    ' ' . 
+                                    ($franchiseApplication->driver->middle_initial ? $franchiseApplication->driver->middle_initial . ' ' : '') . 
+                                    $franchiseApplication->driver->last_name
+                                )
+                                : 'N/A' 
+                        }}
+                    </li>
                     <li><span class="text-gray-600">Route:</span> {{ $franchiseApplication->route->name ?? 'N/A' }}</li>
                 </ul>
             </div>
