@@ -32,7 +32,7 @@
                         <span class="sr-only">Open sidebar</span>
                     </button>
                     <a href="{{ route('superadmin.home') }}" class="flex ml-2 md:mr-24">
-                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike Admin</span>
+                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike Super Admin</span>
                     </a>
                 </div>
                 <div class="flex items-center">
