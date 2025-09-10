@@ -8,101 +8,128 @@
 
 @section('content')
 <div class="w-full px-0 sm:px-0 lg:px-0 py-8 space-y-12">
-    <!-- Operator Documents -->
+    <!-- Operator Documents Table -->
     <div>
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Operators Documents</h2>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            @forelse ($operatorDocuments as $doc)
-            <div class="bg-white p-6 rounded-lg shadow border">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">{{ $doc->documentType->name }}</h3>
-                    <span class="text-xs px-2 py-1 rounded-full 
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Operator Documents</h2>
+        <div class="overflow-x-auto">
+            <table id="operator-documents-table" class="min-w-full bg-white rounded shadow border">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left">Document Type</th>
+                        <th class="px-4 py-2 text-left">Status</th>
+                        <th class="px-4 py-2 text-left">Actions</th>
+                        <th class="px-4 py-2 text-left">Rejection Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($operatorDocuments as $doc)
+                    <tr>
+                        <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
+                        <td class="px-4 py-2">
+                            <span class="text-xs px-2 py-1 rounded-full
                                 @if($doc->status === 'approved') bg-green-100 text-green-700
                                 @elseif($doc->status === 'pending') bg-yellow-100 text-yellow-700
                                 @elseif($doc->status === 'rejected') bg-red-100 text-red-700
                                 @else bg-gray-100 text-gray-600
                                 @endif">
-                        {{ ucfirst($doc->status) }}
-                    </span>
-                </div>
-
-                <x-button onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
-                    View Document
-                </x-button>
-
-                @if($doc->status === 'rejected')
-                @php
-                $resubmitUrl = route('operator.documents.operator.create', ['type' => $doc->document_type_id]);
-                @endphp
-                <x-button class="mt-2"
-                    onclick="window.location.href='{{ $resubmitUrl }}'">
-                    Resubmit
-                </x-button>
-                @if($doc->rejection_reason)
-                <div class="text-xs text-red-600 mt-1">
-                    Reason: {{ $doc->rejection_reason }}
-                </div>
-                @endif
-                @endif
-            </div>
-            @empty
-            <p class="text-gray-600">No operator documents submitted yet.</p>
-            @endforelse
+                                {{ ucfirst($doc->status) }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 space-x-2">
+                            <x-button size="sm" onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
+                                View
+                            </x-button>
+                            @if($doc->status === 'rejected')
+                                @php
+                                    $resubmitUrl = route('operator.documents.operator.create', ['type' => $doc->document_type_id]);
+                                @endphp
+                                <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="window.location.href='{{ $resubmitUrl }}'">
+                                    Resubmit
+                                </x-button>
+                            @endif
+                        </td>
+                        <td class="px-4 py-2 text-xs text-red-600">
+                            @if($doc->status === 'rejected' && $doc->rejection_reason)
+                                {{ $doc->rejection_reason }}
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-4 text-gray-600 text-center">No operator documents submitted yet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Driver Documents -->
+    <!-- Driver Documents Table -->
     <div>
-        <h2 class="text-xl font-bold text-gray-800 mt-4 mb-4">Drivers Documents</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-            @forelse ($driverDocuments as $doc)
-            <div class="bg-white p-6 rounded-lg shadow border">
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-lg font-semibold text-gray-800">{{ $doc->documentType->name }}</h3>
-                    <span class="text-xs px-2 py-1 rounded-full 
+        <h2 class="text-xl font-bold text-gray-800 mt-4 mb-4">Driver Documents</h2>
+        <div class="overflow-x-auto">
+            <table id="driver-documents-table" class="min-w-full bg-white rounded shadow border">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left">Document Type</th>
+                        <th class="px-4 py-2 text-left">Driver</th>
+                        <th class="px-4 py-2 text-left">Status</th>
+                        <th class="px-4 py-2 text-left">Actions</th>
+                        <th class="px-4 py-2 text-left">Rejection Reason</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($driverDocuments as $doc)
+                    <tr>
+                        <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
+                        <td class="px-4 py-2">
+                            @if(isset($doc->driver))
+                                @php
+                                    $driver = $doc->driver;
+                                    $middleInitial = $driver->middle_initial ? ' ' . $driver->middle_initial . '.' : '';
+                                    $driverName = $driver->first_name . $middleInitial . ' ' . $driver->last_name;
+                                @endphp
+                                {{ $driverName }}
+                            @else
+                                N/A
+                            @endif
+                        </td>
+                        <td class="px-4 py-2">
+                            <span class="text-xs px-2 py-1 rounded-full
                                 @if($doc->status === 'approved') bg-green-100 text-green-700
                                 @elseif($doc->status === 'pending') bg-yellow-100 text-yellow-700
                                 @elseif($doc->status === 'rejected') bg-red-100 text-red-700
                                 @else bg-gray-100 text-gray-600
                                 @endif">
-                        {{ ucfirst($doc->status) }}
-                    </span>
-                </div>
-                <p class="text-sm text-gray-600 mb-2">
-                    Driver:
-                    @if(isset($doc->driver))
-                    @php
-                    $driver = $doc->driver;
-                    $middleInitial = $driver->middle_initial ? ' ' . $driver->middle_initial . '.' : '';
-                    $driverName = $driver->first_name . $middleInitial . ' ' . $driver->last_name;
-                    @endphp
-                    {{ $driverName }}
-                    @else
-                    N/A
-                    @endif
-                </p>
-                <x-button onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
-                    View Document
-                </x-button>
-                @if($doc->status === 'rejected')
-                @php
-                $resubmitUrl = route('operator.documents.driver.create', ['type' => $doc->document_type_id]);
-                @endphp
-                <x-button class="mt-2 bg-red-500 hover:bg-red-600"
-                    onclick="window.location.href='{{ $resubmitUrl }}'">
-                    Resubmit
-                </x-button>
-                @if($doc->rejection_reason)
-                <div class="text-xs text-red-600 mt-1">
-                    Reason: {{ $doc->rejection_reason }}
-                </div>
-                @endif
-                @endif
-            </div>
-            @empty
-            <p class="text-gray-600">No driver documents submitted yet.</p>
-            @endforelse
+                                {{ ucfirst($doc->status) }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 space-x-2">
+                            <x-button size="sm" onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
+                                View
+                            </x-button>
+                            @if($doc->status === 'rejected')
+                                @php
+                                    $resubmitUrl = route('operator.documents.driver.create', ['type' => $doc->document_type_id]);
+                                @endphp
+                                <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="window.location.href='{{ $resubmitUrl }}'">
+                                    Resubmit
+                                </x-button>
+                            @endif
+                        </td>
+                        <td class="px-4 py-2 text-xs text-red-600">
+                            @if($doc->status === 'rejected' && $doc->rejection_reason)
+                                {{ $doc->rejection_reason }}
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-4 py-4 text-gray-600 text-center">No driver documents submitted yet.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -127,8 +154,26 @@
 </div>
 @endsection
 
+
 @push('scripts')
 <script>
+    $(document).ready(function() {
+        $('#operator-documents-table').DataTable({
+            "order": [],
+            "pageLength": 10,
+            "columnDefs": [
+                { "orderable": false, "targets": [2,3] }
+            ]
+        });
+        $('#driver-documents-table').DataTable({
+            "order": [],
+            "pageLength": 10,
+            "columnDefs": [
+                { "orderable": false, "targets": [3,4] }
+            ]
+        });
+    });
+
     function openDocumentModal(filePath, documentName) {
         document.getElementById('modalTitle').textContent = documentName;
         document.getElementById('documentViewer').src = filePath;
