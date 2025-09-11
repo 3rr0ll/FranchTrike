@@ -13,6 +13,7 @@
     <div class="bg-white shadow rounded-sm p-6">
         <h2 class="text-lg font-medium text-gray-900 mb-4">Change Password</h2>
 
+        {{-- Success Message --}}
         @if (session('status') === 'password-updated')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -28,7 +29,38 @@
         </script>
         @endif
 
-        <form method="POST" action="{{ route('user-password.update') }}" class="space-y-4">
+        {{-- Error Handling Message --}}
+        @if (session('status') === 'password-error')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Password Update Failed',
+                        text: '{{ session('error_message', 'There was an error updating your password. Please try again.') }}',
+                        icon: 'error',
+                        confirmButtonColor: '#0b2545'
+                    });
+                }
+            });
+        </script>
+        @endif
+
+        {{-- Laravel Validation Errors --}}
+        @if ($errors->any())
+            <div class="mb-4">
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <strong class="font-bold">Whoops!</strong>
+                    <span class="block sm:inline">There were some problems with your input:</span>
+                    <ul class="mt-2 list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('user-password.update') }}" class="space-y-4" id="change-password-form" autocomplete="off">
             @csrf
             @method('PUT')
 
@@ -71,7 +103,7 @@
                 <label for="password" class="block text-sm font-medium text-gray-700">New Password</label>
                 <div class="mt-1 relative">
                     <input id="password" name="password" type="password" autocomplete="new-password"
-                        class="block w-full border-gray-300 rounded-sm shadow-sm focus:ring-primary-gold focus:border-primary-gold pr-20" required>
+                        class="block w-full border-gray-300 rounded-sm shadow-sm focus:ring-primary-gold focus:border-primary-gold pr-20" required minlength="8">
                     <button type="button" data-target="password"
                         class="toggle-password absolute top-1/2 -translate-y-1/2 right-2 px-2 py-1 text-gray-700 hover:bg-gray-100 flex items-center justify-center"
                         aria-label="Show/Hide Password">
@@ -97,6 +129,10 @@
                         </svg>
                     </button>
                 </div>
+                <p class="text-xs text-gray-500 mt-1" id="password-requirements">
+                    Password must be at least 8 characters
+                </p>
+                <p class="text-sm text-red-600 mt-1 hidden" id="password-error"></p>
                 @error('password')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                 @enderror
@@ -131,7 +167,11 @@
                                 d="M3 3l18 18" />
                         </svg>
                     </button>
+                    
                 </div>
+                <p class="text-xs text-gray-500 mt-1" id="password-requirements">
+                    Password must be at least 8 characters
+                </p>
             </div>
 
             <div class="pt-2 flex justify-end">
@@ -162,6 +202,36 @@
                     eyeOff.classList.add('hidden');
                 }
             });
+        });
+
+        // Password validation for minimum 8 chars and not same as current password
+        const form = document.getElementById('change-password-form');
+        const currentPasswordInput = document.getElementById('current_password');
+        const newPasswordInput = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+
+        form.addEventListener('submit', function(e) {
+            passwordError.classList.add('hidden');
+            passwordError.textContent = '';
+
+            const currentPassword = currentPasswordInput.value;
+            const newPassword = newPasswordInput.value;
+
+            if (newPassword.length < 8) {
+                e.preventDefault();
+                passwordError.textContent = 'New password must be at least 8 characters.';
+                passwordError.classList.remove('hidden');
+                newPasswordInput.focus();
+                return false;
+            }
+
+            if (currentPassword && newPassword && currentPassword === newPassword) {
+                e.preventDefault();
+                passwordError.textContent = 'New password must not be the same as the current password.';
+                passwordError.classList.remove('hidden');
+                newPasswordInput.focus();
+                return false;
+            }
         });
     });
 </script>
