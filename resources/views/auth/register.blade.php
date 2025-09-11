@@ -172,19 +172,6 @@
           }
         });
       }
-
-      // Redirect to /operator/create after successful registration
-      const registerForm = document.getElementById('registerForm');
-      if (registerForm) {
-        registerForm.addEventListener('submit', function (e) {
-
-          window.addEventListener('pageshow', function () {
-            if (window.location.pathname === '/dashboard') {
-              window.location.replace('/operator/create');
-            }
-          });
-        });
-      }
     });
   </script>
 </x-guest-layout>
