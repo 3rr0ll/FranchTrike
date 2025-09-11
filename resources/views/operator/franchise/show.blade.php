@@ -1,40 +1,39 @@
 @extends('layouts.operator')
 
 @section('header')
-<h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
+<h2 class="font-bold text-4xl text-primary-navy flex items-center gap-2 mb-2">
     Franchise #{{ $franchiseApplication->franchise_no ?? '-' }} Details
 </h2>
 @endsection
 
 @section('content')
-<div class="max-w-5xl mx-auto mt-6">
-    <div class="bg-white shadow p-6 rounded-lg space-y-6">
-        <a href="{{ route('operator.franchise.index') }}" class="inline-block bg-gray-100 text-gray-800 px-4 py-2 rounded hover:bg-gray-200">Back</a>
+<div class="max-w-5xl mx-auto mt-8">
+    <div class="bg-white shadow-lg p-10 rounded-2xl space-y-10">
+        <a href="{{ route('operator.franchise.index') }}" class="inline-block bg-gray-100 text-lg text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 font-semibold mb-4">Back</a>
         
-       
         {{-- Motor Change Request Status --}}
         @php
         $motorChangeRequest = \App\Models\MotorChangeRequest::where('franchise_application_id', $franchiseApplication->id)->latest()->first();
         @endphp
         @if($motorChangeRequest)
-        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded">
-            <span class="font-semibold text-blue-900">Motor Change Request Status:</span>
-            <span class="ml-2 text-blue-800">
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-4">
+            <span class="font-semibold text-blue-900 text-lg">Motor Change Request Status:</span>
+            <span class="ml-2 text-blue-800 text-lg">
                 {{ ucfirst($motorChangeRequest->status ?? 'pending') }}
             </span>
             @if($motorChangeRequest->created_at)
-            <span class="ml-4 text-xs text-gray-500">(Requested: {{ $motorChangeRequest->created_at->format('M d, Y') }})</span>
+            <span class="ml-4 text-base text-gray-500">(Requested: {{ $motorChangeRequest->created_at->format('M d, Y') }})</span>
             @endif
         </div>
         @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div>
-                <h3 class="text-lg font-bold mb-2">Application Info</h3>
-                <ul class="text-sm space-y-1">
+                <h3 class="text-2xl font-bold mb-4 text-primary-navy">Application Info</h3>
+                <ul class="text-lg space-y-3">
                     <li>
-                        <span class="text-gray-600">Status:</span> 
-                        <span class="px-2 py-1 text-xs font-medium rounded-full
+                        <span class="text-gray-700 font-semibold">Status:</span> 
+                        <span class="px-3 py-1 text-base font-semibold rounded-full
                             @if($franchiseApplication->status == 'approved') bg-green-100 text-green-800
                             @elseif($franchiseApplication->status == 'rejected') bg-red-100 text-red-800
                             @elseif($franchiseApplication->status == 'expired') bg-red-100 text-red-800
@@ -47,18 +46,32 @@
                             @endif
                         </span>
                     </li>
-                    <li><span class="text-gray-600">Application Type:</span> {{ ucfirst($franchiseApplication->application_type) }}</li>
-                    <li><span class="text-gray-600">Franchise No:</span> {{ $franchiseApplication->franchise_no ?? '-' }}</li>
-                    <li><span class="text-gray-600">Submitted:</span> {{ optional($franchiseApplication->submitted_at)->format('M d, Y') ?? '-' }}</li>
+                    <li>
+                        <span class="text-gray-700 font-semibold">Application Type:</span>
+                        <span class="text-gray-900">{{ ucfirst($franchiseApplication->application_type) }}</span>
+                    </li>
+                    <li>
+                        <span class="text-gray-700 font-semibold">Franchise No:</span>
+                        <span class="text-gray-900">{{ $franchiseApplication->franchise_no ?? '-' }}</span>
+                    </li>
+                    <li>
+                        <span class="text-gray-700 font-semibold">Submitted:</span>
+                        <span class="text-gray-900">{{ optional($franchiseApplication->submitted_at)->format('M d, Y') ?? '-' }}</span>
+                    </li>
                     @if($franchiseApplication->franchise_end_date)
-                    <li><span class="text-gray-600">Expiry Date:</span> {{ $franchiseApplication->franchise_end_date->format('M d, Y') }}</li>
+                    <li>
+                        <span class="text-gray-700 font-semibold">Expiry Date:</span>
+                        <span class="text-gray-900">{{ $franchiseApplication->franchise_end_date->format('M d, Y') }}</span>
+                    </li>
                     @endif
                 </ul>
             </div>
             <div>
-                <h3 class="text-lg font-bold mb-2">Parties</h3>
-                <ul class="text-sm space-y-1">
-                    <li><span class="text-gray-600">Operator:</span> 
+                <h3 class="text-2xl font-bold mb-4 text-primary-navy">Parties</h3>
+                <ul class="text-lg space-y-3">
+                    <li>
+                        <span class="text-gray-700 font-semibold">Operator:</span> 
+                        <span class="text-gray-900">
                         {{ 
                             $franchiseApplication->operator 
                                 ? trim(
@@ -69,8 +82,11 @@
                                 )
                                 : 'N/A' 
                         }}
+                        </span>
                     </li>
-                    <li><span class="text-gray-600">Driver:</span> 
+                    <li>
+                        <span class="text-gray-700 font-semibold">Driver:</span> 
+                        <span class="text-gray-900">
                         {{ 
                             $franchiseApplication->driver 
                                 ? trim(
@@ -81,35 +97,53 @@
                                 )
                                 : 'N/A' 
                         }}
+                        </span>
                     </li>
-                    <li><span class="text-gray-600">Route:</span> {{ $franchiseApplication->route->name ?? 'N/A' }}</li>
+                    <li>
+                        <span class="text-gray-700 font-semibold">Route:</span>
+                        <span class="text-gray-900">{{ $franchiseApplication->route->name ?? 'N/A' }}</span>
+                    </li>
                 </ul>
             </div>
         </div>
 
         <div>
-            <h3 class="text-lg font-bold mb-2">Motor Details</h3>
+            <h3 class="text-2xl font-bold mb-4 text-primary-navy">Motor Details</h3>
             @if($franchiseApplication->motorDetail)
-            <ul class="text-sm space-y-1">
-                <li><span class="text-gray-600">Unit Type:</span> {{ ucfirst($franchiseApplication->motorDetail->unit_type) }}</li>
-                <li><span class="text-gray-600">Unit Make:</span> {{ $franchiseApplication->motorDetail->unitMake->name ?? 'N/A' }}</li>
-                <li><span class="text-gray-600">Motor No:</span> {{ $franchiseApplication->motorDetail->motorno }}</li>
-                <li><span class="text-gray-600">Chasis No:</span> {{ $franchiseApplication->motorDetail->chasisno }}</li>
-                <li><span class="text-gray-600">Plate No:</span> {{ $franchiseApplication->motorDetail->platenumber }}</li>
+            <ul class="text-lg space-y-3">
+                <li>
+                    <span class="text-gray-700 font-semibold">Unit Type:</span>
+                    <span class="text-gray-900">{{ ucfirst($franchiseApplication->motorDetail->unit_type) }}</span>
+                </li>
+                <li>
+                    <span class="text-gray-700 font-semibold">Unit Make:</span>
+                    <span class="text-gray-900">{{ $franchiseApplication->motorDetail->unitMake->name ?? 'N/A' }}</span>
+                </li>
+                <li>
+                    <span class="text-gray-700 font-semibold">Motor No:</span>
+                    <span class="text-gray-900">{{ $franchiseApplication->motorDetail->motorno }}</span>
+                </li>
+                <li>
+                    <span class="text-gray-700 font-semibold">Chasis No:</span>
+                    <span class="text-gray-900">{{ $franchiseApplication->motorDetail->chasisno }}</span>
+                </li>
+                <li>
+                    <span class="text-gray-700 font-semibold">Plate No:</span>
+                    <span class="text-gray-900">{{ $franchiseApplication->motorDetail->platenumber }}</span>
+                </li>
             </ul>
             @else
-            <p class="text-gray-500">No motor details recorded.</p>
+            <p class="text-lg text-gray-500">No motor details recorded.</p>
             @endif
-
         </div>
 
-        <div class="flex items-center justify-end gap-2">
+        <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4">
             @if($franchiseApplication->status === 'approved' && $franchiseApplication->motorDetail)
-            <a href="{{ route('operator.franchise.motor-change.create', $franchiseApplication->id) }}" class="inline-block bg-primary-navy text-white px-4 py-2 rounded hover:bg-primary-gold hover:text-primary-navy">Request Motor Change</a>
+            <a href="{{ route('operator.franchise.motor-change.create', $franchiseApplication->id) }}" class="inline-block bg-primary-navy text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-primary-gold hover:text-primary-navy transition">Request Motor Change</a>
             @endif
             
             @if($franchiseApplication->status === 'expired')
-            <button onclick="confirmRenewal()" class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors">
+            <button onclick="confirmRenewal()" class="inline-block bg-green-600 text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
                 Renew Franchise
             </button>
             @endif
@@ -121,7 +155,6 @@
 <form id="renewalForm" method="POST" action="{{ route('operator.franchise.renew', $franchiseApplication->id) }}" style="display: none;">
     @csrf
 </form>
-
 
 {{-- Renewal Confirmation Script --}}
 <script>
