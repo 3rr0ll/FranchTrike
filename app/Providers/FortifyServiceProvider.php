@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Contracts\LoginResponse;
 use App\Actions\Fortify\RedirectAuthenticatedUsers;
 use App\Services\LoginSecurityService;
+use Laravel\Fortify\Contracts\RegisterResponse;
+use Illuminate\Http\RedirectResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,17 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
+
+        // Custom RegisterResponse to redirect to operator/create after registration
+        $this->app->singleton(RegisterResponse::class, function () {
+            return new class implements RegisterResponse {
+                public function toResponse($request)
+                {
+                    return redirect()->intended('/operator/create');
+                }
+            };
+        });
+
         Fortify::authenticateUsing(function (Request $request) {
             $user = \App\Models\User::where('email', $request->email)->first();
             $securityService = app(LoginSecurityService::class);
@@ -93,7 +106,7 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        // ✅ Bind custom login redirect
+        // Bind custom login redirect
         $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
     }
 }
