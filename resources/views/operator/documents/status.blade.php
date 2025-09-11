@@ -10,6 +10,13 @@
 <div class="w-full px-0 sm:px-0 lg:px-0 py-8 space-y-12">
     <!-- Operator Documents Table -->
     <div>
+        <div class="flex justify-end mb-4">
+            <a href="{{ route('operator.documents.operator.create') }}">
+                <x-button size="md" class="bg-primary-navy text-white hover:bg-primary-gold">
+                    Upload Operator Document
+                </x-button>
+            </a>
+        </div>
         <h2 class="text-xl font-bold text-gray-800 mb-4">Operator Documents</h2>
         <div class="overflow-x-auto">
             <table id="operator-documents-table" class="min-w-full bg-white rounded shadow border">
@@ -66,6 +73,13 @@
 
     <!-- Driver Documents Table -->
     <div>
+        <div class="flex justify-end mb-4">
+            <a href="{{ route('operator.documents.driver.create') }}">
+                <x-button size="md" class="bg-primary-navy text-white hover:bg-primary-gold">
+                    Upload Driver Document
+                </x-button>
+            </a>
+        </div>
         <h2 class="text-xl font-bold text-gray-800 mt-4 mb-4">Driver Documents</h2>
         <div class="overflow-x-auto">
             <table id="driver-documents-table" class="min-w-full bg-white rounded shadow border">
