@@ -1,8 +1,8 @@
 @extends('layouts.operator')
 
-@section('header')  
+@section('header')
 <h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
-    Operator Dashboard  
+    Operator Dashboard
 </h2>
 @endsection
 
@@ -81,9 +81,9 @@
     <div class="bg-white rounded-lg shadow p-6 mt-6">
         {{-- Active Franchise(s) (latest 2) --}}
         @php
-            $activeFranchises = isset($franchiseApplications)
-                ? $franchiseApplications->where('status', 'approved')->sortByDesc('submitted_at')->take(2)
-                : collect();
+        $activeFranchises = isset($franchiseApplications)
+        ? $franchiseApplications->where('status', 'approved')->sortByDesc('submitted_at')->take(2)
+        : collect();
         @endphp
         @if($activeFranchises->count())
         <div class="mb-8">
@@ -102,13 +102,153 @@
                         @endif
                     </div>
                     <div class="flex gap-2 mt-2 justify-end">
-                        <a href="{{ route('operator.franchise.show', $app) }}" class="inline-block bg-primary-navy text-white px-4 py-2 rounded hover:bg-primary-gold hover:text-primary-navy text-sm">View</a>
+                        <x-button
+                            size="sm"
+                            type="button"
+                            class="open-franchise-details-modal"
+                            data-status="{{ $app->status ?? '' }}"
+                            data-application-type="{{ ucfirst($app->application_type ?? '') }}"
+                            data-franchise-no="{{ $app->franchise_no ?? '-' }}"
+                            data-submitted="{{ $app->submitted_at ? $app->submitted_at->format('M d, Y') : '-' }}"
+                            data-expiry="{{ $app->franchise_end_date ? \Carbon\Carbon::parse($app->franchise_end_date)->format('M d, Y') : '-' }}"
+                            data-operator="{{ $app->operator ? trim($app->operator->first_name . ' ' . $app->operator->middle_initial . ' ' . $app->operator->last_name) : '-' }}"
+                            data-driver="{{ $app->driver ? trim($app->driver->first_name . ' ' . $app->driver->middle_initial . ' ' . $app->driver->last_name) : '-' }}"
+                            data-route="{{ $app->route->name ?? 'N/A' }}"
+                            data-unit-type="{{ $app->motorDetail->unit_type ?? '' }}"
+                            data-unit-make="{{ $app->motorDetail && $app->motorDetail->unitMake ? $app->motorDetail->unitMake->name : '-' }}"
+                            data-motor-no="{{ $app->motorDetail ? $app->motorDetail->motorno : '-' }}"
+                            data-chasis-no="{{ $app->motorDetail ? $app->motorDetail->chasisno : '-' }}"
+                            data-plate-no="{{ $app->motorDetail ? $app->motorDetail->platenumber : '-' }}">
+                            View Details
+                        </x-button>
                     </div>
                 </div>
                 @endforeach
             </div>
         </div>
         @endif
+    </div>
+
+
+    <!-- Franchise Details Modal -->
+    <div id="franchiseDetailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative border border-gray-100">
+            <!-- Close button -->
+            <button type="button" class="absolute top-6 right-6 text-gray-400 hover:text-gray-600 z-10 transition-colors duration-200 bg-white rounded-full p-2 shadow-md hover:shadow-lg" onclick="closeFranchiseDetailsModal()">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <div class="p-6 sm:p-8 lg:p-10">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="p-3 bg-primary-navy rounded-xl">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-primary-navy pr-12">Franchise Details</h2>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-base sm:text-lg text-gray-800">
+                    <!-- Application Info -->
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Application Info</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Status:</span>
+                                <span id="franchise-status" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Application Type:</span>
+                                <span id="franchise-application-type" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Franchise No:</span>
+                                <span id="franchise-no" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Submitted:</span>
+                                <span id="franchise-submitted" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Expiry Date:</span>
+                                <span id="franchise-expiry" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Parties -->
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="p-2 bg-green-100 rounded-lg">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Parties</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Operator:</span>
+                                <span id="franchise-operator" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Driver:</span>
+                                <span id="franchise-driver" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Route:</span>
+                                <span id="franchise-route" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Motor Details -->
+                <div class="mt-8">
+                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="p-2 bg-purple-100 rounded-lg">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800">Motor Details</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Unit Type:</span>
+                                <span id="franchise-unit-type" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Unit Make:</span>
+                                <span id="franchise-unit-make" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Motor No:</span>
+                                <span id="franchise-motor-no" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Chasis No:</span>
+                                <span id="franchise-chasis-no" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                            <li class="flex flex-col sm:flex-row sm:items-center gap-2">
+                                <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Plate No:</span>
+                                <span id="franchise-plate-no" class="text-sm sm:text-base font-medium"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -216,6 +356,36 @@
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#3085d6'
             });
+        }
+
+
+        // Open modal and populate data
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.open-franchise-details-modal')) {
+                const button = e.target.closest('.open-franchise-details-modal');
+
+                document.getElementById('franchise-status').textContent = button.getAttribute('data-status') || '-';
+                document.getElementById('franchise-application-type').textContent = button.getAttribute('data-application-type') || '-';
+                document.getElementById('franchise-no').textContent = button.getAttribute('data-franchise-no') || '-';
+                document.getElementById('franchise-submitted').textContent = button.getAttribute('data-submitted') || '-';
+                document.getElementById('franchise-expiry').textContent = button.getAttribute('data-expiry') || '-';
+
+                document.getElementById('franchise-operator').textContent = button.getAttribute('data-operator') || '-';
+                document.getElementById('franchise-driver').textContent = button.getAttribute('data-driver') || '-';
+                document.getElementById('franchise-route').textContent = button.getAttribute('data-route') || '-';
+
+                document.getElementById('franchise-unit-type').textContent = button.getAttribute('data-unit-type') || '-';
+                document.getElementById('franchise-unit-make').textContent = button.getAttribute('data-unit-make') || '-';
+                document.getElementById('franchise-motor-no').textContent = button.getAttribute('data-motor-no') || '-';
+                document.getElementById('franchise-chasis-no').textContent = button.getAttribute('data-chasis-no') || '-';
+                document.getElementById('franchise-plate-no').textContent = button.getAttribute('data-plate-no') || '-';
+
+                document.getElementById('franchiseDetailsModal').classList.remove('hidden');
+            }
+        });
+
+        function closeFranchiseDetailsModal() {
+            document.getElementById('franchiseDetailsModal').classList.add('hidden');
         }
     </script>
     @endsection
