@@ -23,7 +23,7 @@ use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
 Route::get('/', function () {
     return view('welcome');
-})->name('landing'); 
+})->name('landing');
 
 // Default login page 
 Route::view('/login', 'auth.login')->name('login')->middleware('guest');
@@ -62,7 +62,7 @@ Route::middleware([
         return view('welcome');
     })->name('dashboard');
 
-   
+
 
     Route::middleware([RoleMiddleware::class . ':operator'])
         ->prefix('operator')
@@ -147,12 +147,12 @@ Route::middleware([
                 Route::get('/cancel', [\App\Http\Controllers\Operator\PaymentController::class, 'cancel'])->name('cancel');
                 Route::get('/receipt/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'receipt'])->name('receipt');
                 Route::post('/resume/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'resume'])->name('resume');
-                
+
                 // Pay All functionality (must come before /{fee} route)
                 Route::get('/pay-all', [\App\Http\Controllers\Operator\PaymentController::class, 'payAll'])->name('pay-all');
                 Route::post('/pay-all', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayAllPayment'])->name('create-pay-all');
                 Route::get('/pay-all/receipt/{paymentIntentId}', [\App\Http\Controllers\Operator\PaymentController::class, 'payAllReceipt'])->name('pay-all.receipt');
-                
+
                 Route::get('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'show'])->name('show');
                 Route::post('/{fee}', [\App\Http\Controllers\Operator\PaymentController::class, 'createPayment'])->name('create');
             });
@@ -167,9 +167,8 @@ Route::middleware([
             })->name('notifications.read');
         });
 
-
     // Admin routes
-    Route::middleware([RoleMiddleware::class . ':admin'])
+    Route::middleware(['auth', RoleMiddleware::class . ':admin'])
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
@@ -212,9 +211,14 @@ Route::middleware([
             Route::post('motor-change/{motorChange}/input-details', [MotorChangeApprovalController::class, 'storeNewDetails'])->name('motor-change.input-details');
             Route::post('motor-change/{motorChange}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
             Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
+          
+            // Certificate routes
+            Route::get('/certificates/mtop', function () {return view('admin.certificates.MTOP');})->name('certificates.mtop');
+            Route::get('/certificates/application', function () { return view('admin.certificates.application');})->name('certificates.application');
+            Route::get('/certificates/mayors-permit', function () { return view('admin.certificates.mayors_permit');})->name('certificates.mayors-permit');
         });
 
-    // SuperAdmin routes (NOT nested under admin)
+
     Route::middleware([RoleMiddleware::class . ':superadmin'])
         ->prefix('superadmin')
         ->name('superadmin.')
@@ -226,10 +230,6 @@ Route::middleware([
             Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
             Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
 
-            // Test route for debugging
-            Route::get('/test-superadmin', function () {
-                return 'Superadmin access working!';
-            })->name('test.superadmin');
 
             // User Management Routes
             Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
