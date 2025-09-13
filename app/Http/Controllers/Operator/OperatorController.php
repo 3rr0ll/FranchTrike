@@ -40,7 +40,7 @@ class OperatorController extends Controller
             'civil_status' => 'required|string',
             'contact_no' => 'required|string',
         ]);
-        // Add logged in user ID
+
         $validated['user_id'] = Auth::user()->id;
 
         Operator::create($validated);

@@ -213,11 +213,20 @@ Route::middleware([
             Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
           
             // Certificate routes
-            Route::get('/certificates/mtop', function () {return view('admin.certificates.MTOP');})->name('certificates.mtop');
-            Route::get('/certificates/application', function () { return view('admin.certificates.application');})->name('certificates.application');
-            Route::get('/certificates/mayors-permit', function () { return view('admin.certificates.mayors_permit');})->name('certificates.mayors-permit');
-        });
+            Route::get('/certificates/mtop', function () {return view('admin.certificates.MTOP');})->name('admin.certificates.mtop');
+            Route::get('/certificates/application', function () { return view('admin.certificates.application');})->name('admin.certificates.application');
+            Route::get('/certificates/mayors-permit', function () { return view('admin.certificates.mayors_permit');})->name('admin.certificates.mayors-permit');
+            
+            // Certificate generation routes
+            Route::get('/certificates/mtop/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateMTOP'])->name('certificates.mtop.generate');
+            Route::get('/certificates/mtop/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewMTOP'])->name('certificates.mtop.preview');
+            Route::get('/certificates/mayors-permit/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateMayorsPermit'])->name('certificates.mayors-permit.generate');
+            Route::get('/certificates/mayors-permit/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewMayorsPermit'])->name('certificates.mayors-permit.preview');
+            Route::get('/certificates/application/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateApplication'])->name('certificates.application.generate');
+            Route::get('/certificates/application/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewApplication'])->name('certificates.application.preview');
+            Route::get('/certificates/all/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateAllCertificates'])->name('certificates.all.generate');
 
+        });
 
     Route::middleware([RoleMiddleware::class . ':superadmin'])
         ->prefix('superadmin')

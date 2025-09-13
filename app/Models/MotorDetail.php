@@ -13,6 +13,17 @@ class MotorDetail extends Model
         'motorno',
         'chasisno',
         'platenumber',
+        'franchise_number',
+        'sticker_number',
+        'case_number',
+        'or_number',
+        'amount',
+        'date_issued',
+        'place_issued',
+        'validity',
+        'toda_president',
+        'traffic_division',
+        'pfuc_chairperson',
     ];
 
     public function unitMake()
