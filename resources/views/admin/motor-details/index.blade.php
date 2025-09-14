@@ -68,7 +68,7 @@ Motor Details Management
 <!-- Motor Details Table -->
 <div class="bg-white shadow-sm rounded-lg">
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left text-black" id="motor-details-table">
+        <table class="w-full text-sm text-left row-border text-black" id="motor-details-table">
             <thead class="text-xs  bg-gray-50 text-black">
                 <tr>
                     <th><strong>Application #</strong></th>
@@ -87,7 +87,7 @@ Motor Details Management
                 @forelse($motorDetails as $motorDetail)
                 <tr class="bg-white border-b hover:bg-gray-50 text-black">
                     <td class="px-6 py-4 font-medium">
-                        {{ $motorDetail->franchiseApplication->application_number ?? 'N/A' }}
+                        {{ $motorDetail->franchiseApplication->id ?? 'N/A' }}
                     </td>
                     <td class="px-6 py-4">
                         {{ $motorDetail->franchiseApplication->operator->last_name ?? 'N/A' }}

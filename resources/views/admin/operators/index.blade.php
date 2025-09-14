@@ -72,7 +72,7 @@ Operators List
     </div>
 
     <div class="bg-white rounded-lg shadow p-4" style="overflow:auto;">
-        <table id="operators-table" class="table-auto w-full text-left">
+        <table id="operators-table" class="table-auto row-border w-full text-left">
             <thead>
                 <tr>
                     <th>Name</th>
