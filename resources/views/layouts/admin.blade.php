@@ -152,6 +152,18 @@
                         <span class="ms-3">Motor Change Requests</span>
                     </a>
                 </li>
+                <li>
+                    @php $isActive = request()->routeIs('admin.payments.index'); @endphp
+                    <a href="{{ route('admin.payments.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                    {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2m-5-4h12m-6-6v12" />
+                        </svg>
+                        <span class="ms-3">Payments</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </aside>
