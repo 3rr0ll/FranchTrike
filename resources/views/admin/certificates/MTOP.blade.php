@@ -143,7 +143,9 @@
             </div>
             <div style="font-size: 16px; margin-top: 6px;">
                 <span style="color: #d32f2f; font-weight: bold;">Validity:</span>
-                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000;">{{ $validity }}</span>
+                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000;">
+                    {{ \Carbon\Carbon::parse($validity)->format('F d, Y') }}
+                </span>
             </div>
 
         </div>
