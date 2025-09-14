@@ -1,224 +1,65 @@
 @extends('layouts.operator')
 
-@section('header')
-<h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
-    Payment Center
-</h2>
-@endsection
 @section('content')
+<div class="max-w-5xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+    <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">My Payment History</h2>
 
-<div class="w-full px-0 sm:px-0 lg:px-0 py-8 space-y-12">
-
-    {{-- Unsettled (Pending) Payments --}}
-    @php
-    $paidFeeIds = $pendingPayments->pluck('fee_id')
-    ->merge($completedPayments->pluck('fee_id'))
-    ->merge(($cancelledPayments ?? collect())->pluck('fee_id'))
-    ->unique();
-
-    $availableFees = $fees->reject(fn($fee) => $paidFeeIds->contains($fee->id));
-    @endphp
-
-    @if($availableFees->count() > 0)
-    <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
-        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <svg class="w-7 h-7 text-primary-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 5a7 7 0 11-0 14 7 7 0 010-14z" />
-                </svg>
-                <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Unsettled Fees</h3>
-            </div>
-            @if($availableFees->count() > 1)
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p class="text-sm text-gray-600">Total Amount:</p>
-                    <p class="text-2xl font-bold text-primary-navy">₱{{ number_format($availableFees->sum('amount'), 2) }}</p>
-                </div>
-                <a href="{{ route('operator.payments.pay-all') }}" 
-                   class="inline-flex items-center px-6 py-3 bg-primary-gold text-primary-navy border border-transparent rounded-lg font-bold text-base tracking-widest hover:bg-primary-gold/90 focus:bg-primary-gold/90 active:bg-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2 transition ease-in-out duration-150">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Pay All ({{ $availableFees->count() }} fees)
-                </a>
-            </div>
-            @endif
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
-            @foreach($availableFees as $fee)
-            <div class="bg-white rounded-lg p-7 border border-gray-100 shadow-sm hover:shadow transition group relative">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="text-lg font-semibold text-gray-900 group-hover:text-primary-navy transition">{{ $fee->description }}</h4>
-                    <span class="text-2xl font-extrabold text-primary-navy">₱{{ number_format($fee->amount, 2) }}</span>
-                </div>
-                <p class="text-sm text-gray-500 mb-6">Settle this fee to continue your application process.</p>
-                <a href="{{ route('operator.payments.show', $fee) }}"
-                    class="w-full flex justify-center items-center px-6 py-3 bg-primary-navy border border-transparent rounded-lg font-semibold text-base text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
-                    Pay Now
-                </a>
-                <div class="absolute top-3 right-3">
-                    <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-primary-navy rounded-full font-medium">Unpaid</span>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-    @endif
-
-    {{-- Cancelled (Unpaid) Payments --}}
-    @if(isset($cancelledPayments) && $cancelledPayments->count() > 0)
-    <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
-        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <svg class="w-7 h-7 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Cancelled Payments</h3>
-            </div>
-            @if($cancelledPayments->count() > 1)
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p class="text-sm text-gray-600">Total Amount:</p>
-                    <p class="text-2xl font-bold text-primary-navy">₱{{ number_format($cancelledPayments->sum('amount_paid'), 2) }}</p>
-                </div>
-                <a href="{{ route('operator.payments.pay-all') }}" 
-                   class="inline-flex items-center px-6 py-3 bg-primary-gold text-primary-navy border border-transparent rounded-lg font-bold text-base tracking-widest hover:bg-primary-gold/90 focus:bg-primary-gold/90 active:bg-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold focus:ring-offset-2 transition ease-in-out duration-150">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    Pay All ({{ $cancelledPayments->count() }} cancelled)
-                </a>
-            </div>
-            @endif
-        </div>
-        <div class="overflow-x-auto px-6 py-6">
-            <table class="min-w-full divide-y divide-gray-100 text-sm">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Application</th>
-                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Fee</th>
-                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-4 text-left font-semibold text-primary-navy uppercase tracking-wider">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                    @foreach($cancelledPayments as $payment)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 font-semibold text-gray-900">
-                            {{ $payment->franchiseApplication->application_number ?? ('#' . $payment->franchise_application_id) }}
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                <tr>
+                    <th class="px-4 py-2">#</th>
+                    <th class="px-4 py-2">Application #</th>
+                    <th class="px-4 py-2">Fee(s)</th>
+                    <th class="px-4 py-2">Amount</th>
+                    <th class="px-4 py-2">Status</th>
+                    <th class="px-4 py-2">Paid At</th>
+                    <th class="px-4 py-2">Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($groupedPayments as $group)
+                    <tr class="border-b dark:border-gray-700">
+                        <td class="px-4 py-2">{{ $group['group_id'] }}</td>
+                        <td class="px-4 py-2">
+                            {{ $group['application_number'] ?? '-' }}
                         </td>
-                        <td class="px-6 py-4 text-gray-700">{{ $payment->fee->description }}</td>
-                        <td class="px-6 py-4 font-bold text-primary-navy">
-                            ₱{{ number_format($payment->amount_paid, 2) }}
+                        <td class="px-4 py-2">
+                            <ul class="list-disc pl-4">
+                                @foreach($group['fees'] as $fee)
+                                    <li>{{ $fee['description'] }}</li>
+                                @endforeach
+                            </ul>
                         </td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 text-xs font-semibold bg-red-100 text-red-700 rounded-full">Cancelled</span>
+                        <td class="px-4 py-2 font-semibold text-gray-900 dark:text-white">
+                            ₱{{ number_format($group['total_amount'], 2) }}
                         </td>
-                        <td class="px-6 py-4">
-                            <form method="POST" action="{{ route('operator.payments.resume', $payment) }}">
-                                @csrf
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-navy text-white text-xs font-bold rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy transition">
-                                    Pay
-                                </button>
-                            </form>
+                        <td class="px-4 py-2">
+                            @if($group['paid_at'])
+                                <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800">Paid</span>
+                            @else
+                                <span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Pending</span>
+                            @endif
                         </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    @endif
-
-    {{-- Paid Payments --}}
-    @if($completedPayments->count() > 0)
-
-    <div class="bg-white shadow rounded-xl overflow-hidden border border-gray-200">
-        <div class="bg-gray-50 border-b border-gray-200 px-8 py-5 flex items-center gap-3">
-            <svg class="w-7 h-7 text-primary-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <h3 class="text-xl font-semibold text-primary-navy tracking-wide">Paid Payments</h3>
-        </div>
-        <div class="overflow-x-auto px-6 py-6"> {{-- Added padding for breathing room --}}
-            <table id="paid-payments-table" class="min-w-full divide-y divide-gray-100 text-sm display">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-4 text-left font-semibold text-black uppercase tracking-wider">Application</th>
-                        <th class="px-6 py-4 text-left font-semibold text-black uppercase tracking-wider">Fee</th>
-                        <th class="px-6 py-4 text-left font-semibold text-black uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-4 text-left font-semibold text-black uppercase tracking-wider">Paid Date</th>
-                        <th class="px-6 py-4 text-left font-semibold text-black uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-4 text-left font-semibold text-black uppercase tracking-wider">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-50">
-                    @foreach($completedPayments as $payment)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-6 py-4 font-semibold text-gray-900">
-                            {{ $payment->franchiseApplication->application_number }}
+                        <td class="px-4 py-2">
+                            {{ $group['paid_at'] ? $group['paid_at']->format('M d, Y H:i') : '-' }}
                         </td>
-                        <td class="px-6 py-4 text-gray-700">{{ $payment->fee->description }}</td>
-                        <td class="px-6 py-4 font-bold text-primary-navy">
-                            ₱{{ number_format($payment->amount_paid, 2) }}
-                        </td>
-                        <td class="px-6 py-4 text-gray-500">
-                            {{ $payment->paid_at->format('M d, Y') }}
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-3 py-1 text-xs font-semibold bg-gray-100 text-primary-navy rounded-full flex items-center gap-1">
-                                <svg class="w-4 h-4 text-primary-navy" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                </svg>
-                                Paid
-                            </span>
-                        </td>
-                        <td class="px-6 py-4">
-                            <a href="{{ route('operator.payments.receipt', $payment) }}"
-                                class="inline-flex items-center px-4 py-2 bg-primary-navy text-white text-xs font-bold rounded-lg shadow hover:bg-primary-gold hover:text-primary-navy transition">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17l4 4 4-4m-4-5v9"></path>
-                                </svg>
+                        <td class="px-4 py-2">
+                            <a href="{{ route('operator.payments.receipt', $group['first_payment_id']) }}"
+                               class="px-3 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded text-xs text-gray-900 dark:text-white">
                                 View Receipt
                             </a>
                         </td>
                     </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center px-4 py-6 text-gray-500 dark:text-gray-400">
+                            No payments found.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
-    {{-- DataTables JS --}}
-
-    <script>
-        $(document).ready(function() {
-            $('#paid-payments-table').DataTable({
-                "order": [[ 3, "desc" ]], // Order by Paid Date descending
-                "pageLength": 10,
-                "columnDefs": [
-                    { "orderable": false, "targets": 5 } // Disable ordering on Action column
-                ],
-                "initComplete": function() {
-                    // Enhance DataTables search box spacing
-                    let searchBox = $('#paid-payments-table_filter input');
-                    searchBox.addClass('px-4 py-2 rounded border border-gray-300 focus:ring focus:ring-primary-navy/30');
-                    $('#paid-payments-table_filter').addClass('mb-4 pl-1');
-                }
-            });
-        });
-    </script>
-    @endif
-
-    @if($availableFees->count() === 0 && $completedPayments->count() === 0)
-    <div class="bg-white border border-gray-200 rounded-xl shadow p-10 flex flex-col items-center justify-center mt-8 mb-8">
-        <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h4 class="text-xl font-semibold text-gray-600 mb-2">No Payments Found</h4>
-        <p class="text-gray-500">You currently have no unsettled or paid payments.</p>
-    </div>
-    @endif
-
 </div>
 @endsection
