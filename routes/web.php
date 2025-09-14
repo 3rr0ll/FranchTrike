@@ -18,6 +18,8 @@ use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseController;
 use App\Http\Controllers\Admin\MotorDetailsController;
 use App\Http\Controllers\Admin\MotorChangeApprovalController;
+use App\Http\Controllers\Admin\PaymentController;
+
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
 
@@ -211,12 +213,18 @@ Route::middleware([
             Route::post('motor-change/{motorChange}/input-details', [MotorChangeApprovalController::class, 'storeNewDetails'])->name('motor-change.input-details');
             Route::post('motor-change/{motorChange}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
             Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
-          
+
             // Certificate routes
-            Route::get('/certificates/mtop', function () {return view('admin.certificates.MTOP');})->name('admin.certificates.mtop');
-            Route::get('/certificates/application', function () { return view('admin.certificates.application');})->name('admin.certificates.application');
-            Route::get('/certificates/mayors-permit', function () { return view('admin.certificates.mayors_permit');})->name('admin.certificates.mayors-permit');
-            
+            Route::get('/certificates/mtop', function () {
+                return view('admin.certificates.MTOP');
+            })->name('admin.certificates.mtop');
+            Route::get('/certificates/application', function () {
+                return view('admin.certificates.application');
+            })->name('admin.certificates.application');
+            Route::get('/certificates/mayors-permit', function () {
+                return view('admin.certificates.mayors_permit');
+            })->name('admin.certificates.mayors-permit');
+
             // Certificate generation routes
             Route::get('/certificates/mtop/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateMTOP'])->name('certificates.mtop.generate');
             Route::get('/certificates/mtop/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewMTOP'])->name('certificates.mtop.preview');
@@ -226,6 +234,19 @@ Route::middleware([
             Route::get('/certificates/application/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewApplication'])->name('certificates.application.preview');
             Route::get('/certificates/all/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateAllCertificates'])->name('certificates.all.generate');
 
+            // Payments routes
+            // List all payments
+            Route::get('/payments', [PaymentController::class, 'index'])
+                ->name('payments.index');
+
+            // Mark a payment as paid
+            Route::post('/payments/{payment}/mark-paid', [PaymentController::class, 'markPaid'])
+                ->name('payments.markPaid');
+
+            // Show a specific payment receipt
+            Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])
+                ->name('payments.receipt');
+            Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
         });
 
     Route::middleware([RoleMiddleware::class . ':superadmin'])
