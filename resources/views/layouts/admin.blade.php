@@ -158,7 +158,7 @@
 
 
     {{-- Main content --}}
-    <div class="p-4 sm:ml-64 mt-16">
+    <div class="p-4 sm:ml-64 mt-16 bg-[#e5e5e4]" style="min-height: 100vh;">
         @hasSection('header')
             <div class="mb-4">
                 @yield('header')
