@@ -49,7 +49,7 @@
                 <p class="text-2xl font-semibold text-gray-900">{{ $statusCounts['submitted'] }}</p>
             </div>
         </div>
-    </div>
+    </div>  
     <div class="p-4 bg-white rounded-lg border border-gray-200">
         <div class="flex items-center">
             <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
@@ -94,7 +94,7 @@
 <!-- Applications Table -->
 <div class="p-6 bg-white rounded-lg shadow">
     <div class="overflow-x-auto">
-        <table class="table-auto w-full text-left" id="applications-table">
+        <table class="table-auto w-full text-left row-border" id="applications-table">
             <thead>
                 <tr>
                     <th scope="col" class="px-8 py-4">Application #</th>
@@ -104,13 +104,14 @@
                     <th scope="col" class="px-8 py-4">Status</th>
                     <th scope="col" class="px-8 py-4">Submitted</th>
                     <th scope="col" class="px-8 py-4">Actions</th>
+
                 </tr>
             </thead>
             <tbody>
                 @foreach($applications as $application)
-                <tr class="bg-white border-b hover:bg-gray-50">
+                <tr class="bg-white hover:bg-gray-50">
                     <td class="px-8 py-5 font-medium text-gray-900 whitespace-nowrap">
-                        {{ $application->application_number }}
+                        {{ $application->id }}
                     </td>
                     <td class="px-8 py-5">
                         {{ $application->operator->last_name }}
@@ -136,7 +137,7 @@
                         </span>
                     </td>
                     <td class="px-8 py-5">
-                        {{ $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i:s') : 'N/A' }}
+                        {{ $application->submitted_at ? $application->submitted_at->format('F d, Y') : 'N/A' }}
                     </td>
                     <td class="px-8 py-5">
                         <div class="flex items-center space-x-3">
@@ -144,6 +145,7 @@
                         </div>
                     </td>
                 </tr>
+               
                 @endforeach
             </tbody>
         </table>
@@ -151,8 +153,6 @@
 </div>
 
 @push('scripts')
-<!-- Include Flowbite Datepicker -->
-<script src="https://cdn.jsdelivr.net/npm/flowbite@1.8.1/dist/datepicker.js"></script>
 <script>
     $(document).ready(function() {
         // Initialize DataTable

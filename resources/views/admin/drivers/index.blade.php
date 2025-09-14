@@ -72,7 +72,7 @@ Drivers List
     </div>
 
     <div class="bg-white rounded-lg shadow p-4 overflow-auto">
-        <table id="drivers-table" class="table-auto w-full text-left">
+        <table id="drivers-table" class="table-auto row-border w-full text-left">
             <thead>
                 <tr>
                     <th>Name</th>

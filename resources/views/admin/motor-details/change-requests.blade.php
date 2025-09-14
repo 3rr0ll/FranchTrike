@@ -84,7 +84,7 @@ Motor Change Requests
 
     <div class="bg-white shadow-sm rounded-lg">
     <div class="overflow-x-auto">
-        <table id="motorChangeTable" class="table-auto w-full text-left">
+        <table id="motorChangeTable" class="table-auto row-border w-full text-left">
             <thead>
                 <tr>
                     <th>Franchise No</th>
