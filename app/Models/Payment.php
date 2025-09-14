@@ -20,13 +20,14 @@ class Payment extends Model
         'paid_at' => 'datetime'
     ];
 
-    public function fee()
-    {
-        return $this->belongsTo(Fee::class);
-    }
-
+   
     public function franchiseApplication()
     {
-        return $this->belongsTo(FranchiseApplication::class);
+        return $this->belongsTo(FranchiseApplication::class, 'franchise_application_id');
+    }
+
+    public function fee()
+    {
+        return $this->belongsTo(Fee::class, 'fee_id');
     }
 }
