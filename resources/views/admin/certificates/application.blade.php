@@ -221,12 +221,12 @@
                     This is to certify that the tricycle unit described above was inspected to have the following condition:
                 </p>
 
-                <table style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+                <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="border: 1px solid #000; padding: 5px; text-align: center; background-color: #f0f0f0; font-weight: bold;"></th>
-                            <th style="border: 1px solid #000; padding: 5px; text-align: center; background-color: #f0f0f0; font-weight: bold;">Functional</th>
-                            <th style="border: 1px solid #000; padding: 5px; text-align: center; background-color: #f0f0f0; font-weight: bold;">Not Functional</th>
+                            <th style="padding: 5px; text-align: center; background-color: #f0f0f0; font-weight: bold;"></th>
+                            <th style="padding: 5px; text-align: center; background-color: #f0f0f0; font-weight: bold;">Functional</th>
+                            <th style="padding: 5px; text-align: center; background-color: #f0f0f0; font-weight: bold;">Not Functional</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -250,19 +250,19 @@
                         @endphp
                         @foreach($checklistItems as $item)
                             <tr>
-                                <td style="border: 1px solid #000; padding: 5px; text-align: left; padding-left: 10px;">{{ $item }}</td>
+                                <td style="padding: 5px; text-align: left; padding-left: 10px;">{{ $item }}</td>
                                 @if($item == 'Muffler')
-                                    <td style="border: 1px solid #000; padding: 5px; text-align: center;">
+                                    <td style="padding: 5px; text-align: center;">
                                         <input type="checkbox" {{ ($inspectionChecklist['Muffler'] ?? '') == 'with_silencer' ? 'checked' : '' }} disabled> With silencer
                                     </td>
-                                    <td style="border: 1px solid #000; padding: 5px; text-align: center;">
+                                    <td style="padding: 5px; text-align: center;">
                                         <input type="checkbox" {{ ($inspectionChecklist['Muffler'] ?? '') == 'without_silencer' ? 'checked' : '' }} disabled> Without silencer
                                     </td>
                                 @else
-                                    <td style="border: 1px solid #000; padding: 5px; text-align: center;">
+                                    <td style="padding: 5px; text-align: center;">
                                         <input type="checkbox" {{ ($inspectionChecklist[$item] ?? '') == 'functional' ? 'checked' : '' }} disabled>
                                     </td>
-                                    <td style="border: 1px solid #000; padding: 5px; text-align: center;">
+                                    <td style="padding: 5px; text-align: center;">
                                         <input type="checkbox" {{ ($inspectionChecklist[$item] ?? '') == 'not_functional' ? 'checked' : '' }} disabled>
                                     </td>
                                 @endif
