@@ -75,7 +75,8 @@
                             data-unit-make="{{ $app->motorDetail && $app->motorDetail->unitMake ? $app->motorDetail->unitMake->name : '-' }}"
                             data-motor-no="{{ $app->motorDetail ? $app->motorDetail->motorno : '-' }}"
                             data-chasis-no="{{ $app->motorDetail ? $app->motorDetail->chasisno : '-' }}"
-                            data-plate-no="{{ $app->motorDetail ? $app->motorDetail->platenumber : '-' }}">
+                            data-plate-no="{{ $app->motorDetail ? $app->motorDetail->platenumber : '-' }}"
+                            data-id="{{ $app->id }}">
                             View Details
                         </x-button>
                     </div>
@@ -154,7 +155,8 @@
                                     data-unit-make="{{ $app->motorDetail->unitMake->name ?? 'N/A' }}"
                                     data-motor-no="{{ $app->motorDetail->motorno ?? '' }}"
                                     data-chasis-no="{{ $app->motorDetail->chasisno ?? '' }}"
-                                    data-plate-no="{{ $app->motorDetail->platenumber ?? '' }}">
+                                    data-plate-no="{{ $app->motorDetail->platenumber ?? '' }}"
+                                    data-id="{{ $app->id }}">
                                     View Franchise Details
                                 </x-button>
                             </td>
@@ -204,23 +206,23 @@
                     </div>
                     <ul class="space-y-4">
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Status:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Status:</span>
                             <span id="franchise-status" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Application Type:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Application Type:</span>
                             <span id="franchise-application-type" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Franchise No:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Franchise No:</span>
                             <span id="franchise-no" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Submitted:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Submitted:</span>
                             <span id="franchise-submitted" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Expiry Date:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Expiry Date:</span>
                             <span id="franchise-expiry" class="text-sm sm:text-base font-medium"></span>
                         </li>
                     </ul>
@@ -238,15 +240,15 @@
                     </div>
                     <ul class="space-y-4">
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Operator:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Operator:</span>
                             <span id="franchise-operator" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Driver:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Driver:</span>
                             <span id="franchise-driver" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Route:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Route:</span>
                             <span id="franchise-route" class="text-sm sm:text-base font-medium"></span>
                         </li>
                     </ul>
@@ -266,159 +268,205 @@
                     </div>
                     <ul class="space-y-4">
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Unit Type:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Unit Type:</span>
                             <span id="franchise-unit-type" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Unit Make:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Unit Make:</span>
                             <span id="franchise-unit-make" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Motor No:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Motor No:</span>
                             <span id="franchise-motor-no" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Chasis No:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Chasis No:</span>
                             <span id="franchise-chasis-no" class="text-sm sm:text-base font-medium"></span>
                         </li>
                         <li class="flex flex-col sm:flex-row sm:items-center gap-2">
-                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Plate No:</span> 
+                            <span class="font-semibold text-sm sm:text-base text-gray-600 min-w-[120px]">Plate No:</span>
                             <span id="franchise-plate-no" class="text-sm sm:text-base font-medium"></span>
                         </li>
                     </ul>
                 </div>
             </div>
+            <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4" id="franchise-modal-actions">
+                {{-- The action buttons will be injected here by JS --}}
+            </div>
+            {{-- Hidden form for renewal submission --}}
+            <form id="renewalForm" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
+
     </div>
-</div>
+    <!-- End Franchise Details Modal -->
 
-@endsection
+    {{-- Request Motor Change and Renew Franchise JS functions are now below the modal --}}
+    @endsection
 
-@push('styles')
-<!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-@endpush
-
-@push('scripts')
-<!-- jQuery and DataTables JS -->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    $(document).ready(function() {
-        $('#renewedFranchiseTable').DataTable({
-            "order": [
-                [0, "desc"]
-            ],
-            "pageLength": 10,
-            "columnDefs": [{
-                "orderable": false,
-                "targets": 5
-            }]
+    @push('scripts')
+    <!-- jQuery and DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            $('#renewedFranchiseTable').DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "pageLength": 10,
+                "columnDefs": [{
+                    "orderable": false,
+                    "targets": 5
+                }]
+            });
         });
-    });
 
-    function requestMotorChange(franchiseId) {
+        // Flash messages
+        @if(session('success'))
         Swal.fire({
-            title: 'Request Motor Change?',
-            html: `
-                    <div class="text-left">
-                        <p class="mb-3">Are you sure you want to request a motor change for this franchise?</p>
-                        <div class="bg-blue-50 p-3 rounded mb-3">
-                            <h4 class="font-semibold text-blue-800 mb-2">Physical Evaluation Requirements:</h4>
-                            <ul class="text-sm text-blue-700 space-y-1">
-                                <li>• Valid Driver's License</li>
-                                <li>• Vehicle Registration (OR/CR)</li>
-                                <li>• Insurance Certificate</li>
-                                <li>• LTO Certificate of Registration</li>
-                                <li>• Valid Franchise Permit</li>
-                                <li>• Vehicle Inspection Report</li>
-                                <li>• Tax Clearance</li>
-                                <li>• Barangay Clearance</li>
-                            </ul>
-                        </div>
-                        <p class="text-sm text-gray-600">Please bring all required documents for physical evaluation.</p>
-                    </div>
-                `,
-            icon: 'question',
-            showCancelButton: true,
+            title: 'Success!',
+            text: {
+                !!json_encode(session('success')) !!
+            },
+            icon: 'success',
             confirmButtonColor: '#1D2761',
-            cancelButtonColor: '#E63946',
-            confirmButtonText: 'Yes, Submit Request',
-            cancelButtonText: 'Cancel',
-            width: '500px'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Show loading
-                Swal.fire({
-                    title: 'Submitting Request...',
-                    text: 'Please wait while we process your request.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Submit the request
-                window.location.href = `/operator/franchise/motor-change/${franchiseId}`;
-            }
+            confirmButtonText: 'OK'
         });
-    }
+        @endif
 
-    // Flash messages
-    @if(session('success'))
-    Swal.fire({
-        title: 'Success!',
-        text: {
-            !!json_encode(session('success')) !!
-        },
-        icon: 'success',
-        confirmButtonColor: '#1D2761',
-        confirmButtonText: 'OK'
-    });
-    @endif
-
-    @if(session('error'))
-    Swal.fire({
-        title: 'Error!',
-        text: {
-            !!json_encode(session('error')) !!
-        },
-        icon: 'error',
-        confirmButtonColor: '#E63946',
-        confirmButtonText: 'OK'
-    });
-    @endif
-
+        @if(session('error'))
+        Swal.fire({
+            title: 'Error!',
+            text: {
+                !!json_encode(session('error')) !!
+            },
+            icon: 'error',
+            confirmButtonColor: '#E63946',
+            confirmButtonText: 'OK'
+        });
+        @endif
 
         // Open modal and populate data
         document.addEventListener('click', function(e) {
-        if (e.target.closest('.open-franchise-details-modal')) {
-            const button = e.target.closest('.open-franchise-details-modal');
+            if (e.target.closest('.open-franchise-details-modal')) {
+                const button = e.target.closest('.open-franchise-details-modal');
 
-            document.getElementById('franchise-status').textContent = button.getAttribute('data-status') || '-';
-            document.getElementById('franchise-application-type').textContent = button.getAttribute('data-application-type') || '-';
-            document.getElementById('franchise-no').textContent = button.getAttribute('data-franchise-no') || '-';
-            document.getElementById('franchise-submitted').textContent = button.getAttribute('data-submitted') || '-';
-            document.getElementById('franchise-expiry').textContent = button.getAttribute('data-expiry') || '-';
+                document.getElementById('franchise-status').textContent = button.getAttribute('data-status') || '-';
+                document.getElementById('franchise-application-type').textContent = button.getAttribute('data-application-type') || '-';
+                document.getElementById('franchise-no').textContent = button.getAttribute('data-franchise-no') || '-';
+                document.getElementById('franchise-submitted').textContent = button.getAttribute('data-submitted') || '-';
+                document.getElementById('franchise-expiry').textContent = button.getAttribute('data-expiry') || '-';
 
-            document.getElementById('franchise-operator').textContent = button.getAttribute('data-operator') || '-';
-            document.getElementById('franchise-driver').textContent = button.getAttribute('data-driver') || '-';
-            document.getElementById('franchise-route').textContent = button.getAttribute('data-route') || '-';
+                document.getElementById('franchise-operator').textContent = button.getAttribute('data-operator') || '-';
+                document.getElementById('franchise-driver').textContent = button.getAttribute('data-driver') || '-';
+                document.getElementById('franchise-route').textContent = button.getAttribute('data-route') || '-';
 
-            document.getElementById('franchise-unit-type').textContent = button.getAttribute('data-unit-type') || '-';
-            document.getElementById('franchise-unit-make').textContent = button.getAttribute('data-unit-make') || '-';
-            document.getElementById('franchise-motor-no').textContent = button.getAttribute('data-motor-no') || '-';
-            document.getElementById('franchise-chasis-no').textContent = button.getAttribute('data-chasis-no') || '-';
-            document.getElementById('franchise-plate-no').textContent = button.getAttribute('data-plate-no') || '-';
+                document.getElementById('franchise-unit-type').textContent = button.getAttribute('data-unit-type') || '-';
+                document.getElementById('franchise-unit-make').textContent = button.getAttribute('data-unit-make') || '-';
+                document.getElementById('franchise-motor-no').textContent = button.getAttribute('data-motor-no') || '-';
+                document.getElementById('franchise-chasis-no').textContent = button.getAttribute('data-chasis-no') || '-';
+                document.getElementById('franchise-plate-no').textContent = button.getAttribute('data-plate-no') || '-';
 
-            document.getElementById('franchiseDetailsModal').classList.remove('hidden');
+                // Get status and id for action buttons
+                const status = (button.getAttribute('data-status') || '').toLowerCase();
+                const franchiseId = button.getAttribute('data-id');
+                const hasMotorDetail = button.getAttribute('data-unit-type') || button.getAttribute('data-unit-make') || button.getAttribute('data-motor-no') || button.getAttribute('data-chasis-no') || button.getAttribute('data-plate-no');
+
+                // Build action buttons
+                let actionsHtml = '';
+                if (status === 'approved' && hasMotorDetail && franchiseId) {
+                    actionsHtml += `<button type="button" class="inline-block bg-primary-navy text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-primary-gold hover:text-primary-navy transition" onclick="requestMotorChange('${franchiseId}')">Request Motor Change</button>`;
+                }
+                if (status === 'expired' && franchiseId) {
+                    actionsHtml += `<button type="button" class="inline-block bg-green-600 text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors" onclick="confirmRenewal('${franchiseId}')">Renew Franchise</button>`;
+                }
+                document.getElementById('franchise-modal-actions').innerHTML = actionsHtml;
+
+                // Set renewal form action
+                if (franchiseId) {
+                    document.getElementById('renewalForm').setAttribute('action', `/operator/franchise/${franchiseId}/renew`);
+                }
+
+                document.getElementById('franchiseDetailsModal').classList.remove('hidden');
+            }
+        });
+
+        function closeFranchiseDetailsModal() {
+            document.getElementById('franchiseDetailsModal').classList.add('hidden');
         }
-    });
 
-    function closeFranchiseDetailsModal() {
-        document.getElementById('franchiseDetailsModal').classList.add('hidden');
-    }
-</script>
-@endpush
+        // Request Motor Change function
+        function requestMotorChange(franchiseId) {
+            Swal.fire({
+                title: 'Request Motor Change?',
+                html: `
+                <div class="text-left">
+                    <p class="mb-3">Are you sure you want to request a motor change for this franchise?</p>
+                    <div class="bg-blue-50 p-3 rounded mb-3">
+                        <h4 class="font-semibold text-blue-800 mb-2">Physical Evaluation Requirements:</h4>
+                        <ul class="text-sm text-blue-700 space-y-1">
+                            <li>• Valid Driver's License</li>
+                            <li>• Vehicle Registration (OR/CR)</li>
+                            <li>• Insurance Certificate</li>
+                            <li>• LTO Certificate of Registration</li>
+                            <li>• Valid Franchise Permit</li>
+                            <li>• Vehicle Inspection Report</li>
+                            <li>• Tax Clearance</li>
+                            <li>• Barangay Clearance</li>
+                        </ul>
+                    </div>
+                    <p class="text-sm text-gray-600">Please bring all required documents for physical evaluation.</p>
+                </div>
+            `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1D2761',
+                cancelButtonColor: '#E63946',
+                confirmButtonText: 'Yes, Submit Request',
+                cancelButtonText: 'Cancel',
+                width: '500px'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Submitting Request...',
+                        text: 'Please wait while we process your request.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    let url = "{{ route('operator.franchise.motor-change.create', ':id') }}";
+                    url = url.replace(':id', franchiseId);
+
+                    window.location.href = url;
+                }
+            });
+        }
+
+        // Renew Franchise function
+        function confirmRenewal(franchiseId) {
+            Swal.fire({
+                title: 'Renew Franchise?',
+                text: 'Are you sure you want to renew this franchise?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1D2761',
+                cancelButtonColor: '#E63946',
+                confirmButtonText: 'Yes, Renew',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Set the form action just in case
+                    document.getElementById('renewalForm').setAttribute('action', `/operator/franchise/${franchiseId}/renew`);
+                    document.getElementById('renewalForm').submit();
+                }
+            });
+        }
+    </script>
+    @endpush
