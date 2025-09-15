@@ -2,7 +2,7 @@
 
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
-Motor Details Management
+    Motor Details Management
 </h2>
 @endsection
 
@@ -65,8 +65,33 @@ Motor Details Management
     </div>
 </div>
 
+<!-- Filters + Export (Right aligned) -->
+<div class="flex flex-col sm:flex-row sm:justify-end gap-4 mb-4 mr-4">
+    <div class="flex flex-wrap gap-2 items-center">
+        <!-- Unit Type Filter -->
+        <select id="filter-unit-type"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
+            <option value="">All Unit Types</option>
+            <option value="motocab">Motocab</option>
+            <option value="tricycle">Tricycle</option>
+        </select>
+
+        <!-- Unit Make Filter -->   
+        <select id="filter-unit-make"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
+            <option value="">All Unit Makes</option>
+            @foreach($unitMakes as $make)
+            <option value="{{ strtolower($make->name) }}">{{ $make->name }}</option>
+            @endforeach
+        </select>
+
+        <!-- Export Buttons -->
+        <div id="export-buttons" class="flex flex-wrap gap-2 items-center"></div>
+    </div>
+</div>
+
 <!-- Motor Details Table -->
-<div class="bg-white shadow-sm rounded-lg">
+<div class="bg-white shadow-sm rounded-lg p-4">
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left row-border text-black" id="motor-details-table">
             <thead class="text-xs  bg-gray-50 text-black">
@@ -79,7 +104,6 @@ Motor Details Management
                     <th><strong>Plate number</strong></th>
                     <th><strong>Motor no</strong></th>
                     <th><strong>Chasis no</strong></th>
-                    <th><strong>Status</strong></th>
                     <th><strong>Actions</strong></th>
                 </tr>
             </thead>
@@ -116,19 +140,7 @@ Motor Details Management
                     <td class="px-6 py-4">
                         {{ $motorDetail->chasisno }}
                     </td>
-                    <td class="px-6 py-4">
-                        @php
-                        $status = $motorDetail->franchiseApplication->status ?? 'unknown';
-                        @endphp
-                        <span class="px-2 py-1 text-xs font-medium rounded-full
-                            @if($status == 'approved') bg-green-100 text-green-800
-                            @elseif($status == 'rejected') bg-red-100 text-red-800
-                            @elseif($status == 'under_review') bg-yellow-100 text-yellow-800
-                            @else bg-gray-100 text-black
-                            @endif">
-                            {{ ucfirst(str_replace('_', ' ', $status)) }}
-                        </span>
-                    </td>
+                  
                     <td class="px-6 py-4">
                         <div class="flex space-x-2">
                             <a href="{{ route('admin.motor-details.show', $motorDetail) }}" class="text-primary-navy hover:text-primary-gold">
@@ -170,7 +182,25 @@ Motor Details Management
 
 <script>
     $(document).ready(function() {
-        $('#motor-details-table').DataTable({
+        var table = $('#motor-details-table').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    className: 'bg-blue-500 text-white px-3 py-1 rounded'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'bg-green-500 text-white px-3 py-1 rounded'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    className: 'bg-red-500 text-white px-3 py-1 rounded'
+                },
+            ],
             "order": [],
             "language": {
                 "search": "Search:",
@@ -181,6 +211,37 @@ Motor Details Management
                     "next": "Next"
                 }
             }
+        });
+
+        // Move export buttons to custom div
+        table.buttons().container().appendTo('#export-buttons');
+
+        // Custom filtering
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            if (settings.nTable.id !== 'motor-details-table') return true;
+
+            var unitType = $('#filter-unit-type').val();
+            var status = $('#filter-status').val();
+            var unitMake = $('#filter-unit-make').val();
+
+            // Get the text content of the relevant columns, stripping HTML
+            // data[3] = Unit type (may have span), data[4] = Unit make, data[8] = Status (may have span)
+            var unitTypeCol = $('<div>').html(data[3]).text().trim().toLowerCase();
+            var unitMakeCol = $('<div>').html(data[4]).text().trim().toLowerCase();
+            var statusCol = $('<div>').html(data[8]).text().trim().toLowerCase();
+
+            // Filter by unit type (exact match)
+            if (unitType && unitTypeCol !== unitType) return false;
+
+            // Filter by unit make (exact match)
+            if (unitMake && unitMakeCol !== unitMake) return false;
+
+            return true;
+        });
+
+        // Trigger filter redraw on change
+        $('#filter-unit-type, #filter-unit-make').on('change', function() {
+            table.draw();
         });
     });
 
