@@ -62,15 +62,24 @@
         
         <!-- Permit Body -->
         <div style="position: relative; z-index: 1; font-size: 16px; margin-top: 10px;">
-            <div style="margin-bottom: 10px;">
+            <div style="margin-bottom: 10px; text-align: center;">
                 PERMIT IS HEREBY GRANTED TO
-                <span style="display: inline-block; min-width: 200px; border-bottom: 1px solid #000;">{{ $operator->first_name ?? '' }} {{ $operator->last_name ?? 'N/A' }}</span>
+                <span style="display: inline-block; min-width: 200px; border-bottom: 1px solid #000; text-align: center;">
+                    {{ $operator->first_name ?? '' }} {{ $operator->last_name ?? 'N/A' }}
+                </span>
                 of Barangay
-                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000;">{{ $operator->barangay ?? 'N/A' }}</span>
+                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center;">
+                    {{ $operator->barangay ?? 'N/A' }}
+                </span>
                 <br>
-                to operate a <span style="display: inline-block; min-width: 60px; border-bottom: 1px solid #000;">{{ ucfirst($motorDetail->unit_type) }}</span>
+                to operate a 
+                <span style="display: inline-block; min-width: 60px; border-bottom: 1px solid #000; text-align: center;">
+                    {{ ucfirst($motorDetail->unit_type) }}
+                </span>
                 service for hire on the route:
-                <span style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000;">{{ $route->name ?? 'N/A' }}</span>
+                <span style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center;">
+                    {{ $route->name ?? 'N/A' }}
+                </span>
                 of Padre Garcia, Batangas using one tricycle described as follows:
             </div>
 

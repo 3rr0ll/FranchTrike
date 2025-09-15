@@ -17,8 +17,8 @@
         $orNo = $franchiseApplication->or_no ?? '';
         $grantedAmount = $granted->amount ?? '';
         $ctcNo = $franchiseApplication->ctc_no ?? '';
-        $ctcIssuedOn = $franchiseApplication->ctc_issued_on ? date('F d, Y', strtotime($franchiseApplication->ctc_issued_on)) : '';
-        $ctcIssuedAt = $franchiseApplication->ctc_issued_at ?? '';
+        $ctcIssuedOn = $franchiseApplication->ctc_date_issued ? date('F d, Y', strtotime($franchiseApplication->ctc_date_issued)) : '';
+        $ctcIssuedAt = $franchiseApplication->ctc_place_issued ?? '';
        
     @endphp
 
@@ -42,27 +42,25 @@
 
         <!-- Body Content -->
         <div style="margin-top: 40px; font-size: 14px; line-height: 1.6;">
-            <p style="margin-bottom: 20px;">
+            <p style="margin-bottom: 20px; text-align: center;">
                 To Whom It May Concern: <br><br>
                 Permit is hereby <strong>GRANTED</strong> to 
-                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 200px;">
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 200px; text-align: center;">
                     {{ $ownerName }}
                 </span> 
                 of Barangay 
-                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 150px;">
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 150px; text-align: center;">
                     {{ $ownerBarangay }}
                 </span> 
                 to operate a 
-                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 100px;">
+                <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 100px; text-align: center;">
                     {{ $unitType }}
                 </span> 
                 within Padre Garcia, Batangas provided that the provisions of existing ordinances of the Local Tax Code are complied with.
             </p>
 
-            <p>
-                Granted this 
-               
-                at Padre Garcia, Batangas.
+            <p style="text-align: center;">
+                Granted this at Padre Garcia, Batangas.
             </p>
         </div>
     
