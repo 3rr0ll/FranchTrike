@@ -1,259 +1,159 @@
 @extends('layouts.superadmin')
 
+
+
 @section('content')
-<div class="flex justify-between items-center mb-6">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Payment Records
-    </h2>
+<div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
 
-</div>
+    <!-- Date Filter & Export Buttons -->
+    <div class="bg-white shadow rounded-lg mb-6 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
+        <div class="flex items-center space-x-4">
+            <label for="min-date" class="text-sm font-medium text-gray-700">From:</label>
+            <input type="date" id="min-date" class="border rounded-md p-2 text-sm">
 
-
-
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-
-    <div class="flex justify-between items-center mb-4">
-        <a href="{{ route('superadmin.payments.index') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy/90 focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 transition ease-in-out duration-150">
-            Back to Payments List
-        </a>
-        <button onclick="openCreateModal()" class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy/90 focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 transition ease-in-out duration-150">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Add Payment Record
-        </button>
+            <label for="max-date" class="text-sm font-medium text-gray-700">To:</label>
+            <input type="date" id="max-date" class="border rounded-md p-2 text-sm">
+        </div>
+        <div id="export-buttons" class="flex flex-wrap gap-2 items-center">
+            <!-- Export buttons will be injected here by DataTables -->
+        </div>
     </div>
-    <!-- Payment Records Table -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
+
+    <!-- Payments -->
+    <div class="bg-white overflow-hidden shadow rounded-lg mb-8">
         <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Payment Records</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Payments</h3>
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+                <table id="grouped-payments-table" class="w-full divide-y divide-gray-200 display nowrap" style="width:100%">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operator</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th>Application #</th>
+                            <th>Operator</th>
+                            <th>Fees</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($payments as $payment)
+                    <tbody>
+                        @forelse($groupedPayments as $group)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $payment->franchiseApplication->application_number ?? 'N/A' }}
+                            <td>{{ $group['application_number'] }}</td>
+                            <td>{{ $group['operator_name'] }}</td>
+                            <td>
+                                <ul class="list-disc ml-4">
+                                    @foreach($group['fees'] as $fee)
+                                    <li>{{ $fee['description'] }} – ₱{{ number_format($fee['amount_paid'], 2) }}</li>
+                                    @endforeach
+                                </ul>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                {{ $payment->franchiseApplication->operator->full_name ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $payment->fee->description ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₱{{ number_format($payment->amount_paid, 2) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $payment->paid_at ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ $payment->paid_at ? 'Paid' : 'Pending' }}
+                            <td>₱{{ number_format($group['total_amount'], 2) }}</td>
+                            <td>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $group['paid_at'] ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                    {{ $group['paid_at'] ? 'Paid' : 'Pending' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $payment->created_at->format('M d, Y') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div class="flex space-x-2">
-                                    <button type="button" onclick="openEditModal({{ $payment->id }})" class="text-primary-navy hover:text-primary-navy/80">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                        </svg>
-                                    </button>
-                                    <form action="{{ route('superadmin.payments.destroy-payment', $payment) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this payment record?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-accent-red hover:text-accent-red/80">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                            </svg>
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+                            <td>{{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('M d, Y H:i') : 'Pending' }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-4 text-center text-gray-500">No payment records found</td>
+                            <td colspan="6" class="text-center text-gray-500">No grouped payments found</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            @if($payments->hasPages())
-            <div class="mt-4">
-                {{ $payments->links() }}
-            </div>
-            @endif
-        </div>
-    </div>
-</div>
-
-<!-- Create Payment Modal -->
-<div id="createModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Add Payment Record</h3>
-            <form action="{{ route('superadmin.payments.create-payment') }}" method="POST">
-                @csrf
-                <div class="space-y-4">
-                    <div>
-                        <label for="franchise_application_id" class="block text-sm font-medium text-gray-700">Application</label>
-                        <select name="franchise_application_id" id="franchise_application_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                            <option value="">Select Application</option>
-                            @foreach($applications as $application)
-                            <option value="{{ $application->id }}">{{ $application->application_number }} - {{ $application->operator->full_name ?? 'N/A' }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="fee_id" class="block text-sm font-medium text-gray-700">Fee</label>
-                        <select name="fee_id" id="fee_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                            <option value="">Select Fee</option>
-                            @foreach($fees as $fee)
-                            <option value="{{ $fee->id }}">{{ $fee->description }} - ₱{{ number_format($fee->amount, 2) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="amount_paid" class="block text-sm font-medium text-gray-700">Amount Paid</label>
-                        <input type="number" name="amount_paid" id="amount_paid" step="0.01" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                    </div>
-
-                    <div>
-                        <label for="paid_at" class="block text-sm font-medium text-gray-700">Payment Date (Optional)</label>
-                        <input type="date" name="paid_at" id="paid_at" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeCreateModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-primary-navy text-white rounded-md text-sm font-medium hover:bg-primary-navy/90">
-                        Create Payment
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Edit Payment Modal -->
-<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Edit Payment Record</h3>
-            <form id="editForm" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="space-y-4">
-                    <div>
-                        <label for="edit_franchise_application_id" class="block text-sm font-medium text-gray-700">Application</label>
-                        <select name="franchise_application_id" id="edit_franchise_application_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                            <option value="">Select Application</option>
-                            @foreach($applications as $application)
-                            <option value="{{ $application->id }}">{{ $application->application_number }} - {{ $application->operator->full_name ?? 'N/A' }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="edit_fee_id" class="block text-sm font-medium text-gray-700">Fee</label>
-                        <select name="fee_id" id="edit_fee_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                            <option value="">Select Fee</option>
-                            @foreach($fees as $fee)
-                            <option value="{{ $fee->id }}">{{ $fee->description }} - ₱{{ number_format($fee->amount, 2) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="edit_amount_paid" class="block text-sm font-medium text-gray-700">Amount Paid</label>
-                        <input type="number" name="amount_paid" id="edit_amount_paid" step="0.01" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                    </div>
-
-                    <div>
-                        <label for="edit_paid_at" class="block text-sm font-medium text-gray-700">Payment Date</label>
-                        <input type="date" name="paid_at" id="edit_paid_at" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" class="px-4 py-2 bg-primary-navy text-white rounded-md text-sm font-medium hover:bg-primary-navy/90">
-                        Update Payment
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
 <script>
-    function openCreateModal() {
-        document.getElementById('createModal').classList.remove('hidden');
-    }
+    $(function() {
+        var table = $('#grouped-payments-table').DataTable({
+            responsive: true,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'csv',
+                    text: '<i class="fas fa-file-csv mr-2"></i> CSV',
+                    className: 'bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1.5 px-3 rounded-md shadow-sm text-xs'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'export-btn bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md shadow-sm text-xs flex items-center gap-2 transition duration-150',
+                    exportOptions: {
+                        columns: ':visible',
+                        format: {
+                            body: function(data, row, column, node) {
+                                var div = document.createElement("div");
+                                div.innerHTML = data;
 
-    function closeCreateModal() {
-        document.getElementById('createModal').classList.add('hidden');
-    }
+                                // Convert <li> items into newlines
+                                var items = div.querySelectorAll("li");
+                                if (items.length > 0) {
+                                    return Array.from(items).map(li => li.innerText).join("\n");
+                                }
 
-    function openEditModal(paymentId) {
-        // Set the form action
-        document.getElementById('editForm').action = '/superadmin/payments/records/' + paymentId;
-        document.getElementById('editModal').classList.remove('hidden');
-    }
+                                return div.innerText;
+                            }
+                        }
+                    }
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fas fa-file-pdf mr-2"></i> PDF',
+                    className: 'bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 px-3 rounded-md shadow-sm text-xs'
+                }
+            ],
+            order: [],
+            initComplete: function() {
+                // Move export buttons to custom container
+                var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
+                $('#export-buttons').empty().append(btns);
+            }
+        });
 
-    function closeEditModal() {
-        document.getElementById('editModal').classList.add('hidden');
-    }
+        // Date range filter
+        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+            var min = $('#min-date').val();
+            var max = $('#max-date').val();
+            var date = data[5]; // column index of "Date"
 
-    // Close modals when clicking outside
-    window.onclick = function(event) {
-        const createModal = document.getElementById('createModal');
-        const editModal = document.getElementById('editModal');
-        if (event.target === createModal) {
-            closeCreateModal();
-        }
-        if (event.target === editModal) {
-            closeEditModal();
-        }
-    }
+            if (!date) return false;
+
+            var parsedDate = new Date(date);
+            if ((min === "" || new Date(min) <= parsedDate) &&
+                (max === "" || parsedDate <= new Date(max))) {
+                return true;
+            }
+            return false;
+        });
+
+        $('#min-date, #max-date').on('change', function() {
+            table.draw();
+        });
+    });
 </script>
 
 @if(session('success'))
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            title: 'Success!',
-            text: "{{ session('success') }}",
-            icon: 'success',
-            confirmButtonColor: '#1D2761'
-        });
+    Swal.fire({
+        title: 'Success!',
+        text: "{{ session('success') }}",
+        icon: 'success',
+        confirmButtonColor: '#1D2761'
     });
 </script>
 @endif
 
 @if(session('error'))
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            title: 'Error!',
-            text: "{{ session('error') }}",
-            icon: 'error',
-            confirmButtonColor: '#E63946'
-        });
+    Swal.fire({
+        title: 'Error!',
+        text: "{{ session('error') }}",
+        icon: 'error',
+        confirmButtonColor: '#E63946'
     });
 </script>
 @endif

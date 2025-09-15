@@ -100,14 +100,60 @@ class PaymentController extends Controller
      */
     public function payments()
     {
-        $payments = Payment::with(['fee', 'franchiseApplication.operator'])
-            ->latest()
-            ->paginate(15);
-        
-        $fees = Fee::where('is_active', true)->get();
-        $applications = FranchiseApplication::with('operator')->get();
-        
-        return view('superadmin.payments.payments', compact('payments', 'fees', 'applications'));
+        $fees = Fee::withCount('payments')->latest()->get();
+
+    // Get all payments with related data
+    $payments = Payment::with(['fee', 'franchiseApplication.operator'])
+        ->orderByDesc('created_at')
+        ->get();
+
+    // Group payments by application + paid_at timestamp (or "pending")
+    $paymentsGrouped = $payments->groupBy(function ($payment) {
+        $paidAtKey = $payment->paid_at ? $payment->paid_at->format('Y-m-d H:i') : 'pending';
+        return $payment->franchise_application_id . '|' . $paidAtKey;
+    });
+
+    $groupedPayments = [];
+    $groupId = 1;
+
+    foreach ($paymentsGrouped as $key => $group) {
+        $first = $group->first();
+
+        $groupedPayments[] = [
+            'group_id' => $groupId++,
+            'first_payment_id' => $first->id,
+            'franchise_application_id' => $first->franchise_application_id,
+            'application_number' => $first->franchise_application_id ?? 'N/A',
+            'operator_name' => $first->franchiseApplication && $first->franchiseApplication->operator
+                ? trim(
+                    $first->franchiseApplication->operator->first_name . ' ' .
+                    ($first->franchiseApplication->operator->middle_initial ? $first->franchiseApplication->operator->middle_initial . '. ' : '') .
+                    $first->franchiseApplication->operator->last_name
+                )
+                : 'N/A',
+            'fees' => $group->map(function ($payment) {
+                return [
+                    'description' => $payment->fee->description ?? 'N/A',
+                    'amount_paid' => $payment->amount_paid,
+                ];
+            })->toArray(),
+            'total_amount' => $group->sum('amount_paid'),
+            'paid_at' => $first->paid_at,
+        ];
+    }
+
+    // Extra stats
+    $totalFees = $fees->sum('amount');
+    $totalPayments = $payments->sum('amount_paid');
+    $pendingPayments = Payment::whereNull('paid_at')->count();
+
+    return view('superadmin.payments.payments', compact(
+        'fees',
+        'groupedPayments',
+        'totalFees',
+        'totalPayments',
+        'pendingPayments'
+    ));
     }
 
     /**
