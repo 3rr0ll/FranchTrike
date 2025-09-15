@@ -17,7 +17,7 @@ class PaymentController extends Controller
 
         $payments = Payment::with(['fee', 'franchiseApplication'])
             ->whereHas('franchiseApplication', function ($q) use ($operator) {
-                $q->where('operator_id', $operator->operator_id); // 👈 link via operator_id
+                $q->where('operator_id', $operator->operator_id); 
             })
             ->orderByDesc('created_at')
             ->get();
@@ -37,7 +37,7 @@ class PaymentController extends Controller
                 'group_id' => $groupId++,
                 'first_payment_id' => $first->id,
                 'franchise_application_id' => $first->franchise_application_id,
-                'application_number' => $first->franchiseApplication->application_number ?? 'N/A',
+                'application_id' => $first->franchise_application_id ?? 'N/A',
                 'fees' => $group->map(function ($payment) {
                     return [
                         'description' => $payment->fee->description ?? 'N/A',
