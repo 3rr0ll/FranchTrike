@@ -39,20 +39,19 @@ class FranchiseApplicationController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('operator_name', 'like', "%{$search}%")
-                  ->orWhere('franchise_no', 'like', "%{$search}%")
-                  ->orWhere('sticker_no', 'like', "%{$search}%")
-                  ->orWhere('application_number', 'like', "%{$search}%");
+                    ->orWhere('franchise_no', 'like', "%{$search}%")
+                    ->orWhere('sticker_no', 'like', "%{$search}%");
             });
         }
 
         $applications = $query->latest()->paginate(15);
 
-        // Get status counts for dashboard
         $statusCounts = [
             'submitted' => FranchiseApplication::where('status', 'submitted')->count(),
             'under_review' => FranchiseApplication::where('status', 'under_review')->count(),
             'approved' => FranchiseApplication::where('status', 'approved')->count(),
             'rejected' => FranchiseApplication::where('status', 'rejected')->count(),
+            'renewed' => FranchiseApplication::where('status', 'renewed')->count(),
         ];
 
         return view('admin.franchise.index', compact('applications', 'statusCounts'));
@@ -61,7 +60,7 @@ class FranchiseApplicationController extends Controller
     public function show(FranchiseApplication $franchiseApplication)
     {
         $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route']);
-        
+
         return view('admin.franchise.show', compact('franchiseApplication'));
     }
 
@@ -122,7 +121,7 @@ class FranchiseApplicationController extends Controller
                     default => 'franchise_under_review',
                 };
                 app(NotificationService::class)->sendToUser($user, $templateKey, [
-                    'application_number' => $franchiseApplication->application_number,
+                    'application_id' => $franchiseApplication->id,
                     'rejection_reason' => $franchiseApplication->rejection_reason ?? 'N/A',
                     'status' => $request->status,
                 ]);
@@ -131,52 +130,12 @@ class FranchiseApplicationController extends Controller
             // ignore
         }
 
-        // Log the status change
-        // $franchiseApplication->logStatusChange(
-        //     $franchiseApplication->getOriginal('status'),
-        //     $request->status,
-        //     $request->status === 'rejected' ? $request->rejection_reason : 'Status updated by admin'
-        // );
+
 
         return redirect()->route('admin.franchise.index')
             ->with('success', 'Application status updated successfully.');
     }
 
-    public function bulkUpdateStatus(Request $request)
-    {
-        $request->validate([
-            'application_ids' => 'required|array',
-            'application_ids.*' => 'exists:franchise_applications,id',
-            'status' => 'required|in:under_review,approved,rejected',
-            'rejection_reason' => 'nullable|string|max:500',
-        ]);
-
-        $applications = FranchiseApplication::whereIn('id', $request->application_ids)->get();
-
-        foreach ($applications as $application) {
-            $updateData = [
-                'status' => $request->status,
-                'reviewed_at' => now(),
-                'reviewed_by' => Auth::id(),
-            ];
-
-            if ($request->status === 'rejected') {
-                $updateData['rejection_reason'] = $request->rejection_reason;
-            }
-
-            $application->update($updateData);
-
-            // Log the status change
-            // $application->logStatusChange(
-            //     $application->getOriginal('status'),
-            //     $request->status,
-            //     $request->status === 'rejected' ? $request->rejection_reason : 'Bulk status update by admin'
-            // );
-        }
-
-        return redirect()->route('admin.franchise.index')
-            ->with('success', count($applications) . ' applications updated successfully.');
-    }
 
     public function statistics()
     {
@@ -207,26 +166,35 @@ class FranchiseApplicationController extends Controller
         $applications = $query->get();
 
         $filename = 'franchise_applications_' . date('Y-m-d_H-i-s') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function() use ($applications) {
+        $callback = function () use ($applications) {
             $file = fopen('php://output', 'w');
-            
+
             // CSV headers
             fputcsv($file, [
-                'ID', 'Application Number', 'Operator Name', 'Driver Name', 'Application Type', 
-                'Status', 'Franchise No', 'Sticker No', 'CTC No',
-                'Submitted At', 'Reviewed At', 'Reviewer', 'Rejection Reason'
+                'ID',
+                'Application Number',
+                'Operator Name',
+                'Driver Name',
+                'Application Type',
+                'Status',
+                'Franchise No',
+                'Sticker No',
+                'CTC No',
+                'Submitted At',
+                'Reviewed At',
+                'Reviewer',
+                'Rejection Reason'
             ]);
 
             foreach ($applications as $application) {
                 fputcsv($file, [
                     $application->id,
-                    $application->application_number,
                     $application->operator_name,
                     $application->driver->name ?? 'N/A',
                     $application->application_type,
@@ -251,7 +219,7 @@ class FranchiseApplicationController extends Controller
     {
         $routes = Route::all();
         $documentTypes = DocumentType::all();
-        
+
         return view('admin.franchise.create', compact('routes', 'documentTypes'));
     }
 
@@ -272,7 +240,7 @@ class FranchiseApplicationController extends Controller
             'operator_contact_no' => 'required|string|max:20',
             'operator_email' => 'required|email|unique:users,email',
             'operator_password' => 'required|string|min:8',
-            
+
             // Driver details
             'driver_last_name' => 'required|string|max:255',
             'driver_first_name' => 'required|string|max:255',
@@ -287,7 +255,7 @@ class FranchiseApplicationController extends Controller
             'driver_contact_no' => 'required|string|max:20',
             'driver_license_no' => 'required|string|max:50',
             'driver_license_validity' => 'required|date|after:today',
-            
+
             // Franchise application details
             'application_type' => 'required|in:new,renewal',
             'route_id' => 'required|exists:routes,id',
@@ -295,16 +263,16 @@ class FranchiseApplicationController extends Controller
             'ctc_date_issued' => 'required|date',
             'ctc_place_issued' => 'required|string|max:255',
             'franchise_fee' => 'nullable|numeric|min:0',
-            
+
             // Previous franchise details (for renewal)
             'previous_franchise_no' => 'nullable|string|max:50',
             'previous_sticker_no' => 'nullable|string|max:50',
             'previous_application_id' => 'nullable|integer',
             'previous_franchise_end_date' => 'nullable|date',
-            
+
             // Document checkboxes
             'operator_documents' => 'required|array',
-            'operator_documents.*' => 'exists:document_types,document_id',  
+            'operator_documents.*' => 'exists:document_types,document_id',
             'driver_documents' => 'required|array',
             'driver_documents.*' => 'exists:document_types,document_id',
         ];
@@ -318,18 +286,9 @@ class FranchiseApplicationController extends Controller
 
         $request->validate($validationRules);
 
-        // Custom validation for previous application ID if provided
-        if ($request->previous_application_id) {
-            $previousApplication = FranchiseApplication::find($request->previous_application_id);
-            if (!$previousApplication) {
-                return redirect()->back()
-                    ->withInput()
-                    ->withErrors(['previous_application_id' => 'The selected previous application ID does not exist.']);
-            }
-        }
 
         DB::beginTransaction();
-        
+
         try {
             // Create user account for operator
             $user = User::create([
@@ -400,7 +359,7 @@ class FranchiseApplicationController extends Controller
 
             $franchiseApplication = FranchiseApplication::create($franchiseApplicationData);
 
-            // Create operator documents (as checkboxes - marked as approved since physically submitted)
+            // Create operator documents (as checkboxes - marked as approved since physiclly submitted)
             foreach ($request->operator_documents as $documentTypeId) {
                 $documentType = DocumentType::find($documentTypeId);
                 $operator->operatorDocuments()->create([
@@ -434,13 +393,12 @@ class FranchiseApplicationController extends Controller
 
             return redirect()->route('admin.franchise.index')
                 ->with('success', 'Franchise application created successfully for walk-in client.');
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Failed to create franchise application: ' . $e->getMessage());
         }
     }
-} 
+}
