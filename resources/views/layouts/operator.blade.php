@@ -160,6 +160,17 @@
                         <span class="ms-3">Payments</span>
                     </a>
                 </li>
+                <li>
+                    @php $isActive = request()->routeIs('operator.motor-change.index'); @endphp
+                    <a href="{{ route('operator.motor-change.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                    {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 8.25V6.75A2.25 2.25 0 0 0 14.25 4.5h-4.5A2.25 2.25 0 0 0 7.5 6.75v1.5m9 0v8.25A2.25 2.25 0 0 1 14.25 18.75h-4.5A2.25 2.25 0 0 1 7.5 16.5V8.25m9 0h-9" />
+                        </svg>
+                        <span class="ms-3">Motor Change Requests</span>
+                    </a>
+                </li>
             </ul>
             {{-- Settings and Sign Out at the bottom --}}
             <ul class="space-y-2 font-medium mt-4">
