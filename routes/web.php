@@ -94,6 +94,8 @@ Route::middleware([
                 Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
             });
 
+            Route::get('/motor-change', [MotorChangeController::class, 'index'])
+                ->name('motor-change.index');
 
             Route::prefix('driver')->name('driver.')->group(function () {
                 Route::get('/', [DriverController::class, 'index'])->name('index');
@@ -121,15 +123,11 @@ Route::middleware([
                         ->name('store');
                 });
 
-
-
                 // Document Status and Management
                 Route::get('/status', [DocumentSubmissionController::class, 'viewDocumentStatus'])
                     ->name('status');
                 Route::delete('/delete', [DocumentSubmissionController::class, 'deleteDocument'])
                     ->name('delete');
-
-
 
                 // Driver Documents
                 Route::prefix('driver')->name('driver.')->group(function () {
