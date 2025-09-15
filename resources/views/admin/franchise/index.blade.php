@@ -106,9 +106,11 @@
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
                 <option value="">All Statuses</option>
                 <option value="submitted">Submitted</option>
-                <option value="under_review">Under Review</option>
+                <option value="Under review">Under Review</option>
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
+                <option value="renewed">Renewed</option>
+
             </select>
 
             <!-- Date Range Picker -->
