@@ -82,7 +82,10 @@ Motor Change Requests
         </select>
     </form>
 
-    <div class="bg-white shadow-sm rounded-lg">
+    <div class="bg-white shadow-sm rounded-lg p-4">
+    <div class="border-b font-semibold text-lg text-primary-navy mb-2">
+        Motor Change Request 
+    </div>
     <div class="overflow-x-auto">
         <table id="motorChangeTable" class="table-auto row-border w-full text-left">
             <thead>
@@ -126,7 +129,7 @@ Motor Change Requests
                             {{ ucfirst($request->status) }}
                         </span>
                     </td>
-                    <td>{{ $request->created_at->format('Y-m-d H:i') }}</td>
+                    <td>{{ $request->created_at->format('M d, Y') }}</td>
                     <td>
                         @if($request->status === 'pending')
                             @if(!$request->new_unit_type)
@@ -157,20 +160,20 @@ Motor Change Requests
 
 {{-- History Table for Approved and Rejected Requests --}}
 @if($historyRequests && $historyRequests->count() > 0)
-<div class="bg-white shadow-sm rounded-lg mt-8">
-    <div class="p-4 border-b font-semibold text-lg text-primary-navy">
+<div class="bg-white shadow-sm rounded-lg mt-8 p-4">
+    <div class="p-4 border-b font-semibold text-lg text-primary-navy mb-2">
         Motor Change Request History (Approved &amp; Rejected)
     </div>
     <div class="overflow-x-auto">
         <table id="motorChangeHistoryTable" class="w-full text-sm text-left text-black">
             <thead class="text-xs bg-gray-50 text-black">
                 <tr>
-                    <th class="px-6 py-3">Franchise No</th>
-                    <th class="px-6 py-3">Current Motor Details</th>
-                    <th class="px-6 py-3">New Motor Details</th>
-                    <th class="px-6 py-3">Status</th>
-                    <th class="px-6 py-3">Submitted At</th>
-                    <th class="px-6 py-3">Processed At</th>
+                    <th>Franchise No</th>
+                    <th>Current Motor Details</th>
+                    <th>New Motor Details</th>
+                    <th>Status</th>
+                    <th>Submitted At</th>
+                    <th>Processed At</th>
                 </tr>
             </thead>
             <tbody>
@@ -211,13 +214,13 @@ Motor Change Requests
                             </span>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">
-                            {{ $request->created_at->format('M d, Y H:i') }}
+                            {{ $request->created_at->format('M d, Y') }}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600">
                             @if($request->status == 'approved' && $request->updated_at)
-                                {{ $request->updated_at->format('M d, Y H:i') }}
+                                {{ $request->updated_at->format('M d, Y') }}
                             @elseif($request->status == 'rejected' && $request->updated_at)
-                                {{ $request->updated_at->format('M d, Y H:i') }}
+                                {{ $request->updated_at->format('M d, Y') }}
                             @else
                                 <span class="text-gray-400">-</span>
                             @endif

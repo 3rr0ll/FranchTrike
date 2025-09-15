@@ -40,4 +40,6 @@ class MotorChangeRequest extends Model
     {
         return $this->belongsTo(UnitMake::class, 'new_unit_make_id');
     }
+
+    
 }

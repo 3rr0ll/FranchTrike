@@ -12,6 +12,37 @@ use Illuminate\Support\Facades\Auth;
 
 class MotorChangeController extends Controller
 {
+    /**
+     * Show the motor change requests for a specific franchise application under the operator.
+     */
+    public function index(Request $request)
+    {
+        $operator = Auth::user()->operator;
+
+        $franchiseId = $request->input('franchise_application_id');
+
+        // All franchise applications owned by operator
+        $franchiseApplications = FranchiseApplication::where('operator_id', $operator->id)->get();
+
+        // Fetch requests only tied to this operator’s franchises
+        $query = MotorChangeRequest::with(['franchiseApplication', 'oldUnitMake'])
+            ->whereHas('franchiseApplication', function ($q) use ($operator) {
+                $q->where('operator_id', $operator->operator_id); // 👈 match operator_id from schema
+            });
+
+        if ($franchiseId) {
+            $query->where('franchise_application_id', $franchiseId);
+        }
+
+        $requests = $query->latest()->get();
+
+        return view('operator.motor-change.index', [
+            'requests' => $requests,
+            'franchiseApplications' => $franchiseApplications,
+            'selectedFranchiseId' => $franchiseId,
+        ]);
+    }
+
     public function create($franchiseId)
     {
         $application = FranchiseApplication::findOrFail($franchiseId);
@@ -52,5 +83,4 @@ class MotorChangeController extends Controller
         return redirect()->route('operator.franchise.index')
             ->with('success', 'Motor change request submitted successfully! Please prepare for physical evaluation.');
     }
-
 }
