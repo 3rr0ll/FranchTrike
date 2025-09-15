@@ -7,10 +7,10 @@ Franchise Application Details
 @endsection
 
 @section('content')
-<div class="p-4 bg-white block sm:flex items-center justify-between border-b border-gray-200 lg:mt-1.5">
-    <div class="w-full mb-1">
 
-        <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100">
+
+<div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
+<div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 mb-4">
             <div class="flex items-center mb-4 sm:mb-0">
                 <a href="{{ route('admin.franchise.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,17 +20,13 @@ Franchise Application Details
                 </a>
             </div>
         </div>
-    </div>
-</div>
-
-<div class="max-w-4xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <!-- Application Status -->
             <div class="mb-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-lg font-medium text-gray-900">Application #{{ $franchiseApplication->application_number }}</h2>
+                        <h2 class="text-lg font-medium text-gray-900">Application # {{ $franchiseApplication->id }}</h2>
                         <p class="text-sm text-gray-500">Submitted on {{ $franchiseApplication->created_at->format('M d, Y \a\t g:i A') }}</p>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -339,10 +335,7 @@ Franchise Application Details
                             <label for="franchise_end_date" class="block text-sm font-medium text-gray-700">Franchise End Date</label>
                             <input type="date" name="franchise_end_date" id="franchise_end_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                         </div>
-                        <div>
-                            <label for="franchise_fee" class="block text-sm font-medium text-gray-700">Franchise Fee</label>
-                            <input type="number" name="franchise_fee" id="franchise_fee" step="0.01" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
-                        </div>
+
                     </div>
 
                     <div class="flex items-center justify-end space-x-3 pt-4">
