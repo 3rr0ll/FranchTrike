@@ -183,7 +183,7 @@
 <script>
     $(document).ready(function() {
         var table = $('#motor-details-table').DataTable({
-            dom: 'Bfrtip',
+            dom: 'Bflrtip',
             buttons: [
                 {
                     extend: 'csvHtml5',
