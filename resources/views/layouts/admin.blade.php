@@ -11,6 +11,13 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
 
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -38,7 +45,7 @@
                             <button type="button" class="flex text-sm aria-expanded=" false" data-dropdown-toggle="dropdown-user">
                                 <span class="sr-only">Open user menu</span>
                                 <img src="{{ asset('images/logo.png') }}" alt="User" class="w-10 h-10 rounded-full">
-                                 </button>
+                            </button>
                         </div>
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm" id="dropdown-user">
                             <div class="px-4 py-3" role="none">
@@ -147,7 +154,7 @@
                     {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
                         <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M4 3a2 2 0 00-2 2v7a2 2 0 002 2h6l4 3v-3h2a2 2 0 002-2V5a2 2 0 00-2-2H4z"/>
+                            <path d="M4 3a2 2 0 00-2 2v7a2 2 0 002 2h6l4 3v-3h2a2 2 0 002-2V5a2 2 0 00-2-2H4z" />
                         </svg>
                         <span class="ms-3">Motor Change Requests</span>
                     </a>
@@ -172,9 +179,9 @@
     {{-- Main content --}}
     <div class="p-4 sm:ml-64 mt-16 bg-[#e5e5e4]" style="min-height: 100vh;">
         @hasSection('header')
-            <div class="mb-4">
-                @yield('header')
-            </div>
+        <div class="mb-4">
+            @yield('header')
+        </div>
         @endif
         @yield('content')
     </div>
