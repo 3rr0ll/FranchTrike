@@ -139,58 +139,6 @@
         </div>
     </div>
 
-    <!-- Recent Payments -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-        <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Payments</h3>
-            <div class="overflow-x-auto">
-                <table id="payments-table" class="min-w-full divide-y divide-gray-200 display nowrap" style="width:100%">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($payments as $payment)
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                {{ $payment->franchiseApplication->application_number ?? 'N/A' }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $payment->fee->description ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                @if(isset($payment->amount_paid))
-                                ₱{{ number_format($payment->amount_paid, 2) }}
-                                @else
-                                N/A
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $payment->paid_at ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                    {{ $payment->paid_at ? 'Paid' : 'Pending' }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                @if(isset($payment->created_at))
-                                {{ $payment->created_at->format('M d, Y') }}
-                                @else
-                                N/A
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">No payments found</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -208,59 +156,10 @@
                 }
             }
         });
-        $('#payments-table').DataTable({
-            responsive: true,
-            "order": [],
-            "language": {
-                "search": "Search:",
-                "lengthMenu": "Show _MENU_ entries",
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                "paginate": {
-                    "previous": "Prev",
-                    "next": "Next"
-                }
-            }
-        });
     });
 
 
 
-    $('#fees-table').DataTable({
-        responsive: true,
-        order: [],
-        language: {
-            search: "Search:",
-            lengthMenu: "Show _MENU_ entries",
-            info: "Showing _START_ to _END_ of _TOTAL_ entries",
-            paginate: {
-                previous: "Prev",
-                next: "Next"
-            }
-        },
-        columnDefs: [{
-                targets: "_all",
-                defaultContent: ""
-            } // ensures each cell is filled
-        ]
-    });
-
-    $('#payments-table').DataTable({
-        responsive: true,
-        order: [],
-        language: {
-            search: "Search:",
-            lengthMenu: "Show _MENU_ entries",
-            info: "Showing _START_ to _END_ of _TOTAL_ entries",
-            paginate: {
-                previous: "Prev",
-                next: "Next"
-            }
-        },
-        columnDefs: [{
-            targets: "_all",
-            defaultContent: ""
-        }]
-    });
 </script>
 
 @if(session('success'))
