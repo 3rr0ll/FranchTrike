@@ -8,10 +8,11 @@
 
 @section('content')
 <div class="w-full mt-4">
+    <a href="{{ route('admin.motor-change.index') }}" class="inline-block mb-4 bg-primary-navy hover:bg-primary-navy/90 text-white px-4 py-2 rounded">
+         Back to Motor Change Requests
+    </a>
     <div class="bg-white shadow-sm rounded-lg p-6">
-        <a href="{{ route('admin.motor-change.index') }}" class="inline-block mb-4 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">
-            &larr; Back to Motor Change Requests
-        </a>
+
 
         <div class="mb-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Franchise Information</h3>
@@ -22,7 +23,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Application Number</label>
-                    <p class="mt-1 text-sm text-gray-900">{{ $motorChange->franchiseApplication->application_number ?? 'N/A' }}</p>
+                    <p class="mt-1 text-sm text-gray-900">{{ $motorChange->franchiseApplication->id ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -68,7 +69,7 @@
                             <option value="motocab" {{ old('new_unit_type') == 'motocab' ? 'selected' : '' }}>Motocab</option>
                         </select>
                         @error('new_unit_type')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -77,11 +78,11 @@
                         <select name="new_unit_make_id" id="new_unit_make_id" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                             <option value="">-- Select Unit Make --</option>
                             @foreach($unitMakes as $make)
-                                <option value="{{ $make->id }}" {{ old('new_unit_make_id') == $make->id ? 'selected' : '' }}>{{ $make->name }}</option>
+                            <option value="{{ $make->id }}" {{ old('new_unit_make_id') == $make->id ? 'selected' : '' }}>{{ $make->name }}</option>
                             @endforeach
                         </select>
                         @error('new_unit_make_id')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -89,7 +90,7 @@
                         <label for="new_motorno" class="block text-sm font-medium text-gray-700">Motor Number *</label>
                         <input type="text" name="new_motorno" id="new_motorno" value="{{ old('new_motorno') }}" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                         @error('new_motorno')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -97,7 +98,7 @@
                         <label for="new_chasisno" class="block text-sm font-medium text-gray-700">Chassis Number *</label>
                         <input type="text" name="new_chasisno" id="new_chasisno" value="{{ old('new_chasisno') }}" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                         @error('new_chasisno')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -105,7 +106,7 @@
                         <label for="new_platenumber" class="block text-sm font-medium text-gray-700">Plate Number *</label>
                         <input type="text" name="new_platenumber" id="new_platenumber" value="{{ old('new_platenumber') }}" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
                         @error('new_platenumber')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
@@ -145,21 +146,25 @@
 
     // Flash messages
     @if(session('success'))
-        Swal.fire({
-            title: 'Success!',
-            text: {!! json_encode(session('success')) !!},
-            icon: 'success',
-            confirmButtonColor: '#1D2761'
-        });
+    Swal.fire({
+        title: 'Success!',
+        text: {
+            !!json_encode(session('success')) !!
+        },
+        icon: 'success',
+        confirmButtonColor: '#1D2761'
+    });
     @endif
 
     @if(session('error'))
-        Swal.fire({
-            title: 'Error!',
-            text: {!! json_encode(session('error')) !!},
-            icon: 'error',
-            confirmButtonColor: '#E63946'
-        });
+    Swal.fire({
+        title: 'Error!',
+        text: {
+            !!json_encode(session('error')) !!
+        },
+        icon: 'error',
+        confirmButtonColor: '#E63946'
+    });
     @endif
 </script>
 @endsection
