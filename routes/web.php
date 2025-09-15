@@ -121,6 +121,12 @@ Route::middleware([
                         ->name('create');
                     Route::post('/store', [DocumentSubmissionController::class, 'storeOperatorDocuments'])
                         ->name('store');
+                    
+                    // Resubmit Operator Document
+                    Route::get('/resubmit/{document}', [DocumentSubmissionController::class, 'resubmitOperatorDocument'])
+                        ->name('resubmit');
+                    Route::post('/resubmit/{document}', [DocumentSubmissionController::class, 'processResubmitOperatorDocument'])
+                        ->name('process-resubmit');
                 });
 
                 // Document Status and Management
@@ -133,9 +139,14 @@ Route::middleware([
                 Route::prefix('driver')->name('driver.')->group(function () {
                     Route::get('/create/{driver?}', [DocumentSubmissionController::class, 'createDriverDocuments'])
                         ->name('create');
-
                     Route::post('/store', [DocumentSubmissionController::class, 'storeDriverDocuments'])
                         ->name('store');
+
+                    // Resubmit Driver Document
+                    Route::get('/resubmit/{document}', [DocumentSubmissionController::class, 'resubmitDriverDocument'])
+                        ->name('resubmit');
+                    Route::post('/resubmit/{document}', [DocumentSubmissionController::class, 'processResubmitDriverDocument'])
+                        ->name('process-resubmit');
                 });
             });
 
