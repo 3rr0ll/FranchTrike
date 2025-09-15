@@ -73,7 +73,6 @@ class FranchiseApplicationController extends Controller
             'sticker_no' => 'nullable|string|max:50',
             'franchise_start_date' => 'nullable|date',
             'franchise_end_date' => 'nullable|date|after:franchise_start_date',
-            'franchise_fee' => 'nullable|numeric|min:0',
         ]);
 
         $updateData = [
@@ -94,7 +93,6 @@ class FranchiseApplicationController extends Controller
                 'sticker_no' => $request->sticker_no,
                 'franchise_start_date' => $request->franchise_start_date,
                 'franchise_end_date' => $request->franchise_end_date,
-                'franchise_fee' => $request->franchise_fee,
             ]);
         }
 
