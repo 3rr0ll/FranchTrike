@@ -90,10 +90,10 @@
         <div>
             <h4 class="text-md font-semibold mb-3 text-primary-navy">Renewed/Other Franchise Applications</h4>
             <div class="overflow-x-auto">
-                <table id="renewedFranchiseTable" class="w-full table-auto border text-sm">
+                <table id="renewedFranchiseTable" class="w-full table-auto row-border text-sm">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="p-2 text-left">#</th>
+                            <th class="p-2 text-left">Application #</th>
                             <th class="p-2 text-left">Application Type</th>
                             <th class="p-2 text-left">Status</th>
                             <th class="p-2 text-left">Franchise No</th>
@@ -313,7 +313,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            $('#renewedFranchiseTable').DataTable({
+            var table = $('#renewedFranchiseTable').DataTable({
                 "order": [
                     [0, "desc"]
                 ],
@@ -323,6 +323,8 @@
                     "targets": 5
                 }]
             });
+
+            $('#renewedFranchiseTable_filter').addClass('mb-4');
         });
 
         // Flash messages
