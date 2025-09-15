@@ -2,7 +2,7 @@
 
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
-    Create Franchise Application for Walk-in Client
+    Create Franchise Application
 </h2>
 @endsection
 
@@ -301,7 +301,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const applicationTypeSelect = document.getElementById('application_type');
     const franchiseDetailsDiv = document.getElementById('franchise_details');
-    const previousFranchiseNo = document.getElementById('previous_franchise_no');
+    // Removed previousFranchiseNo since franchise application number column is removed
     const previousStickerNo = document.getElementById('previous_sticker_no');
     const previousFranchiseEndDate = document.getElementById('previous_franchise_end_date');
     
@@ -309,13 +309,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (applicationTypeSelect.value === 'renewal') {
             franchiseDetailsDiv.classList.remove('hidden');
             // Make required fields mandatory
-            previousFranchiseNo.setAttribute('required', 'required');
             previousStickerNo.setAttribute('required', 'required');
             previousFranchiseEndDate.setAttribute('required', 'required');
         } else {
             franchiseDetailsDiv.classList.add('hidden');
             // Remove required attributes
-            previousFranchiseNo.removeAttribute('required');
             previousStickerNo.removeAttribute('required');
             previousFranchiseEndDate.removeAttribute('required');
         }
