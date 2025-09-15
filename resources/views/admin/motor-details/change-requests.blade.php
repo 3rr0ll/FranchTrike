@@ -133,19 +133,20 @@ Motor Change Requests
                     <td>
                         @if($request->status === 'pending')
                             @if(!$request->new_unit_type)
-                                <a href="{{ route('admin.motor-change.input-details', $request->id) }}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm">
-                                    Input New Details
+                                <a href="{{ route('admin.motor-change.input-details', $request->id) }}" class="inline-block bg-primary-navy hover:bg-primary-navy/90 text-white px-3 py-1 rounded text-sm">
+                                   Evaluate
                                 </a>
                             @else
-                                <form action="{{ route('admin.motor-change.approve', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="approve">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                                </form>
-
-                                <form action="{{ route('admin.motor-change.reject', $request->id) }}" method="POST" class="d-inline js-approval-form" data-action="reject">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
-                                </form>
+                               <div class="flex flex-row gap-2">
+                                   <form action="{{ route('admin.motor-change.approve', $request->id) }}" method="POST" class="js-approval-form" data-action="approve">
+                                        @csrf
+                                        <button type="submit" class="inline-block bg-primary-navy hover:bg-primary-navy/90 text-white px-3 py-1 rounded text-sm">Approve</button>
+                                    </form>
+                                    <form action="{{ route('admin.motor-change.reject', $request->id) }}" method="POST" class="js-approval-form" data-action="reject">
+                                        @csrf
+                                        <button type="submit" class="inline-block bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm">Reject</button>
+                                    </form>
+                               </div>
                             @endif
                         @else
                             <em>No actions available</em>
