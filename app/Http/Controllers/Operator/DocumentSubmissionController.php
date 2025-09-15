@@ -47,7 +47,7 @@ class DocumentSubmissionController extends Controller
     /**
      * Show driver document submission form
      */
-    public function createDriverDocuments()
+    public function createDriverDocuments(Request $request)
     {
         $operator = $this->getCurrentOperator();
 
@@ -60,8 +60,16 @@ class DocumentSubmissionController extends Controller
 
         $documentTypes = DocumentType::forDriver()->get();
 
-        // If no specific driver is selected yet, empty submitted documents
+        $selectedDriverId = $request->input('driver_id');
         $submittedDocuments = [];
+
+        // Remove drivers who have already submitted all required documents
+        $drivers = $drivers->filter(function ($driver) use ($documentTypes) {
+            $submittedCount = DriverDocument::where('driver_id', $driver->driver_id)
+                ->whereIn('document_type_id', $documentTypes->pluck('document_id'))
+                ->count();
+            return $submittedCount < $documentTypes->count();
+        })->values();
 
         return view('operator.documents.driver.create', compact('documentTypes', 'submittedDocuments', 'drivers'));
     }
@@ -238,4 +246,128 @@ class DocumentSubmissionController extends Controller
 
         return back()->with('success', 'Document deleted successfully!');
     }
-}
+
+    /**
+     * Show the resubmit form for an operator document
+     */
+    public function showResubmitOperatorDocument(Request $request, $id)
+    {
+        $operator = $this->getCurrentOperator();
+
+        if (!$operator) {
+            return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
+        }
+
+        $document = OperatorDocument::where('id', $id)
+            ->where('operator_id', $operator->operator_id)
+            ->firstOrFail();
+
+        $documentType = $document->documentType;
+
+        return view('operator.documents.operator.resubmit', compact('document', 'documentType'));
+    }
+
+    /**
+     * Handle resubmission of an operator document
+     */
+    public function resubmitOperatorDocument(Request $request, $id)
+    {
+        $operator = $this->getCurrentOperator();
+
+        if (!$operator) {
+            return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
+        }
+
+        $document = OperatorDocument::where('id', $id)
+            ->where('operator_id', $operator->operator_id)
+            ->firstOrFail();
+
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        // Delete old file
+        if ($document->file_path) {
+            Storage::delete($document->file_path);
+        }
+
+        // Store new file
+        $file = $request->file('document');
+        $fileName = Str::random(16) . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs('operator_documents', $fileName, 'public');
+
+        $document->file_path = $filePath;
+        $document->document_name = $file->getClientOriginalName();
+        $document->status = 'pending';
+        $document->rejection_reason = null;
+        $document->save();
+
+        return redirect()->route('operator.documents.status')->with('success', 'Document resubmitted successfully!');
+    }
+
+    /**
+     * Show the resubmit form for a driver document
+     * Route: GET /operator/documents/driver/resubmit/{document}
+     */
+    public function resubmitDriverDocument(Request $request, $id)
+    {
+        $operator = $this->getCurrentOperator();
+
+        if (!$operator) {
+            return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
+        }
+
+        $document = DriverDocument::where('id', $id)
+            ->whereHas('driver', function ($query) use ($operator) {
+                $query->where('operator_id', $operator->operator_id);
+            })
+            ->with(['driver', 'documentType'])
+            ->firstOrFail();
+
+        $documentType = $document->documentType;
+        $driver = $document->driver;
+
+        return view('operator.documents.driver.resubmit', compact('document', 'documentType', 'driver'));
+    }
+
+    /**
+     * Handle resubmission of a driver document
+     * Route: POST /operator/documents/driver/resubmit/{document}
+     */
+    public function processResubmitDriverDocument(Request $request, $id)
+    {
+        $operator = $this->getCurrentOperator();
+
+        if (!$operator) {
+            return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
+        }
+
+        $document = DriverDocument::where('id', $id)
+            ->whereHas('driver', function ($query) use ($operator) {
+                $query->where('operator_id', $operator->operator_id);
+            })
+            ->firstOrFail();
+
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        // Delete old file
+        if ($document->file_path) {
+            Storage::delete($document->file_path);
+        }
+
+        // Store new file
+        $file = $request->file('document');
+        $fileName = Str::random(16) . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs('driver_documents', $fileName, 'public');
+
+        $document->file_path = $filePath;
+        $document->document_name = $file->getClientOriginalName();
+        $document->status = 'pending';
+        $document->rejection_reason = null;
+        $document->save();
+
+        return redirect()->route('operator.documents.status')->with('success', 'Driver document resubmitted successfully!');
+    }
+};
