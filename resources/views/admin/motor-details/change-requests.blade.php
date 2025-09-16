@@ -72,19 +72,18 @@ Motor Change Requests
         <div class="mb-3 p-3 rounded border-l-4 border-red-600 bg-red-50 text-red-800">{{ session('error') }}</div>
     @endif
 
-    <form method="GET" action="{{ route('admin.motor-change.index') }}" class="mb-3 d-flex align-items-center gap-2">
-        <label for="status" class="me-2">Status:</label>
-        <select name="status" id="status" class="form-select w-auto" onchange="this.form.submit()">
-            <option value="all" {{ (isset($status) && $status==='all') ? 'selected' : '' }}>All ({{ $counts['all'] ?? 0 }})</option>
-            <option value="pending" {{ (!isset($status) || $status==='pending') ? 'selected' : '' }}>Pending ({{ $counts['pending'] ?? 0 }})</option>
-            <option value="approved" {{ (isset($status) && $status==='approved') ? 'selected' : '' }}>Approved ({{ $counts['approved'] ?? 0 }})</option>
-            <option value="rejected" {{ (isset($status) && $status==='rejected') ? 'selected' : '' }}>Rejected ({{ $counts['rejected'] ?? 0 }})</option>
-        </select>
-    </form>
+    <div class="mb-6 flex justify-end">
+        <a href="{{ route('admin.motor-change.change-create') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy text-white rounded-lg font-semibold hover:bg-blue-900 transition">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Create Motor Change Request
+        </a>
+    </div>
 
     <div class="bg-white shadow-sm rounded-lg p-4">
     <div class="border-b font-semibold text-lg text-primary-navy mb-2">
-        Motor Change Request 
+       New Motor Change Request 
     </div>
     <div class="overflow-x-auto">
         <table id="motorChangeTable" class="table-auto row-border w-full text-left">
@@ -162,7 +161,7 @@ Motor Change Requests
 {{-- History Table for Approved and Rejected Requests --}}
 @if($historyRequests && $historyRequests->count() > 0)
 <div class="bg-white shadow-sm rounded-lg mt-8 p-4">
-    <div class="p-4 border-b font-semibold text-lg text-primary-navy mb-2">
+    <div class="border-b font-semibold text-lg text-primary-navy mb-2">
         Motor Change Request History (Approved &amp; Rejected)
     </div>
     <div class="overflow-x-auto">
