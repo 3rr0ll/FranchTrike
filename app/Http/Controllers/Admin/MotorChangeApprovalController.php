@@ -23,7 +23,6 @@ class MotorChangeApprovalController extends Controller
 
         $requests = $query->get();
 
-        // Get history requests (approved and rejected)
         $historyRequests = MotorChangeRequest::with(['franchiseApplication.motorDetail', 'oldUnitMake', 'newUnitMake'])
             ->whereIn('status', ['approved', 'rejected'])
             ->latest()
@@ -114,6 +113,63 @@ class MotorChangeApprovalController extends Controller
                 ->with('success', 'New motor details saved successfully. You can now approve or reject the request.');
         } catch (\Throwable $e) {
             return back()->with('error', 'Failed to save new details: ' . $e->getMessage());
+        }
+    }
+
+    public function createForClient()
+    {
+        // Get all franchise applications with their motor details and operator
+        $applications = \App\Models\FranchiseApplication::with(['motorDetail', 'operator'])
+            ->where('status', 'approved')
+            ->get();
+
+        $unitMakes = UnitMake::all();
+
+        return view('admin.motor-change.change-create', compact('applications', 'unitMakes'));
+    }
+
+    /**
+     * Store a new motor change request for a client (admin-initiated).
+     * This is called by the route: POST motor-change/store-for-client
+     */
+    public function storeForClient(Request $request)
+    {
+        $request->validate([
+            'franchise_application_id' => 'required|exists:franchise_applications,id',
+            'new_unit_type' => 'required|string|max:255',
+            'new_unit_make_id' => 'required|exists:unit_makes,id',
+            'new_motorno' => 'required|string|max:255',
+            'new_chasisno' => 'required|string|max:255',
+            'new_platenumber' => 'required|string|max:255',
+        ]);
+
+        try {
+            // Fetch the franchise application with its motor detail
+            $application = \App\Models\FranchiseApplication::with('motorDetail')->findOrFail($request->franchise_application_id);
+            $oldMotor = $application->motorDetail;
+
+            MotorChangeRequest::create([
+                'franchise_application_id' => $request->franchise_application_id,
+                // Old details
+                'old_unit_type' => $oldMotor->unit_type ?? null,
+                'old_unit_make_id' => $oldMotor->unit_make_id ?? null,
+                'old_motorno' => $oldMotor->motorno ?? null,
+                'old_chasisno' => $oldMotor->chasisno ?? null,
+                'old_platenumber' => $oldMotor->platenumber ?? null,
+                // New details
+                'new_unit_type' => $request->new_unit_type,
+                'new_unit_make_id' => $request->new_unit_make_id,
+                'new_motorno' => $request->new_motorno,
+                'new_chasisno' => $request->new_chasisno,
+                'new_platenumber' => $request->new_platenumber,
+                'status' => 'pending',
+                'requested_by_admin' => true,
+            ]);
+
+            return redirect()->route('admin.motor-change.index')
+                ->with('success', 'Motor change request created successfully for the client.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Failed to create motor change request: ' . $e->getMessage());
         }
     }
 }
