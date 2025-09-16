@@ -12,7 +12,7 @@ Admin Dashboard
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Applications -->
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-blue-100 text-blue-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,10 +24,15 @@ Admin Dashboard
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalApplications ?? 0 }}</p>
                 </div>
             </div>
+            <a href="{{ route('admin.franchise.index') }}" class="ml-4 text-blue-600 hover:text-blue-800" title="View Applications">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
         </div>
 
         <!-- Pending Review -->
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,10 +44,15 @@ Admin Dashboard
                     <p class="text-2xl font-semibold text-gray-900">{{ $pendingReview ?? 0 }}</p>
                 </div>
             </div>
+            <a href="{{ route('admin.franchise.index', ['status' => 'under_review']) }}" class="ml-4 text-yellow-600 hover:text-yellow-800" title="View Pending Review">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
         </div>
 
         <!-- Total Operators -->
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-green-100 text-green-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,10 +64,15 @@ Admin Dashboard
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalOperators ?? 0 }}</p>
                 </div>
             </div>
+            <a href="{{ route('admin.operators.index') }}" class="ml-4 text-green-600 hover:text-green-800" title="View Operators">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
         </div>
 
         <!-- Total Drivers -->
-        <div class="bg-white rounded-lg shadow p-6">
+        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
             <div class="flex items-center">
                 <div class="p-3 rounded-full bg-purple-100 text-purple-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,6 +84,11 @@ Admin Dashboard
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalDrivers ?? 0 }}</p>
                 </div>
             </div>
+            <a href="{{ route('admin.drivers.index') }}" class="ml-4 text-purple-600 hover:text-purple-800" title="View Drivers">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
         </div>
     </div>
 
