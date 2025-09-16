@@ -9,7 +9,7 @@
 @section('content')
 
 <!-- Status Counts -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
     <div class="p-4 bg-white rounded-lg border border-gray-200">
         <div class="flex items-center">
             <div class="p-2 rounded-full bg-blue-100 text-blue-600">
@@ -75,6 +75,19 @@
             </div>
         </div>
     </div>
+<div class="p-4 bg-white rounded-lg border border-gray-200">
+    <div class="flex items-center">
+        <div class="p-2 rounded-full bg-gray-200 text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <div class="ml-4">
+            <p class="text-sm font-medium text-gray-600">Expired</p>
+            <p class="text-2xl font-semibold text-gray-900">{{ $statusCounts['expired'] ?? 0 }}</p>
+        </div>
+    </div>
+</div>
 </div>
 
 <div class="p-4 border-b border-gray-200 lg:mt-1.5">
@@ -110,7 +123,7 @@
                 <option value="approved">Approved</option>
                 <option value="rejected">Rejected</option>
                 <option value="renewed">Renewed</option>
-
+                <option value="expired">Expired</option>
             </select>
 
             <!-- Date Range Picker -->
@@ -135,7 +148,6 @@
 
 <!-- Applications Table -->
 <div class="p-6 bg-white rounded-lg shadow">
-
 
     <div class="overflow-x-auto">
         <table class="table-auto w-full text-left row-border" id="applications-table">
@@ -164,6 +176,8 @@
                         'under_review' => 'bg-yellow-100 text-yellow-800',
                         'approved' => 'bg-green-100 text-green-800',
                         'rejected' => 'bg-red-100 text-red-800',
+                        'expired' => 'bg-gray-300 text-gray-700',
+                        'renewed' => 'bg-purple-100 text-purple-800',
                         ];
                         $color = $statusColors[$application->status] ?? 'bg-gray-100 text-gray-800';
                         @endphp
