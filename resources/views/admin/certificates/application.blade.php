@@ -1,64 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motorized Tricycle Franchising Application Form</title>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 0; }
+            .application-container { margin: 0; padding: 0; }
+        }
+    </style>
 </head>
+
 <body style="margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; padding: 20px; background-color: #f5f5f5;">
     @php
-        // Expecting $motorDetail, $franchiseApplication, $operators, $driver, $requirements, $granted, etc. from controller
-        $route = $franchiseApplication->route->name ?? '';
-        $todaPresident = $franchiseApplication->toda_president ?? '';
-        $trafficDivision = $franchiseApplication->traffic_division ?? '';
-        $publicFacilitiesChair = $franchiseApplication->public_facilities_chair ?? '';
-        $franchiseNo = $franchiseApplication->franchise_no ?? '';
-        $stickerNo = $franchiseApplication->sticker_no ?? '';
-        $unitType = $motorDetail->unit_type ?? '';
-        $unitMake = $motorDetail->unitMake->name ?? '';
-        $motorNo = $motorDetail->motorno ?? '';
-        $chasisNo = $motorDetail->chasisno ?? '';
-        $plateNumber = $motorDetail->platenumber ?? '';
-        $applicationType = $franchiseApplication->application_type ?? '';
-        $ownerFirstName = $operator->first_name ?? '';
-        $ownerMiddleName = $operator->middle_initial ?? '';
-        $ownerLastName = $operator->last_name ?? '';
-        $ownerName = trim("{$ownerFirstName} {$ownerMiddleName} {$ownerLastName}");
-        $ownerAddress = trim(($operator->barangay ?? '') . ', ' . ($operator->municipality ?? '') . ', ' . ($operator->province ?? ''));
-        $ownerBirthdate = $operator->birth_date ? date('F d, Y', strtotime($operator->birth_date)) : '';
-        $ownerAge = $operator->age ?? '';
-        $ownerSex = $operator->sex ?? '';
-        $driverName = trim(($driver->first_name ?? '') . ' ' . ($driver->middle_initial ?? '') . ' ' . ($driver->last_name ?? ''));
-        $driverAddress = $driver->barangay . ', ' . $driver->municipality . ', ' . $driver->province;
-        $driverBirthdate = $driver->birth_date ? date('F d, Y', strtotime($driver->birth_date)) : '';
-        $driverAge = $driver->age ?? '';
-        $driverCivilStatus = $driver->civil_status ?? '';
-        $driverSex = $driver->sex ?? '';
-        $driverLicenseNo = $driver->license_no ?? '';
-        $driverLicenseValidity = $driver->license_validity ? date('F d, Y', strtotime($driver->license_validity)) : '';
-        $driverLicenseNature = $driver->license_nature ?? '';
-        $inspectedBy = $inspection->inspected_by ?? '';
-        $inspectorSignature = $inspection->signature ?? '';
-        $inspectorPosition = $inspection->position ?? '';
-        $inspectionDate = $inspection->date ?? '';
-        $orNo = $franchiseApplication->or_no ?? '';
-        $grantedBy = $franchiseApplication->granted_by ?? '';
-        $grantedUnits = $granted->units ?? '';
-        $grantedUntil = $granted->until ?? '';
-        $grantedDate = $granted->date ?? '';
-        $grantedAmount = $granted->amount ?? '';
-        $applicantName = $ownerName;
-        $applicantSignature = $franchiseApplication->applicant_signature ?? '';
-        $ctcNo = $franchiseApplication->ctc_no ?? '';
-        $ctcIssuedOn = $franchiseApplication->ctc_issued_on ?? '';
-        $ctcIssuedAt = $franchiseApplication->ctc_issued_at ?? '';
-        // Requirements
-        $ownerReqs = $requirements['owner'] ?? [];
-        $driverReqs = $requirements['driver'] ?? [];
-        // Inspection checklist
-        $inspectionChecklist = $inspection->checklist ?? [];
+    $route = $franchiseApplication->route->name ?? '';
+    $todaPresident = $franchiseApplication->toda_president ?? '';
+    $trafficDivision = $franchiseApplication->traffic_division ?? '';
+    $publicFacilitiesChair = $franchiseApplication->public_facilities_chair ?? '';
+    $franchiseNo = $franchiseApplication->franchise_no ?? '';
+    $stickerNo = $franchiseApplication->sticker_no ?? '';
+    $unitType = $motorDetail->unit_type ?? '';
+    $unitMake = $motorDetail->unitMake->name ?? '';
+    $motorNo = $motorDetail->motorno ?? '';
+    $chasisNo = $motorDetail->chasisno ?? '';
+    $plateNumber = $motorDetail->platenumber ?? '';
+    $applicationType = $franchiseApplication->application_type ?? '';
+    $ownerFirstName = $operator->first_name ?? '';
+    $ownerMiddleName = $operator->middle_initial ?? '';
+    $ownerLastName = $operator->last_name ?? '';
+    $ownerName = trim("{$ownerFirstName} {$ownerMiddleName} {$ownerLastName}");
+    $ownerAddress = trim(($operator->barangay ?? '') . ', ' . ($operator->municipality ?? '') . ', ' . ($operator->province ?? ''));
+    $ownerBirthdate = $operator->birth_date ? date('F d, Y', strtotime($operator->birth_date)) : '';
+    $ownerAge = $operator->age ?? '';
+    $ownerSex = $operator->sex ?? '';
+    $driverName = trim(($driver->first_name ?? '') . ' ' . ($driver->middle_initial ?? '') . ' ' . ($driver->last_name ?? ''));
+    $driverAddress = $driver->barangay . ', ' . $driver->municipality . ', ' . $driver->province;
+    $driverBirthdate = $driver->birth_date ? date('F d, Y', strtotime($driver->birth_date)) : '';
+    $driverAge = $driver->age ?? '';
+    $driverCivilStatus = $driver->civil_status ?? '';
+    $driverSex = $driver->sex ?? '';
+    $driverLicenseNo = $driver->license_no ?? '';
+    $driverLicenseValidity = $driver->license_validity ? date('F d, Y', strtotime($driver->license_validity)) : '';
+    $driverLicenseNature = $driver->license_nature ?? '';
+    $inspectedBy = $inspection->inspected_by ?? '';
+    $inspectorSignature = $inspection->signature ?? '';
+    $inspectorPosition = $inspection->position ?? '';
+    $inspectionDate = $inspection->date ?? '';
+    $orNo = $franchiseApplication->or_no ?? '';
+    $grantedBy = $franchiseApplication->granted_by ?? '';
+    $grantedUnits = $granted->units ?? '';
+    $grantedUntil = $granted->until ?? '';
+    $grantedDate = $granted->date ?? '';
+    $grantedAmount = $granted->amount ?? '';
+    $applicantName = $ownerName;
+    $applicantSignature = $franchiseApplication->applicant_signature ?? '';
+    $ctcNo = $franchiseApplication->ctc_no ?? '';
+    $ctcIssuedOn = $franchiseApplication->ctc_issued_on ?? '';
+    $ctcIssuedAt = $franchiseApplication->ctc_issued_at ?? '';
+    // Requirements
+    $ownerReqs = $requirements['owner'] ?? [];
+    $driverReqs = $requirements['driver'] ?? [];
+    // Inspection checklist
+    $inspectionChecklist = $inspection->checklist ?? [];
     @endphp
-    <div style="max-width: 800px; margin: 0 auto; background: white; padding: 20px; ">
+
+    <!-- Print Controls -->
+    <div class="no-print" style="text-align: center; margin: 20px 0; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+        <h2 style="margin-bottom: 20px; color: #333;">Application Form Preview</h2>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="window.print()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                🖨️ Print Certificate
+            </button>
+        </div>
+    </div>
+
+    <div id="application-certificate" style="max-width: 800px; margin: 0 auto; background: white; padding: 20px; ">
         <div style="text-align: center; margin-bottom: 20px;">
             <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                 <div style="border: 2px solid #000; padding: 10px; width: 300px;">
@@ -231,42 +250,42 @@
                     </thead>
                     <tbody>
                         @php
-                            $checklistItems = [
-                                'Brake Light',
-                                'Signal Light',
-                                'Head Light',
-                                'Inside Light',
-                                'Clutch',
-                                'Hand Brake',
-                                'Foot Brake',
-                                'Side Car Brake',
-                                'Side Car Flooring',
-                                'Suspension',
-                                'Wind Shield of Motorcycle',
-                                'Wind Shield of Side Car',
-                                'Trash Can 0.10 m x 0.10 m',
-                                'Muffler'
-                            ];
+                        $checklistItems = [
+                        'Brake Light',
+                        'Signal Light',
+                        'Head Light',
+                        'Inside Light',
+                        'Clutch',
+                        'Hand Brake',
+                        'Foot Brake',
+                        'Side Car Brake',
+                        'Side Car Flooring',
+                        'Suspension',
+                        'Wind Shield of Motorcycle',
+                        'Wind Shield of Side Car',
+                        'Trash Can 0.10 m x 0.10 m',
+                        'Muffler'
+                        ];
                         @endphp
                         @foreach($checklistItems as $item)
-                            <tr>
-                                <td style="padding: 5px; text-align: left; padding-left: 10px;">{{ $item }}</td>
-                                @if($item == 'Muffler')
-                                    <td style="padding: 5px; text-align: center;">
-                                        <input type="checkbox" {{ ($inspectionChecklist['Muffler'] ?? '') == 'with_silencer' ? 'checked' : '' }} disabled> With silencer
-                                    </td>
-                                    <td style="padding: 5px; text-align: center;">
-                                        <input type="checkbox" {{ ($inspectionChecklist['Muffler'] ?? '') == 'without_silencer' ? 'checked' : '' }} disabled> Without silencer
-                                    </td>
-                                @else
-                                    <td style="padding: 5px; text-align: center;">
-                                        <input type="checkbox" {{ ($inspectionChecklist[$item] ?? '') == 'functional' ? 'checked' : '' }} disabled>
-                                    </td>
-                                    <td style="padding: 5px; text-align: center;">
-                                        <input type="checkbox" {{ ($inspectionChecklist[$item] ?? '') == 'not_functional' ? 'checked' : '' }} disabled>
-                                    </td>
-                                @endif
-                            </tr>
+                        <tr>
+                            <td style="padding: 5px; text-align: left; padding-left: 10px;">{{ $item }}</td>
+                            @if($item == 'Muffler')
+                            <td style="padding: 5px; text-align: center;">
+                                <input type="checkbox" {{ ($inspectionChecklist['Muffler'] ?? '') == 'with_silencer' ? 'checked' : '' }} disabled> With silencer
+                            </td>
+                            <td style="padding: 5px; text-align: center;">
+                                <input type="checkbox" {{ ($inspectionChecklist['Muffler'] ?? '') == 'without_silencer' ? 'checked' : '' }} disabled> Without silencer
+                            </td>
+                            @else
+                            <td style="padding: 5px; text-align: center;">
+                                <input type="checkbox" {{ ($inspectionChecklist[$item] ?? '') == 'functional' ? 'checked' : '' }} disabled>
+                            </td>
+                            <td style="padding: 5px; text-align: center;">
+                                <input type="checkbox" {{ ($inspectionChecklist[$item] ?? '') == 'not_functional' ? 'checked' : '' }} disabled>
+                            </td>
+                            @endif
+                        </tr>
                         @endforeach
                     </tbody>
                 </table>
@@ -299,40 +318,40 @@
                 <div style="border: 2px solid #000; padding: 10px; margin-bottom: 20px;">
                     <div style="font-weight: bold; margin-bottom: 10px;">OWNER'S REQUIREMENTS:</div>
                     @php
-                        $ownerReqList = [
-                            'OR' => 'or',
-                            'CR' => 'cr',
-                            'Proof of Ownership' => 'proof_of_ownership',
-                            "Old MTOP and Mayor's Permit" => 'old_mtop_mayors_permit',
-                            'Brgy Clearance' => 'brgy_clearance',
-                            'Cedula' => 'cedula'
-                        ];
+                    $ownerReqList = [
+                    'OR' => 'or',
+                    'CR' => 'cr',
+                    'Proof of Ownership' => 'proof_of_ownership',
+                    "Old MTOP and Mayor's Permit" => 'old_mtop_mayors_permit',
+                    'Brgy Clearance' => 'brgy_clearance',
+                    'Cedula' => 'cedula'
+                    ];
                     @endphp
                     @foreach($ownerReqList as $label => $key)
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                            <span>{{ $label }}</span>
-                            <input type="checkbox" style="width: 15px; height: 15px; accent-color: #000;" checked disabled>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span>{{ $label }}</span>
+                        <input type="checkbox" style="width: 15px; height: 15px; accent-color: #000;" checked disabled>
+                    </div>
                     @endforeach
                 </div>
 
                 <div style="border: 2px solid #000; padding: 10px; margin-bottom: 20px;">
                     <div style="font-weight: bold; margin-bottom: 10px;">DRIVER'S REQUIREMENTS:</div>
                     @php
-                        $driverReqList = [
-                            'Barangay Clearance' => 'barangay_clearance',
-                            'Medical Clearance' => 'medical_clearance',
-                            'Drug Test' => 'drug_test',
-                            'Police Clearance' => 'police_clearance',
-                            "Driver's License" => 'drivers_license',
-                            'Cedula' => 'cedula'
-                        ];
+                    $driverReqList = [
+                    'Barangay Clearance' => 'barangay_clearance',
+                    'Medical Clearance' => 'medical_clearance',
+                    'Drug Test' => 'drug_test',
+                    'Police Clearance' => 'police_clearance',
+                    "Driver's License" => 'drivers_license',
+                    'Cedula' => 'cedula'
+                    ];
                     @endphp
                     @foreach($driverReqList as $label => $key)
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                            <span>{{ $label }}</span>
-                            <input type="checkbox" style="width: 15px; height: 15px; accent-color: #000;" checked disabled>
-                        </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span>{{ $label }}</span>
+                        <input type="checkbox" style="width: 15px; height: 15px; accent-color: #000;" checked disabled>
+                    </div>
                     @endforeach
                 </div>
 
@@ -348,21 +367,21 @@
                         <label style="font-weight: bold;">OR No.:</label>
                         <span style="border-bottom: 1px solid #000; flex: 1; margin-left: 10px; display: inline-block;">{{ $orNo }}</span>
                     </div>
-                    
+
                     <div style="text-align: right; margin-bottom: 10px;">
                         <span style="font-weight: bold;">GRANTED BY:</span>
                     </div>
-                    
+
                     <div style="display: flex; margin-bottom: 8px; align-items: center;">
                         <label style="font-weight: bold;">Date:</label>
                         <span style="border-bottom: 1px solid #000; flex: 1; margin-left: 10px; display: inline-block;">{{ $grantedDate }}</span>
                     </div>
-                    
+
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <label style="font-weight: bold;">Amount:</label>
                         <span style="border-bottom: 1px solid #000; width: 100px; display: inline-block;">{{ $grantedAmount }}</span>
                     </div>
-                    
+
                     <div style="text-align: right; font-weight: bold; font-size: 10px;">
                         <div>ENGR. KHRISTINE Z. TAPALLA, EnP</div>
                         <div>OIC-MPDC/ZA</div>
@@ -374,7 +393,7 @@
             <p style="margin-bottom: 15px; text-align: justify; font-size: 11px;">
                 I hereby certify that the information provided herein are true and correct to the best of my knowledge and belief and any misrepresentation made herein shall be ground for disapproval of this application without prejudice to the filing of the corresponding criminal case for perjury.
             </p>
-            
+
             <div style="text-align: right; margin-bottom: 10px;">
                 <div style="font-weight: bold;">{{ $applicantName }}</div>
                 <div style="font-size: 11px; border-bottom: 1px solid #000; width: 200px; margin-left: auto; text-align: center; padding-bottom: 2px;">Signature of Applicant/Date</div>
@@ -404,5 +423,12 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function downloadPDF() {
+            window.location.href = "{{ route('admin.certificates.application.generate', $motorDetail->id) }}";
+        }
+    </script>
 </body>
+
 </html>

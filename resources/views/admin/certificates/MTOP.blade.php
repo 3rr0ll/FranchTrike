@@ -20,12 +20,6 @@
             <button onclick="window.print()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
                 🖨️ Print Certificate
             </button>
-            <button onclick="downloadPDF()" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
-                📄 Download PDF
-            </button>
-            <a href="{{ route('admin.motor-details.show', $motorDetail->id) }}" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; text-decoration: none; display: inline-block;">
-                ← Back to Motor Details
-            </a>
         </div>
     </div>
 
