@@ -121,7 +121,7 @@ Route::middleware([
                         ->name('create');
                     Route::post('/store', [DocumentSubmissionController::class, 'storeOperatorDocuments'])
                         ->name('store');
-                    
+
                     // Resubmit Operator Document
                     Route::get('/resubmit/{document}', [DocumentSubmissionController::class, 'resubmitOperatorDocument'])
                         ->name('resubmit');
@@ -170,7 +170,7 @@ Route::middleware([
 
             // Notifications: mark all as read
             Route::patch('/notifications/read', function () {
-                $user = \Illuminate\Support\Facades\Auth::user();
+                $user = Auth::user();
                 if ($user) {
                     $user->siteNotifications()->whereNull('read_at')->update(['read_at' => now()]);
                 }
@@ -218,21 +218,16 @@ Route::middleware([
 
             // Motor Change Approval Routes
             Route::get('motor-change', [MotorChangeApprovalController::class, 'index'])->name('motor-change.index');
+            Route::get('motor-change/change-create', function () {
+                $applications = \App\Models\FranchiseApplication::with(['motorDetail', 'operator'])->where('status', 'approved')->get();
+                $unitMakes = \App\Models\UnitMake::all();
+                return view('admin.motor-details.change-create', compact('applications', 'unitMakes'));
+            })->name('motor-change.change-create');
+            Route::post('motor-change/store-for-client', [MotorChangeApprovalController::class, 'storeForClient'])->name('motor-change.store-for-client');
             Route::get('motor-change/{motorChange}/input-details', [MotorChangeApprovalController::class, 'inputDetails'])->name('motor-change.input-details');
             Route::post('motor-change/{motorChange}/input-details', [MotorChangeApprovalController::class, 'storeNewDetails'])->name('motor-change.input-details');
             Route::post('motor-change/{motorChange}/approve', [MotorChangeApprovalController::class, 'approve'])->name('motor-change.approve');
             Route::post('motor-change/{motorChange}/reject', [MotorChangeApprovalController::class, 'reject'])->name('motor-change.reject');
-
-            // Certificate routes
-            Route::get('/certificates/mtop', function () {
-                return view('admin.certificates.MTOP');
-            })->name('admin.certificates.mtop');
-            Route::get('/certificates/application', function () {
-                return view('admin.certificates.application');
-            })->name('admin.certificates.application');
-            Route::get('/certificates/mayors-permit', function () {
-                return view('admin.certificates.mayors_permit');
-            })->name('admin.certificates.mayors-permit');
 
             // Certificate generation routes
             Route::get('/certificates/mtop/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateMTOP'])->name('certificates.mtop.generate');
@@ -269,6 +264,7 @@ Route::middleware([
             Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
             Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
 
+            Route::get('/franchise', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'index'])->name('franchise.index');
 
             // User Management Routes
             Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
@@ -285,8 +281,7 @@ Route::middleware([
             Route::get('/users/{user}/login-history', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'loginHistory'])->name('users.login-history');
             Route::get('/users/login-logs', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'allLoginLogs'])->name('users.login-logs');
 
-            // Global Search
-            Route::get('/search', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'search'])->name('search');
+           
 
             // Payment Management Routes
             Route::prefix('payments')->name('payments.')->group(function () {
@@ -306,5 +301,8 @@ Route::middleware([
                 // Statistics
                 Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
             });
+            
+
         });
+
 });
