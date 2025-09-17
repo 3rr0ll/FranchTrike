@@ -64,7 +64,10 @@ class MotorChangeApprovalController extends Controller
                 'platenumber'   => $motorChange->new_platenumber,
             ]);
 
-            $motorChange->update(['status' => 'approved']);
+            $motorChange->update([
+                'status' => 'approved',
+                'reviewed_by' => auth()->user()->id,
+            ]);
 
             DB::commit();
             return back()->with('success', 'Motor change approved.');
@@ -77,7 +80,12 @@ class MotorChangeApprovalController extends Controller
     public function reject(MotorChangeRequest $motorChange)
     {
         try {
-            $motorChange->update(['status' => 'rejected']);
+           
+            $motorChange->update([
+                'status' => 'rejected',
+                'reviewed_by' => auth()->user()->id,
+            ]);
+            
             return back()->with('success', 'Motor change rejected.');
         } catch (\Throwable $e) {
             return back()->with('error', 'Rejection failed: ' . $e->getMessage());
