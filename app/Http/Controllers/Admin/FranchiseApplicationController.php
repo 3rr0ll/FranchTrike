@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Mail\FranchiseStatusUpdated;
 use App\Services\NotificationService;
+use App\Models\FranchiseApplicationLog;
 
 class FranchiseApplicationController extends Controller
 {
@@ -59,7 +60,7 @@ class FranchiseApplicationController extends Controller
 
     public function show(FranchiseApplication $franchiseApplication)
     {
-        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route']);
+        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route','logs.updatedBy']);
 
         return view('admin.franchise.show', compact('franchiseApplication'));
     }
@@ -80,6 +81,16 @@ class FranchiseApplicationController extends Controller
             'reviewed_at' => now(),
             'reviewed_by' => Auth::id(),
         ];
+
+
+        $oldStatus = $franchiseApplication->status;
+
+        FranchiseApplicationLog::create([
+            'franchise_application_id' => $franchiseApplication->id,
+            'status_before' => $oldStatus,
+            'status_after' => $request->status,
+            'updated_by' => Auth::id(),
+        ]);
 
         // Add rejection reason if status is rejected
         if ($request->status === 'rejected') {

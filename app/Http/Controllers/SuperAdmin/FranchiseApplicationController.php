@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FranchiseApplication;
+use App\Models\FranchiseApplicationLog;
 
 class FranchiseApplicationController extends Controller
 {
@@ -47,4 +48,15 @@ class FranchiseApplicationController extends Controller
 
         return view('superadmin.franchise.index', compact('applications', 'statusCounts'));
     }
+
+
+
+    public function show(FranchiseApplication $franchiseApplication)
+    {
+        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route','logs.updatedBy']);
+
+        return view('superadmin.franchise.show', compact('franchiseApplication'));
+    }
+
+
 }
