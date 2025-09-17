@@ -265,6 +265,10 @@ Route::middleware([
             Route::put('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'updateSecuritySettings'])->name('users.update-security-settings');
 
             Route::get('/franchise', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'index'])->name('franchise.index');
+            Route::get('/franchise/create', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'create'])->name('franchise.create');
+            Route::post('/franchise', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'store'])->name('franchise.store');
+            Route::get('/franchise/{franchiseApplication}', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'show'])->name('franchise.show');
+            Route::put('/franchise/{franchiseApplication}/status', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'updateStatus'])->name('franchise.update-status');
 
             // User Management Routes
             Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
