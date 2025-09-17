@@ -139,6 +139,7 @@ class PaymentController extends Controller
             })->toArray(),
             'total_amount' => $group->sum('amount_paid'),
             'paid_at' => $first->paid_at,
+            'reviewer' => $first->reviewer,
         ];
     }
 

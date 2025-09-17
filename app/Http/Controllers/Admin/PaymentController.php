@@ -42,8 +42,8 @@ class PaymentController extends Controller
                 'operator_name' => isset($first->franchiseApplication->operator)
                     ? trim(
                         $first->franchiseApplication->operator->first_name . ' ' .
-                        ($first->franchiseApplication->operator->middle_initial ? $first->franchiseApplication->operator->middle_initial . '. ' : '') .
-                        $first->franchiseApplication->operator->last_name
+                            ($first->franchiseApplication->operator->middle_initial ? $first->franchiseApplication->operator->middle_initial . '. ' : '') .
+                            $first->franchiseApplication->operator->last_name
                     )
                     : 'N/A',
                 'fees' => $group->map(function ($payment) {
@@ -54,6 +54,7 @@ class PaymentController extends Controller
                 })->toArray(),
                 'total_amount' => $group->sum('amount_paid'),
                 'paid_at' => $first->paid_at,
+                'reviewer' => $first->reviewer,
             ];
         }
 
@@ -79,7 +80,8 @@ class PaymentController extends Controller
                 'franchise_application_id' => $application->id,
                 'fee_id' => $fee->id,
                 'amount_paid' => $fee->amount,
-                'paid_at' => now(), // Walk-in = instantly marked paid
+                'paid_at' => now(),
+                'reviewed_by' => auth()->id(),
             ]);
         }
 
@@ -93,15 +95,17 @@ class PaymentController extends Controller
     public function receipt(Payment $payment)
     {
         // Group by the same application and the same paid_at timestamp
-        $payments = Payment::with('fee', 'franchiseApplication.operator')
+        $payments = Payment::with('fee', 'franchiseApplication.operator', 'reviewer')
             ->where('franchise_application_id', $payment->franchise_application_id)
             ->where('paid_at', $payment->paid_at) // ensures it pulls all fees from this batch
             ->get();
-    
+
         // Calculate total
         $totalAmount = $payments->sum('amount_paid');
-    
-        return view('admin.payments.receipt', compact('payments', 'totalAmount'));
+
+        // Get the reviewer (assume all payments in the batch have the same reviewer)
+        $reviewedBy = $payments->first() ? $payments->first()->reviewer : null;
+
+        return view('admin.payments.receipt', compact('payments', 'totalAmount', 'reviewedBy'));
     }
-    
 }

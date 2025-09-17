@@ -87,6 +87,7 @@
                     <th>Total Amount</th>
                     <th>Status</th>
                     <th>Paid At</th>
+                    <th>Manage by</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -111,6 +112,14 @@
                         @endif
                     </td>
                     <td>{{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('M d, Y') : '-' }}</td>
+                    <td>
+                        @if($group['reviewer'])
+                        {{ $group['reviewer']->name }}
+                        @else
+                        <span class="text-gray-400 italic">Not reviewed</span>
+                        @endif
+                    </td>
+
                     <td>
                         @if(!$group['paid_at'])
                         <form method="POST" action="{{ route('admin.payments.markPaid', $group['first_payment_id']) }}" class="inline">
@@ -184,8 +193,7 @@
         var table = $('#payments-table').DataTable({
             // Show entries per page dropdown by including 'l' in the dom option
             dom: 'Blfrtip',
-            buttons: [
-                {
+            buttons: [{
                     extend: 'csvHtml5',
                     text: 'CSV',
                     className: 'bg-blue-500 text-white px-3 py-1 rounded'

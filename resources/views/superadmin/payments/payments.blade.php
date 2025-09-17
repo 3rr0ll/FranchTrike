@@ -32,6 +32,7 @@
                             <th>Fees</th>
                             <th>Total</th>
                             <th>Status</th>
+                            <th>Manage by</th>
                             <th>Date</th>
                         </tr>
                     </thead>
@@ -53,7 +54,15 @@
                                     {{ $group['paid_at'] ? 'Paid' : 'Pending' }}
                                 </span>
                             </td>
+                            <td>
+                        @if($group['reviewer'])
+                        {{ $group['reviewer']->name }}
+                        @else
+                        <span class="text-gray-400 italic">Not reviewed</span>
+                        @endif
+                    </td>
                             <td>{{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('M d, Y H:i') : 'Pending' }}</td>
+                            
                         </tr>
                         @empty
                         <tr>
