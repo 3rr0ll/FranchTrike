@@ -108,7 +108,7 @@
                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 0a10 10 0 1 0 10 10A10.009 10.009 0 0 0 10 0Zm6.613 4.614a8.523 8.523 0 0 1 1.93 2.302 8.243 8.243 0 0 1-.778 2.104l-.004-.007a4.786 4.786 0 0 0-1.01 2.805 4.49 4.49 0 0 0-1.858 2.024 4.504 4.504 0 0 0-1.858-2.024 4.49 4.49 0 0 0-1.01-2.805l-.004.007a8.243 8.243 0 0 1-.778-2.104 8.523 8.523 0 0 1 1.93-2.302A8.523 8.523 0 0 1 10 4.614a8.523 8.523 0 0 1 6.613 0Z" />
                         </svg>
-                        <span class="ms-3">Manage Users</span>
+                        <span class="ms-3">User Management</span>
                     </a>
                 </li>
                 <li>
@@ -124,13 +124,25 @@
                         <span class="ms-3">Payment Management</span>
                     </a>
                 </li>
+                <li>
+                    @php $isActive = request()->routeIs('superadmin.franchise.*'); @endphp
+                    <a href="{{ route('superadmin.franchise.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                        {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-1h2v1zm0-3H9V7h2v3z"/>
+                        </svg>
+                        <span class="ms-3">Franchise List</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </aside>
 
 
     {{-- Main content --}}
-    <div class="p-4 sm:ml-64 mt-16">
+    <div class="p-4 sm:ml-64 mt-16 bg-[#e5e5e4]" style="min-height: 100vh;">
         @hasSection('header')
         <div>
             @yield('header')
