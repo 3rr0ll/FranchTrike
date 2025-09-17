@@ -92,17 +92,7 @@
 
 <div class="p-4 border-b border-gray-200 lg:mt-1.5">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <!-- Left: Add Franchise Button (hidden on mobile) -->
-        <div class="hidden md:flex items-center">
-            <a href="{{ route('admin.franchise.create') }}"
-                class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add Franchise
-            </a>
-        </div>
-
+    
         <!-- Right: Filters + Date Range Picker + Export Buttons -->
         <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full sm:w-auto">
 
@@ -125,7 +115,7 @@
                 <option value="renewed">Renewed</option>
                 <option value="expired">Expired</option>
             </select>
-
+            
             <!-- Date Range Picker -->
             <div class="flex items-center gap-2">
                 <span class="text-gray-600">From:</span>
@@ -159,6 +149,7 @@
                     <th class="px-8 py-4">Type</th>
                     <th class="px-8 py-4">Status</th>
                     <th class="px-8 py-4">Submitted</th>
+                    <th class="px-8 py-4">Reviewer</th>
                     <th class="px-8 py-4">Actions</th>
                 </tr>
             </thead>
@@ -189,7 +180,10 @@
                         {{ $application->submitted_at ? $application->submitted_at->format('M d, Y') : 'N/A' }}
                     </td>
                     <td class="px-8 py-5">
-                        <a href="{{ route('admin.franchise.show', $application) }}"
+                        {{ $application->reviewer ? $application->reviewer->name : 'N/A' }}
+                    </td>
+                    <td class="px-8 py-5">
+                        <a href="{{ route('superadmin.franchise.show', $application) }}"
                             class="text-primary-navy hover:underline">View</a>
                     </td>
                 </tr>
