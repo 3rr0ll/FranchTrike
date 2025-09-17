@@ -41,5 +41,8 @@ class MotorChangeRequest extends Model
         return $this->belongsTo(UnitMake::class, 'new_unit_make_id');
     }
 
-    
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
 }

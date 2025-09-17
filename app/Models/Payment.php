@@ -30,4 +30,11 @@ class Payment extends Model
     {
         return $this->belongsTo(Fee::class, 'fee_id');
     }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
+    }
+    
+
 }

@@ -200,4 +200,9 @@ class FranchiseApplication extends Model
     {
         return $this->hasMany(MotorChangeRequest::class, 'franchise_application_id');
     }
+
+    public function logs()
+    {
+        return $this->hasMany(FranchiseApplicationLog::class);
+    }
 }
