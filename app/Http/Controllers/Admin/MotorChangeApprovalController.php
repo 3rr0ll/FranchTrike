@@ -7,6 +7,7 @@ use App\Models\MotorChangeRequest;
 use App\Models\UnitMake;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class MotorChangeApprovalController extends Controller
 {
@@ -64,10 +65,33 @@ class MotorChangeApprovalController extends Controller
                 'platenumber'   => $motorChange->new_platenumber,
             ]);
 
-            $motorChange->update([
-                'status' => 'approved',
-                'reviewed_by' => auth()->user()->id,
-            ]);
+            // Ensure 'reviewed_by' is fillable in the MotorChangeRequest model
+            $motorChange->status = 'approved';
+            $motorChange->reviewed_by = Auth::id();
+            $motorChange->save();
+
+            // Log the approval activity
+            \App\Helpers\ActivityLogger::log(
+                'motor_change',
+                'approved',
+                'Motor change request approved for MotorDetail ID: ' . $motorDetail->id . '.',
+                [
+                    'motor_change_request_id' => $motorChange->id,
+                    'motor_detail_id' => $motorDetail->id,
+                    'franchise_application_id' => $franchiseApplication->id,
+                    'old_unit_type' => $motorChange->old_unit_type,
+                    'old_unit_make_id' => $motorChange->old_unit_make_id,
+                    'old_motorno' => $motorChange->old_motorno,
+                    'old_chasisno' => $motorChange->old_chasisno,
+                    'old_platenumber' => $motorChange->old_platenumber,
+                    'new_unit_type' => $motorChange->new_unit_type,
+                    'new_unit_make_id' => $motorChange->new_unit_make_id,
+                    'new_motorno' => $motorChange->new_motorno,
+                    'new_chasisno' => $motorChange->new_chasisno,
+                    'new_platenumber' => $motorChange->new_platenumber,
+                    'reviewed_by' => Auth::user()->name,
+                ]
+            );
 
             DB::commit();
             return back()->with('success', 'Motor change approved.');
@@ -80,12 +104,30 @@ class MotorChangeApprovalController extends Controller
     public function reject(MotorChangeRequest $motorChange)
     {
         try {
-           
-            $motorChange->update([
-                'status' => 'rejected',
-                'reviewed_by' => auth()->user()->id,
-            ]);
-            
+
+            $motorChange->status = 'rejected';
+            $motorChange->reviewed_by = Auth::id();
+            $motorChange->save();
+
+            \App\Helpers\ActivityLogger::log(
+                'motor_change',
+                'rejected',
+                'Motor change request rejected for Franchise No: ' . $motorChange->franchiseApplication->franchise_no . '.',
+                [
+                    'motor_change_request_id' => $motorChange->id,
+                    'reviewed_by' => auth()->user()->name,
+                    'old_unit_type' => $motorChange->old_unit_type,
+                    'old_unit_make_id' => $motorChange->old_unit_make_id,
+                    'old_motorno' => $motorChange->old_motorno,
+                    'old_chasisno' => $motorChange->old_chasisno,
+                    'old_platenumber' => $motorChange->old_platenumber,
+                    'new_unit_type' => $motorChange->new_unit_type,
+                    'new_unit_make_id' => $motorChange->new_unit_make_id,
+                    'new_motorno' => $motorChange->new_motorno,
+                    'new_chasisno' => $motorChange->new_chasisno,
+                    'new_platenumber' => $motorChange->new_platenumber,
+                ]
+            );
             return back()->with('success', 'Motor change rejected.');
         } catch (\Throwable $e) {
             return back()->with('error', 'Rejection failed: ' . $e->getMessage());
@@ -116,6 +158,21 @@ class MotorChangeApprovalController extends Controller
                 'new_chasisno' => $request->new_chasisno,
                 'new_platenumber' => $request->new_platenumber,
             ]);
+
+            \App\Helpers\ActivityLogger::log(
+                'motor_change',
+                'input_new_details',
+                'New motor details inputted for MotorChangeRequest ID: ' . $motorChange->id . '.',
+                [
+                    'motor_change_request_id' => $motorChange->id,
+                    'input_by' => auth()->user()->id,
+                    'new_unit_type' => $request->new_unit_type,
+                    'new_unit_make_id' => $request->new_unit_make_id,
+                    'new_motorno' => $request->new_motorno,
+                    'new_chasisno' => $request->new_chasisno,
+                    'new_platenumber' => $request->new_platenumber,
+                ]
+            );
 
             return redirect()->route('admin.motor-change.index')
                 ->with('success', 'New motor details saved successfully. You can now approve or reject the request.');
@@ -173,6 +230,22 @@ class MotorChangeApprovalController extends Controller
                 'status' => 'pending',
                 'requested_by_admin' => true,
             ]);
+
+            \App\Helpers\ActivityLogger::log(
+                'motor_change_request',
+                'created',
+                'Motor change request created for client (admin-initiated).',
+                [
+                    'franchise_application_id' => $request->franchise_application_id,
+                    'new_unit_type' => $request->new_unit_type,
+                    'new_unit_make_id' => $request->new_unit_make_id,
+                    'new_motorno' => $request->new_motorno,
+                    'new_chasisno' => $request->new_chasisno,
+                    'new_platenumber' => $request->new_platenumber,
+                    'requested_by_admin' => true,
+                ]
+            );
+
 
             return redirect()->route('admin.motor-change.index')
                 ->with('success', 'Motor change request created successfully for the client.');

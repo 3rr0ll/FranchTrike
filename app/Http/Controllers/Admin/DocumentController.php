@@ -33,43 +33,8 @@ class DocumentController extends Controller
     /**
      * Update operator document verification status
      */
-    public function updateOperatorDocumentStatus(Request $request, $documentId)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,approved,rejected',
-            'remarks' => 'nullable|string|max:500'
-        ]);
 
-        $document = OperatorDocument::findOrFail($documentId);
-        $document->update([
-            'status' => $request->status,
-            'verified_by' => Auth::user()->id,
-            'verified_at' => now()
-        ]);
 
-        return back()->with('success', 'Operator document verification status updated successfully.');
-    }
-
-    public function updateDriverDocumentStatus(Request $request, $documentId)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,approved,rejected',
-            'remarks' => 'nullable|string|max:500'
-        ]);
-
-        $document = DriverDocument::findOrFail($documentId);
-        $document->update([
-            'status' => $request->status,
-            'verified_by' => Auth::user()->id,
-            'verified_at' => now()
-        ]);
-
-        return back()->with('success', 'Driver document verification status updated successfully.');
-    }
-
-    /**
-    
-     */
     public function verifyOperatorDocument(Request $request, OperatorDocument $document)
     {
         $request->validate([
@@ -80,6 +45,19 @@ class DocumentController extends Controller
         $document->status = $request->status;
         $document->rejection_reason = $request->status === 'rejected' ? $request->rejection_reason : null;
         $document->save();
+
+        // Activity log
+        \App\Helpers\ActivityLogger::log(
+            'operator document',
+            'status updated',
+            'Operator document status updated to "' . $request->status . '".',
+            [
+                'operator_document_id' => $document->id,
+                'status' => $request->status,
+                'verified_by' => \Auth::user() ? \Auth::user()->name : null,
+                'rejection_reason' => $request->rejection_reason ?? null,
+            ]
+        );
 
         return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
     }
@@ -96,6 +74,19 @@ class DocumentController extends Controller
         $document->verified_by = Auth::id();
         $document->verified_at = now();
         $document->save();
+
+        // Activity log
+        \App\Helpers\ActivityLogger::log(
+            'driver document',
+            'status updated',
+            'Driver document status updated to "' . $request->status . '".',
+            [
+                'driver_document_id' => $document->id,
+                'status' => $request->status,
+                'verified_by' => \Auth::user() ? \Auth::user()->name : null,
+                'rejection_reason' => $request->rejection_reason ?? null,
+            ]
+        );
 
         return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
     }

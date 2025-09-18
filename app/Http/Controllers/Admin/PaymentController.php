@@ -7,8 +7,7 @@ use App\Models\Fee;
 use App\Models\Payment;
 use App\Models\FranchiseApplication;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-
+use App\Helpers\ActivityLogger;
 class PaymentController extends Controller
 {
     /**
@@ -76,13 +75,20 @@ class PaymentController extends Controller
         $fees = Fee::whereIn('id', $request->fees)->get();
 
         foreach ($fees as $fee) {
-            Payment::create([
+            $payment = Payment::create([
                 'franchise_application_id' => $application->id,
                 'fee_id' => $fee->id,
                 'amount_paid' => $fee->amount,
                 'paid_at' => now(),
                 'reviewed_by' => auth()->id(),
             ]);
+
+           ActivityLogger::log(
+                'payment',
+                'created',
+                'Payment of ₱' . $payment->amount_paid . ' recorded.',
+                ['payment_id' => $payment->id]
+            );
         }
 
         return redirect()->route('admin.payments.index')

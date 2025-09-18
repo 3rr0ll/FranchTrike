@@ -138,6 +138,22 @@ class FranchiseApplicationController extends Controller
         } catch (\Throwable $e) {
             // ignore
         }
+        // Activity log for status update
+        \App\Helpers\ActivityLogger::log(
+            'franchise application',
+            'status updated',
+            'Franchise application status updated to "' . $request->status . '".',
+            [
+                'franchise_application_id' => $franchiseApplication->id,
+                'status' => $request->status,
+                'updated_by' => \Auth::user() ? \Auth::user()->name : null,
+                'rejection_reason' => $request->rejection_reason ?? null,
+                'franchise_no' => $request->franchise_no ?? null,
+                'sticker_no' => $request->sticker_no ?? null,
+                'franchise_start_date' => $request->franchise_start_date ?? null,
+                'franchise_end_date' => $request->franchise_end_date ?? null,
+            ]
+        );
 
 
 
@@ -284,6 +300,8 @@ class FranchiseApplicationController extends Controller
             'operator_documents.*' => 'exists:document_types,document_id',
             'driver_documents' => 'required|array',
             'driver_documents.*' => 'exists:document_types,document_id',
+
+            
         ];
 
         // Add conditional validation for renewal applications
@@ -398,10 +416,26 @@ class FranchiseApplicationController extends Controller
                 ]);
             }
 
+            \App\Helpers\ActivityLogger::log(
+                'franchise application',
+                'created',
+                'Franchise application created for client.',
+                [
+                    'franchise_application_id' => $franchiseApplication->id,
+                    'operator_id' => $operator->operator_id,
+                    'driver_id' => $driver->driver_id,
+                    'created_by' => \Auth::user() ? \Auth::user()->name : null,
+                    'application_type' => $request->application_type,
+                    'franchise_fee' => $request->franchise_fee,
+                    'route_id' => $request->route_id,
+                ]
+            );
+
+            
             DB::commit();
 
             return redirect()->route('admin.franchise.index')
-                ->with('success', 'Franchise application created successfully for walk-in client.');
+                ->with('success', 'Franchise application created successfully for client.');
         } catch (\Exception $e) {
             DB::rollback();
 

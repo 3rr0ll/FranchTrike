@@ -86,6 +86,14 @@ class MotorDetailsController extends Controller
             'platenumber' => 'required|string|max:20',
         ]);
 
+        \App\Helpers\ActivityLogger::log(
+            'motor_detail',
+            'updated',
+            'Motor details for franchise id ' . ($motorDetail->franchiseApplication->id ?? 'N/A') . ' updated.',
+            ['motor_detail_id' => $motorDetail->id]
+        );
+       
+
         $motorDetail->update($request->all());
 
         return redirect()->route('admin.motor-details.index')
@@ -96,6 +104,12 @@ class MotorDetailsController extends Controller
     {
         $motorDetail->delete();
 
+        \App\Helpers\ActivityLogger::log(
+            'motor_detail',
+            'deleted',
+            'Motor detail with ID ' . $motorDetail->id . ' deleted.',
+            ['motor_detail_id' => $motorDetail->id]
+        );
         return redirect()->route('admin.motor-details.index')
             ->with('success', 'Motor detail deleted successfully.');
     }
