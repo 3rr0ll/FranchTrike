@@ -116,29 +116,6 @@ class DashboardController extends Controller
             ];
         }
 
-        // Payments
-        $pendingPayments = Payment::whereHas('franchiseApplication', function ($q) use ($operator) {
-            $q->where('operator_id', $operator->operator_id);
-        })
-            ->whereNull('paid_at')
-            ->where(function ($q) {
-                $q->whereNull('stripe_payment_status')
-                  ->orWhere('stripe_payment_status', '!=', 'cancelled');
-            })
-            ->with(['fee', 'franchiseApplication'])
-            ->get();
-
-        $completedPayments = Payment::whereHas('franchiseApplication', function ($q) use ($operator) {
-            $q->where('operator_id', $operator->operator_id);
-        })->whereNotNull('paid_at')->with(['fee', 'franchiseApplication'])->latest()->take(10)->get();
-
-        if ($pendingPayments->count() > 0) {
-            $alerts[] = [
-                'type' => 'warning',
-                'message' => 'You have ' . $pendingPayments->count() . ' pending payment(s) — <a class="underline" href="' . route('operator.payments.index') . '">Go to Payment Center</a>'
-            ];
-        }
-
         // Incomplete applications (not approved/rejected/submitted)
         $incompleteApplications = $applications->whereNotIn('status', ['approved', 'rejected', 'submitted']);
 
@@ -179,11 +156,6 @@ class DashboardController extends Controller
             }
         }
 
-        // Dynamic counts for quick stats
-        $pendingPaymentsCount = $pendingPayments->count();
-        $completedPaymentsCount = Payment::whereHas('franchiseApplication', function ($q) use ($operator) {
-            $q->where('operator_id', $operator->operator_id);
-        })->whereNotNull('paid_at')->count();
 
         $applicationsInProgressCount = $franchiseApplications
             ? $franchiseApplications->whereIn('status', ['submitted', 'pending', 'under_review'])->count()
@@ -193,15 +165,11 @@ class DashboardController extends Controller
 
         return view('operator.dashboard', compact(
             'alerts',
-            'pendingPayments',
-            'completedPayments',
             'incompleteApplications',
             'expiringDocuments',
             'franchiseStatus',
             'franchiseEndDate',
             'franchiseApplications',
-            'pendingPaymentsCount',
-            'completedPaymentsCount',
             'applicationsInProgressCount',
             'expiringDocumentsCount',
             'driversCount'
