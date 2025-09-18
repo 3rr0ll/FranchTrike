@@ -285,7 +285,7 @@ Route::middleware([
             Route::get('/users/{user}/login-history', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'loginHistory'])->name('users.login-history');
             Route::get('/users/login-logs', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'allLoginLogs'])->name('users.login-logs');
 
-           
+            Route::get('/activity', [\App\Http\Controllers\SuperAdmin\ActivityController::class, 'index'])->name('activity.index');
 
             // Payment Management Routes
             Route::prefix('payments')->name('payments.')->group(function () {
