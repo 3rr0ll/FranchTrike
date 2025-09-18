@@ -65,51 +65,67 @@ Driver Document
         </div>
     </div>
 
-    <!-- Documents Section -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($documents as $document)
-        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-200">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900">{{ $document->documentType->name }}</h3>
-                    <span class="px-3 py-1 text-xs font-medium rounded-full 
-                        @if($document->status === 'approved') bg-green-100 text-green-800
-                        @elseif($document->status === 'pending') bg-yellow-100 text-yellow-800
-                        @elseif($document->status === 'rejected') bg-red-100 text-red-800
-                        @else bg-gray-100 text-gray-800
-                        @endif">
-                        {{ ucfirst($document->status) }}
-                    </span>
-                </div>
-
-                <div class="space-y-3">
-                    <x-button
-                        color="blue"
-                        class="flex-1 flex items-center justify-center"
-                        onclick="openDocumentModal('{{ asset('storage/' . $document->file_path) }}', '{{ $document->documentType->name }}', '{{ $document->id }}')">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                        </svg>
-                        View Document
-                    </x-button>
-                </div>
-            </div>
+    <!-- Documents Section (DataTable) -->
+    <div class="bg-white p-4 rounded-lg shadow border border-gray-200 mt-4">
+        <h2 class="text-2xl font-bold text-primary-navy mb-4">Driver Documents</h2>
+        <div class="overflow-x-auto">
+            <table id="documentsTable" class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Name</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @forelse($documents as $i => $document)
+                    <tr>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ $i + 1 }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ $document->documentType->name }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">
+                            <span class="px-3 py-1 text-xs font-medium rounded-full 
+                                @if($document->status === 'approved') bg-green-100 text-green-800
+                                @elseif($document->status === 'pending') bg-yellow-100 text-yellow-800
+                                @elseif($document->status === 'rejected') bg-red-100 text-red-800
+                                @else bg-gray-100 text-gray-800
+                                @endif">
+                                {{ ucfirst($document->status) }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-2 whitespace-nowrap">
+                            <x-button
+                                color="blue"
+                                class="flex items-center justify-center"
+                                onclick="openDocumentModal('{{ asset('storage/' . $document->file_path) }}', '{{ $document->documentType->name }}', '{{ $document->id }}')">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                View Document
+                            </x-button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">
+                            <div class="flex flex-col items-center">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">No documents</h3>
+                                <p class="mt-1 text-sm text-gray-500">No documents have been submitted by this driver yet.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-        @empty
-        <div class="col-span-full">
-            <div class="text-center py-12">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">No documents</h3>
-                <p class="mt-1 text-sm text-gray-500">No documents have been submitted by this driver yet.</p>
-            </div>
-        </div>
-        @endforelse
     </div>
-</div>
 
+   
+   
 <!-- Document Modal -->
 <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-50 hidden">
     <div class="relative mx-auto my-12 w-full max-w-6xl bg-white rounded-md shadow-lg">
@@ -197,6 +213,18 @@ Driver Document
 
         form.submit();
     }
+
+    $(document).ready(function() {
+            $('#documentsTable').DataTable({
+                "order": [],
+                "columnDefs": [
+                    { "orderable": false, "targets": 3 }
+                ],
+                "language": {
+                    "emptyTable": "No documents have been submitted by this driver yet."
+                }
+            });
+        });
 </script>
 
 @if (session('status'))
