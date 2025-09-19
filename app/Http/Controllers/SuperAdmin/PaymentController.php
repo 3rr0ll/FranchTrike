@@ -48,6 +48,14 @@ class PaymentController extends Controller
         ]);
 
         Fee::create($validated);
+        $createdFee = \App\Models\Fee::where($validated)->latest()->first();
+
+        \App\Helpers\ActivityLogger::log(
+            'fee',
+            'Super Admin created new fee',
+            'Fee "' . $validated['description'] . '" with amount ₱' . $validated['amount'] . ' was created.',
+            ['fee_id' => $createdFee ? $createdFee->id : null]
+        );
 
         return redirect()->route('superadmin.payments.index')
             ->with('success', 'Fee created successfully!');
@@ -74,6 +82,13 @@ class PaymentController extends Controller
 
         $fee->update($validated);
 
+        \App\Helpers\ActivityLogger::log(
+            'fee',
+            'Super Admin updated a fee',
+            'Fee "' . $fee->description . '" (ID: ' . $fee->id . ') was updated to ₱' . $fee->amount . '.',
+            ['fee_id' => $fee->id]
+        );
+
         return redirect()->route('superadmin.payments.index')
             ->with('success', 'Fee updated successfully!');
     }
@@ -90,6 +105,12 @@ class PaymentController extends Controller
         }
 
         $fee->delete();
+        \App\Helpers\ActivityLogger::log(
+            'fee',
+            'Super Admin deleted a fee',
+            'Fee "' . $fee->description . '" (ID: ' . $fee->id . ') was deleted.',
+            ['fee_id' => $fee->id]
+        );
 
         return redirect()->route('superadmin.payments.index')
             ->with('success', 'Fee deleted successfully!');
@@ -189,6 +210,13 @@ class PaymentController extends Controller
 
         $payment->update($validated);
 
+        \App\Helpers\ActivityLogger::log(
+            'Super Admin updated a payment',
+            'updated',
+            'Super Admin updated payment of ₱' . $payment->amount_paid . '.',
+            ['payment_id' => $payment->id]
+        );
+
         return redirect()->route('superadmin.payments.payments')
             ->with('success', 'Payment updated successfully!');
     }
@@ -199,6 +227,13 @@ class PaymentController extends Controller
     public function destroyPayment(Payment $payment)
     {
         $payment->delete();
+
+        \App\Helpers\ActivityLogger::log(
+            'payment',
+            'deleted',
+            'Super Admin deleted a payment record.',
+            ['payment_id' => $payment->id]
+        );
 
         return redirect()->route('superadmin.payments.payments')
             ->with('success', 'Payment deleted successfully!');

@@ -56,6 +56,12 @@ class UserManagementController extends Controller
             'password' => Hash::make($validated['password']),
             'role_id' => $validated['role_id'],
         ]);
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin created new user',
+            'User "' . $user->name . '" with email "' . $user->email . '" created.',
+            ['user_id' => $user->id]
+        );
 
         return redirect()->route('superadmin.users.index')
             ->with('success', 'User created successfully!');
@@ -95,6 +101,13 @@ class UserManagementController extends Controller
 
         $user->update($validated);
 
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin updated user',
+            'User "' . $user->name . '" (ID: ' . $user->id . ') was updated.',
+            ['user_id' => $user->id]
+        );
+
         return redirect()->route('superadmin.users.index')
             ->with('success', 'User updated successfully!');
     }
@@ -120,6 +133,13 @@ class UserManagementController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin reset user password',
+            'Password for user "' . $user->name . '" (ID: ' . $user->id . ') was reset.',
+            ['user_id' => $user->id]
+        );
+
         return redirect()->route('superadmin.users.index')
             ->with('success', 'Password reset successfully!');
     }
@@ -133,6 +153,13 @@ class UserManagementController extends Controller
             'is_active' => !$user->is_active,
         ]);
 
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin toggled user status',
+            'User "' . $user->name . '" (ID: ' . $user->id . ') status was toggled to ' . ($user->is_active ? 'active' : 'inactive') . '.',
+            ['user_id' => $user->id]
+        );
+
         $status = $user->is_active ? 'activated' : 'deactivated';
         return redirect()->route('superadmin.users.index')
             ->with('success', "User {$status} successfully!");
@@ -144,6 +171,13 @@ class UserManagementController extends Controller
     public function resetLoginAttempts(User $user)
     {
         $user->resetLoginAttempts();
+
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin reset login attempts',
+            'Login attempts for user "' . $user->name . '" (ID: ' . $user->id . ') were reset.',
+            ['user_id' => $user->id]
+        );
         return redirect()->route('superadmin.users.index')
             ->with('success', 'Login attempts reset successfully!');
     }
@@ -154,6 +188,13 @@ class UserManagementController extends Controller
     public function lockAccount(User $user)
     {
         $user->lockAccount(30); // Lock for 30 minutes
+
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin locked user account',
+            'User "' . $user->name . '" (ID: ' . $user->id . ') account was locked for 30 minutes.',
+            ['user_id' => $user->id]
+        );
         return redirect()->route('superadmin.users.index')
             ->with('success', 'User account locked successfully!');
     }
@@ -175,6 +216,14 @@ class UserManagementController extends Controller
     {
         $securityService = app(LoginSecurityService::class);
         $securityService->forceLogout($user);
+        
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin forced logout',
+            'User "' . $user->name . '" (ID: ' . $user->id . ') was forcibly logged out.',
+            ['user_id' => $user->id]
+        );
+
         
         return redirect()->route('superadmin.users.index')
             ->with('success', 'User logged out successfully!');
@@ -256,6 +305,13 @@ class UserManagementController extends Controller
 
         $user->delete();
 
+        \App\Helpers\ActivityLogger::log(
+            'user',
+            'Super Admin deleted user',
+            'User "' . $user->name . '" with email "' . $user->email . '" was deleted.',
+            ['user_id' => $user->id]
+        );
+
         return redirect()->route('superadmin.users.index')
             ->with('success', 'User deleted successfully!');
     }
@@ -319,6 +375,21 @@ class UserManagementController extends Controller
         SecuritySetting::setValue('enable_login_logging', $validated['enable_login_logging'] ?? false, 'boolean');
         SecuritySetting::setValue('enable_account_lockout', $validated['enable_account_lockout'] ?? false, 'boolean');
         SecuritySetting::setValue('session_timeout_minutes', $validated['session_timeout_minutes'], 'integer');
+
+
+        \App\Helpers\ActivityLogger::log(
+            'security_settings',
+            'Super Admin updated security settings',
+            'Security settings were updated.',
+            [
+                'max_login_attempts' => $validated['max_login_attempts'],
+                'lockout_duration_minutes' => $validated['lockout_duration_minutes'],
+                'enable_login_logging' => $validated['enable_login_logging'] ?? false,
+                'enable_account_lockout' => $validated['enable_account_lockout'] ?? false,
+                'session_timeout_minutes' => $validated['session_timeout_minutes'],
+                'updated_by' => auth()->id(),
+            ]
+        );
 
         return redirect()->route('superadmin.users.security-settings')
             ->with('success', 'Security settings updated successfully!');
