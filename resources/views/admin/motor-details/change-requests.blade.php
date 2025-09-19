@@ -263,7 +263,7 @@
                 pageLength: 10
             });
 
-            @if($historyRequests && $historyRequests->count() > 0)
+            @if($historyRequests && $historyRequests - > count() > 0)
             $('#motorChangeHistoryTable').DataTable({
                 responsive: true,
                 order: [
