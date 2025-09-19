@@ -72,7 +72,7 @@
     </script>
     @endif
    
-    <div class="bg-white rounded-lg shadow p-6 mb-4">
+    <div class="mb-4">
         {{-- Active Franchise(s) (latest 2) --}}
         @php
         $activeFranchises = isset($franchiseApplications)
