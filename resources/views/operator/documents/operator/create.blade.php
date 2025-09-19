@@ -2,7 +2,7 @@
 
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
-   Submit Operator Documents
+    Submit Operator Documents
 </h2>
 @endsection
 
@@ -28,7 +28,7 @@
                 <li>Maximum file size: 5MB per document</li>
                 <li>Documents must be current and valid</li>
             </ul>
-        </div> 
+        </div>
 
         <!-- Document Upload Form -->
         <div class="bg-white rounded-lg shadow-md p-6">
@@ -70,10 +70,12 @@
                         <div class="flex items-center justify-center w-full">
                             <label for="dropzone-file-{{ $docType->document_id }}"
                                 class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 relative">
-
+                               
                                 <!-- Preview Container -->
-                                <div id="file-preview-container-{{ $docType->document_id }}" class="hidden absolute inset-0 flex items-center justify-center bg-white bg-opacity-95 rounded-lg">
-                                    <div id="file-preview-content-{{ $docType->document_id }}" class="flex flex-col items-center"></div>
+                                <div id="file-preview-container-{{ $docType->document_id }}"
+                                    class="hidden absolute inset-0 flex items-center justify-center bg-white bg-opacity-95 rounded-lg overflow-hidden">
+                                    <div id="file-preview-content-{{ $docType->document_id }}"
+                                        class="w-full h-full flex items-center justify-center"></div>
                                 </div>
 
                                 <div class="flex flex-col items-center justify-center pointer-events-none" id="dropzone-content-{{ $docType->document_id }}">
@@ -144,12 +146,12 @@
             if (file.type === 'application/pdf') {
                 const iframe = document.createElement('iframe');
                 iframe.src = URL.createObjectURL(file);
-                iframe.className = "w-full h-60 border rounded-lg";
+                iframe.className = "w-full h-full object-contain border rounded-lg";
                 previewContent.appendChild(iframe);
             } else if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
-                img.className = "max-h-60 object-contain border rounded-lg";
+                img.className = "w-full h-full object-contain border rounded-lg";
                 previewContent.appendChild(img);
             } else {
                 previewContent.innerHTML = '<span class="text-red-600">Unsupported file type</span>';
