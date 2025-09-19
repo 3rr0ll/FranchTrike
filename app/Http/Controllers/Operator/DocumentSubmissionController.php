@@ -123,6 +123,19 @@ class DocumentSubmissionController extends Controller
             ]);
         }
 
+        \App\Helpers\ActivityLogger::log(
+            'operator_document',
+            'uploaded',
+            'Operator uploaded documents.',
+            [
+                'operator_id' => $operatorId,
+                'uploaded document names' => collect($request->file('documents'))->map(function($file) {
+                    return $file->getClientOriginalName();
+                })->values()->all(),
+                'uploaded_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
         return redirect()->route('operator.documents.driver.create')
             ->with('success', 'Documents uploaded successfully!');
     }
@@ -181,6 +194,18 @@ class DocumentSubmissionController extends Controller
                 'status' => 'pending',
             ]);
         }
+
+        \App\Helpers\ActivityLogger::log(
+            'driver_document',
+            'uploaded',
+            'Driver documents uploaded by operator.',
+            [
+                'operator_id' => $operator->operator_id,
+                'driver_id' => $driverId,
+                'uploaded_by' => \Auth::user() ? \Auth::user()->name : null,
+                'document_count' => count($request->file('documents')),
+            ]
+        );
 
         return redirect()->route('operator.home', ['driver' => $driverId])
             ->with('success', 'Driver documents uploaded successfully!');
@@ -247,25 +272,6 @@ class DocumentSubmissionController extends Controller
         return back()->with('success', 'Document deleted successfully!');
     }
 
-    /**
-     * Show the resubmit form for an operator document
-     */
-    public function showResubmitOperatorDocument(Request $request, $id)
-    {
-        $operator = $this->getCurrentOperator();
-
-        if (!$operator) {
-            return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
-        }
-
-        $document = OperatorDocument::where('id', $id)
-            ->where('operator_id', $operator->operator_id)
-            ->firstOrFail();
-
-        $documentType = $document->documentType;
-
-        return view('operator.documents.operator.resubmit', compact('document', 'documentType'));
-    }
 
     /**
      * Handle resubmission of an operator document
@@ -368,6 +374,70 @@ class DocumentSubmissionController extends Controller
         $document->rejection_reason = null;
         $document->save();
 
+        \App\Helpers\ActivityLogger::log(
+            'driver_document',
+            'resubmitted',
+            'Operator resubmitted a Driver document.',
+            [
+                'operator_id' => $operator->operator_id,
+                'driver_id' => $document->driver_id,
+                'document_id' => $document->id,
+                'document_name' => $document->document_name,
+                'uploaded_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
         return redirect()->route('operator.documents.status')->with('success', 'Driver document resubmitted successfully!');
+    }
+
+    /**
+     * Handle resubmission of an operator document
+     * Route: POST /operator/documents/operator/resubmit/{document}
+     */
+    public function processResubmitOperatorDocument(Request $request, $id)
+    {
+        $operator = $this->getCurrentOperator();
+
+        if (!$operator) {
+            return redirect()->back()->withErrors(['error' => 'Please complete your operator profile first']);
+        }
+
+        $document = \App\Models\OperatorDocument::where('id', $id)
+            ->where('operator_id', $operator->operator_id)
+            ->firstOrFail();
+
+        $request->validate([
+            'document' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        // Delete old file
+        if ($document->file_path) {
+            \Storage::delete($document->file_path);
+        }
+
+        // Store new file
+        $file = $request->file('document');
+        $fileName = \Str::random(16) . '.' . $file->getClientOriginalExtension();
+        $filePath = $file->storeAs('operator-documents/' . $operator->operator_id, $fileName, 'public');
+
+        $document->file_path = $filePath;
+        $document->document_name = $file->getClientOriginalName();
+        $document->status = 'pending';
+        $document->rejection_reason = null;
+        $document->save();
+
+        \App\Helpers\ActivityLogger::log(
+            'operator_document',
+            'resubmitted',
+            'Operator resubmitted a Operator document.',
+            [
+                'operator_id' => $operator->operator_id,
+                'document_id' => $document->id,
+                'document_name' => $document->document_name,
+                'uploaded_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
+        return redirect()->route('operator.documents.status')->with('success', 'Operator document resubmitted successfully!');
     }
 };

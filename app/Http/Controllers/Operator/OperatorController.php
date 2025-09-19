@@ -45,6 +45,27 @@ class OperatorController extends Controller
 
         Operator::create($validated);
 
+        \App\Helpers\ActivityLogger::log(
+            'operator',
+            'created',
+            'Operator profile created.',
+            [
+                'operator_id' => Auth::user()->id,
+                'last_name' => $validated['last_name'],
+                'first_name' => $validated['first_name'],
+                'middle_initial' => $validated['middle_initial'] ?? null,
+                'barangay' => $validated['barangay'],
+                'municipality' => $validated['municipality'],
+                'province' => $validated['province'],
+                'birth_date' => $validated['birth_date'],
+                'age' => $validated['age'],
+                'sex' => $validated['sex'],
+                'civil_status' => $validated['civil_status'],
+                'contact_no' => $validated['contact_no'],
+                'created_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
         return redirect()->route('operator.driver.create')->with('success', 'Operator created.');
     }
 

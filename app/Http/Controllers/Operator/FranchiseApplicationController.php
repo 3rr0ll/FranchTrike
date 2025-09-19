@@ -108,6 +108,28 @@ class FranchiseApplicationController extends Controller
             'status' => 'submitted',
         ]);
 
+        \App\Helpers\ActivityLogger::log(
+            'franchise_application',
+            'submitted',
+            'Operator submitted a franchise application.',
+            [
+                'franchise_application_id' => $franchiseApplication->id,
+                'operator_id' => $operator->operator_id,
+                'driver_id' => $request->driver_id,
+                'route_id' => $request->route_id,
+                'application_type' => $request->application_type,
+                'previous_application_id' => $request->previous_application_id,
+                'franchise_no' => $request->franchise_no,
+                'sticker_no' => $request->sticker_no,
+                'operator_name' => $request->operator_name,
+                'ctc_no' => $request->ctc_no,
+                'ctc_date_issued' => $request->ctc_date_issued,
+                'ctc_place_issued' => $request->ctc_place_issued,
+                'franchise_fee' => $request->franchise_fee,
+                'submitted_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
         return redirect()->route('operator.franchise.motor-details', $franchiseApplication->id)->with('success', 'Franchise application submitted..');
     }
 
@@ -139,6 +161,22 @@ class FranchiseApplicationController extends Controller
             'chasisno' => $request->chasisno,
             'platenumber' => $request->platenumber,
         ]);
+
+        \App\Helpers\ActivityLogger::log(
+            'motor_detail',
+            'added',
+            'Operator added motor details to franchise application.',
+            [
+                'franchise_application_id' => $franchiseApplicationId,
+                'operator_id' => auth()->user() && auth()->user()->operator ? auth()->user()->operator->operator_id : null,
+                'unit_type' => $request->unit_type,
+                'unit_make_id' => $request->unit_make_id,
+                'motorno' => $request->motorno,
+                'chasisno' => $request->chasisno,
+                'platenumber' => $request->platenumber,
+                'added_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
 
         return redirect()->route('operator.franchise.index')->with('success', 'Motor details added successfully.');
     }
@@ -222,6 +260,19 @@ class FranchiseApplicationController extends Controller
 
             // Now, safely mark the old application as renewed (status change)
             $franchiseApplication->update(['status' => 'renewed']);
+
+            \App\Helpers\ActivityLogger::log(
+                'franchise_application',
+                'renewed',
+                'Operator renewed a franchise application.',
+                [
+                    'operator_id' => $operator->operator_id,
+                    'old_application_id' => $franchiseApplication->id,
+                    'new_application_id' => $renewalApplication->id,
+                    'driver_id' => $renewalApplication->driver_id,
+                    'submitted_by' => auth()->user() ? auth()->user()->name : null,
+                ]
+            );
 
             return redirect()->route('operator.franchise.show', $renewalApplication->id)
                 ->with('success', 'Renewal application created successfully! The application has been submitted for review, including motor details.');

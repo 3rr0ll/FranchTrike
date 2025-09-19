@@ -80,6 +80,22 @@ class MotorChangeController extends Controller
             'status' => 'pending',
         ]);
 
+        \App\Helpers\ActivityLogger::log(
+            'motor_change_request',
+            'submitted',
+            'Operator submitted a motor change request.',
+            [
+                'franchise_application_id' => $application->id,
+                'operator_id' => $application->operator_id,
+                'old_unit_type' => $motorDetail->unit_type,
+                'old_unit_make_id' => $motorDetail->unit_make_id,
+                'old_motorno' => $motorDetail->motorno,
+                'old_chasisno' => $motorDetail->chasisno,
+                'old_platenumber' => $motorDetail->platenumber,
+                'submitted_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
         return redirect()->route('operator.franchise.index')
             ->with('success', 'Motor change request submitted successfully! Please prepare for physical evaluation.');
     }

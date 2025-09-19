@@ -57,6 +57,30 @@ class DriverController extends Controller
 
         Driver::create($validated);
 
+        \App\Helpers\ActivityLogger::log(
+            'driver',
+            'created',
+            'Operator created a driver profile.',
+            [
+                'operator_id' => $operator->operator_id,
+                'last_name' => $validated['last_name'],
+                'first_name' => $validated['first_name'],
+                'middle_initial' => $validated['middle_initial'] ?? null,
+                'barangay' => $validated['barangay'],
+                'municipality' => $validated['municipality'],
+                'province' => $validated['province'],
+                'birth_date' => $validated['birth_date'],
+                'age' => $validated['age'],
+                'sex' => $validated['sex'],
+                'civil_status' => $validated['civil_status'],
+                'contact_no' => $validated['contact_no'],
+                'license_no' => $validated['license_no'],
+                'license_validity' => $validated['license_validity'],
+                'license_nature' => $validated['license_nature'],
+                'created_by' => auth()->user() ? auth()->user()->name : null,
+            ]
+        );
+
         return redirect()->route('operator.documents.operator.create')
             ->with('success', 'Driver information submitted successfully!');
     }
