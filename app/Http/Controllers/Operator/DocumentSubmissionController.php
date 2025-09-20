@@ -97,7 +97,6 @@ class DocumentSubmissionController extends Controller
     
         // Initialize Cloudinary
         try {
-            // Debug configuration
             \Log::info('Cloudinary config check:', [
                 'cloud_name' => config('cloudinary.cloud_name'),
                 'api_key' => config('cloudinary.api_key') ? 'SET' : 'NOT SET',
