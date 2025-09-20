@@ -14,6 +14,8 @@ use App\Http\Controllers\Operator\DriverController;
 use App\Http\Controllers\Operator\DocumentSubmissionController;
 use App\Http\Controllers\Operator\FranchiseApplicationController;
 use App\Http\Controllers\Operator\MotorChangeController;
+use App\Http\Controllers\Operator\ProfileController;
+
 
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\OperatorController as AdminOperatorController;
@@ -139,10 +141,14 @@ Route::middleware([
             Route::get('/', [OperatorController::class, 'index'])->name('index');
             Route::get('/create', [OperatorController::class, 'create'])->name('create');
             Route::post('/', [OperatorController::class, 'store'])->name('store');
-            Route::get('/{operator}/edit', [OperatorController::class, 'edit'])->name('edit');
-            Route::put('/{operator}', [OperatorController::class, 'update'])->name('update');
             Route::delete('/{operator}', [OperatorController::class, 'destroy'])->name('destroy');
+            // Operator profile edit and update routes
+            Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+            Route::post('/edit', [ProfileController::class, 'update'])->name('update');
 
+
+            
+          
             Route::prefix('franchise')->name('franchise.')->group(function () {
                 Route::get('/', [FranchiseApplicationController::class, 'index'])->name('index');
                 Route::get('/create', [FranchiseApplicationController::class, 'create'])->name('create');
