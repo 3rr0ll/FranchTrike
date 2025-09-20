@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
+use Carbon\Carbon;
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
 use App\Http\Controllers\Operator\OperatorController;
@@ -32,6 +36,63 @@ Route::view('/login', 'auth.login')->name('login')->middleware('guest');
 
 // Admin and Superadmin login form (now in auth folder)
 Route::view('admin/login', 'auth.admins-login')->name('admin.login')->middleware('guest');
+
+// Email Verification Routes
+Route::get('/email/verify', function () {
+    $interval = 30; // seconds
+    $lastAttempt = Session::get('verification_last_attempt');
+
+    if ($lastAttempt) {
+        $secondsLeft = max(0, $interval - Carbon::now()->diffInSeconds(Carbon::parse($lastAttempt)));
+    } else {
+        $secondsLeft = 0;
+    }
+
+    return view('auth.verify-email', ['secondsLeft' => $secondsLeft]);
+})->middleware('auth')->name('verification.notice');
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    // After verifying, redirect to operator/create so user can access it
+    return redirect('/operator/create');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::post('/email/verification-resend', function (Request $request) {
+    $maxAttempts = 2;
+    $interval = 30; // seconds
+
+    $resendAttempts = Session::get('verification_resend_attempts', 0);
+    $lastAttempt = Session::get('verification_last_attempt');
+
+    $now = Carbon::now();
+
+    // If lastAttempt exists, check interval
+    if ($lastAttempt) {
+        $diff = $now->diffInSeconds(Carbon::parse($lastAttempt));
+        if ($diff < $interval) {
+            $secondsLeft = $interval - $diff;
+            return back()->with('error', "Please wait {$secondsLeft} seconds before trying again.");
+        }
+    }
+
+    // Check max attempts
+    if ($resendAttempts >= $maxAttempts) {
+        return back()->with('error', 'You have reached the maximum number of resend attempts.');
+    }
+
+    // Send verification email
+    $request->user()->sendEmailVerificationNotification();
+
+    // Update session
+    Session::put('verification_resend_attempts', $resendAttempts + 1);
+    Session::put('verification_last_attempt', $now);
+
+    return back()->with('status', 'verification-link-sent');
+})->middleware(['auth'])->name('verification.resend');
 
 Route::middleware([
     'auth:sanctum',
@@ -305,8 +366,5 @@ Route::middleware([
                 // Statistics
                 Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
             });
-            
-
         });
-
 });

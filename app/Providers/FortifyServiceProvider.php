@@ -18,33 +18,63 @@ use Laravel\Fortify\Contracts\LoginResponse;
 use App\Actions\Fortify\RedirectAuthenticatedUsers;
 use App\Services\LoginSecurityService;
 use Laravel\Fortify\Contracts\RegisterResponse;
-use Illuminate\Http\RedirectResponse;
+use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
+use Laravel\Fortify\Http\Responses\VerifyEmailResponse;
+use Illuminate\Auth\Events\Verified; 
 
 class FortifyServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
 
-        // Custom RegisterResponse to redirect to operator/create after registration
+        // Custom RegisterResponse to redirect to verification notice
         $this->app->singleton(RegisterResponse::class, function () {
             return new class implements RegisterResponse {
                 public function toResponse($request)
                 {
+                    // Redirect to email verification notice instead of operator/create
+                    return redirect()->route('verification.notice');
+                }
+            };
+        });
+
+        $this->app->singleton(VerifyEmailViewResponse::class, function () {
+            return new class implements VerifyEmailViewResponse {
+                public function toResponse($request)
+                {
+                    return view('auth.verify-email');
+                }
+            };
+        });
+        
+        // Custom VerifyEmailResponse to redirect to /operator/create
+        $this->app->singleton(VerifyEmailResponse::class, function () {
+            return new class implements VerifyEmailResponse {
+                public function toResponse($request)
+                {
+                    // Set role_id to 1 when email is verified
+                    if ($request->user() && $request->user()->role_id != 1) {
+                        $request->user()->role_id = 1;
+                        $request->user()->save();
+                    }
                     return redirect()->intended('/operator/create');
                 }
             };
+        });
+
+        // Listen for the Verified event as a backup (in case other flows verify email)
+        \Illuminate\Support\Facades\Event::listen(Verified::class, function ($event) {
+            $user = $event->user;
+            if ($user && $user->role_id != 1) {
+                $user->role_id = 1;
+                $user->save();
+            }
         });
 
         Fortify::authenticateUsing(function (Request $request) {
@@ -57,6 +87,11 @@ class FortifyServiceProvider extends ServiceProvider
                     $securityService->logLoginAttempt($request, $request->email, 'fail', 'User account is inactive');
                 }
                 return null;
+            }
+
+            // Check if email is verified (only for non-admin logins)
+            if (!$request->has('is_admin_login') && !$user->hasVerifiedEmail()) {
+                return null; // This will redirect to verification notice
             }
 
             // Check if account is locked
@@ -105,8 +140,5 @@ class FortifyServiceProvider extends ServiceProvider
         RateLimiter::for('two-factor', function (Request $request) {
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
-
-        // Bind custom login redirect
-        $this->app->singleton(LoginResponse::class, RedirectAuthenticatedUsers::class);
     }
 }
