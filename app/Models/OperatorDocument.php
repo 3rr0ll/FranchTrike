@@ -15,13 +15,16 @@ class OperatorDocument extends Model
         'document_type_id',
         'document_name',
         'file_path',
+        'file_url',
         'file_type',
         'file_size',
+        'cloudinary_public_id',
         'status',
         'rejection_reason',
         'verified_by',
         'verified_at',
     ];
+    
 
     protected $casts = [
         'verified_at' => 'datetime',
@@ -53,11 +56,31 @@ class OperatorDocument extends Model
     }
 
     /**
-     * Get the full file URL
+     * Get the full file URL - RENAMED to avoid conflict with database column
      */
-    public function getFileUrlAttribute()
+    public function getFullFileUrlAttribute()
     {
-        return Storage::url($this->file_path);
+        // Priority: Cloudinary URL first, then local storage
+        if ($this->attributes['file_url']) {
+            return $this->attributes['file_url']; // Cloudinary link
+        }
+        return $this->file_path ? Storage::url($this->file_path) : null;
+    }
+
+    /**
+     * Check if file is an image
+     */
+    public function getIsImageAttribute()
+    {
+        return in_array(strtolower($this->file_type), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+    }
+
+    /**
+     * Check if file is a PDF
+     */
+    public function getIsPdfAttribute()
+    {
+        return strtolower($this->file_type) === 'pdf';
     }
 
     /**

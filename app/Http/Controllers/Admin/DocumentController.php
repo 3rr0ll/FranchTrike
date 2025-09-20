@@ -16,7 +16,12 @@ class DocumentController extends Controller
     {
         $documents = OperatorDocument::where('operator_id', $operator->operator_id)
             ->with('documentType')
-            ->get();
+            ->get()
+            ->map(function ($document) {
+                // Add helper properties for easier view handling
+                $document->display_url = $document->file_url ?: $document->full_file_url;
+                return $document;
+            });
 
         return view('admin.documents.operators.show', compact('operator', 'documents'));
     }
@@ -25,16 +30,88 @@ class DocumentController extends Controller
     {
         $documents = DriverDocument::where('driver_id', $driver->driver_id)
             ->with('documentType')
-            ->get();
+            ->get()
+            ->map(function ($document) {
+                // Add helper properties for easier view handling
+                $document->display_url = $document->file_url ?: $document->full_file_url;
+                return $document;
+            });
 
         return view('admin.documents.drivers.show', compact('driver', 'documents'));
     }
 
     /**
+     * View a specific operator document
+     */
+    public function viewOperatorDocument(OperatorDocument $document)
+    {
+        $document->load(['documentType', 'operator']);
+        $displayUrl = $document->file_url ?: $document->full_file_url;
+        
+        return view('admin.documents.operators.view', compact('document', 'displayUrl'));
+    }
+
+    /**
+     * View a specific driver document
+     */
+    public function viewDriverDocument(DriverDocument $document)
+    {
+        $document->load(['documentType', 'driver']);
+        $displayUrl = $document->file_url ?: $document->full_file_url;
+        
+        return view('admin.documents.drivers.view', compact('document', 'displayUrl'));
+    }
+
+    /**
+     * Get document for modal viewing (AJAX)
+     */
+    public function getOperatorDocumentForModal(OperatorDocument $document)
+    {
+        $displayUrl = $document->file_url ?: $document->full_file_url;
+        
+        return response()->json([
+            'success' => true,
+            'document' => [
+                'id' => $document->id,
+                'name' => $document->document_name,
+                'type' => $document->documentType->name,
+                'url' => $displayUrl,
+                'file_type' => $document->file_type,
+                'is_image' => $document->is_image,
+                'is_pdf' => $document->is_pdf,
+                'status' => $document->status,
+                'rejection_reason' => $document->rejection_reason,
+            ]
+        ]);
+    }
+
+    /**
+     * Get driver document for modal viewing (AJAX)
+     */
+    public function getDriverDocumentForModal(DriverDocument $document)
+    {
+        $displayUrl = $document->file_url ?: $document->full_file_url;
+        
+        return response()->json([
+            'success' => true,
+            'document' => [
+                'id' => $document->id,
+                'name' => $document->document_name,
+                'type' => $document->documentType->name,
+                'url' => $displayUrl,
+                'file_type' => $document->file_type,
+                'is_image' => $document->is_image,
+                'is_pdf' => $document->is_pdf,
+                'status' => $document->status,
+                'rejection_reason' => $document->rejection_reason,
+                'driver_name' => $document->driver ? $document->driver->first_name . ' ' . $document->driver->last_name : 'N/A',
+            ]
+        ]);
+    }
+
+    /**
      * Update operator document verification status
      */
-
-
     public function verifyOperatorDocument(Request $request, OperatorDocument $document)
     {
         $request->validate([
@@ -44,6 +121,8 @@ class DocumentController extends Controller
 
         $document->status = $request->status;
         $document->rejection_reason = $request->status === 'rejected' ? $request->rejection_reason : null;
+        $document->verified_by = Auth::id();
+        $document->verified_at = now();
         $document->save();
 
         // Activity log
@@ -54,10 +133,19 @@ class DocumentController extends Controller
             [
                 'operator_document_id' => $document->id,
                 'status' => $request->status,
-                'verified_by' => \Auth::user() ? \Auth::user()->name : null,
+                'verified_by' => Auth::user() ? Auth::user()->name : null,
                 'rejection_reason' => $request->rejection_reason ?? null,
             ]
         );
+
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Document has been ' . $request->status . ' successfully.',
+                'status' => $request->status
+            ]);
+        }
 
         return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
     }
@@ -83,11 +171,48 @@ class DocumentController extends Controller
             [
                 'driver_document_id' => $document->id,
                 'status' => $request->status,
-                'verified_by' => \Auth::user() ? \Auth::user()->name : null,
+                'verified_by' => Auth::user() ? Auth::user()->name : null,
                 'rejection_reason' => $request->rejection_reason ?? null,
             ]
         );
 
+        // Return JSON response for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Document has been ' . $request->status . ' successfully.',
+                'status' => $request->status
+            ]);
+        }
+
         return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
+    }
+
+    /**
+     * Download document (redirect to Cloudinary URL)
+     */
+    public function downloadOperatorDocument(OperatorDocument $document)
+    {
+        $displayUrl = $document->file_url ?: $document->full_file_url;
+        
+        if (!$displayUrl) {
+            abort(404, 'Document not found');
+        }
+
+        return redirect($displayUrl);
+    }
+
+    /**
+     * Download driver document (redirect to Cloudinary URL)
+     */
+    public function downloadDriverDocument(DriverDocument $document)
+    {
+        $displayUrl = $document->file_url ?: $document->full_file_url;
+        
+        if (!$displayUrl) {
+            abort(404, 'Document not found');
+        }
+
+        return redirect($displayUrl);
     }
 }
