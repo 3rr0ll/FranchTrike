@@ -11,7 +11,7 @@
     <!-- Operator Documents Table -->
 
     <div class="bg-white p-4 rounded shadow">
-    <h2 class="text-xl font-bold text-gray-800">Operator Documents</h2>
+        <h2 class="text-xl font-bold text-gray-800">Operator Documents</h2>
         @if($operatorDocuments->isEmpty())
         <div class="flex justify-end mb-4">
             <a href="{{ route('operator.documents.operator.create') }}">
@@ -46,18 +46,19 @@
                             </span>
                         </td>
                         <td class="px-4 py-2 space-x-2">
-                            <x-button size="sm" onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
+                            {{-- Use file_url for Cloudinary files --}}
+                            <x-button size="sm" onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
                                 View
                             </x-button>
                             @if($doc->status === 'rejected')
-                                <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="openResubmitModal('operator', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.operator.resubmit', $doc->id) }}')">
-                                    Resubmit
-                                </x-button>
+                            <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="openResubmitModal('operator', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.operator.resubmit', $doc->id) }}')">
+                                Resubmit
+                            </x-button>
                             @endif
                         </td>
                         <td class="px-4 py-2 text-xs text-red-600">
                             @if($doc->status === 'rejected' && $doc->rejection_reason)
-                                {{ $doc->rejection_reason }}
+                            {{ $doc->rejection_reason }}
                             @endif
                         </td>
                     </tr>
@@ -73,7 +74,7 @@
 
     <!-- Driver Documents Table -->
     <div class="bg-white p-4 rounded shadow">
-    <h2 class="text-xl font-bold text-gray-800">Driver Documents</h2>
+        <h2 class="text-xl font-bold text-gray-800">Driver Documents</h2>
 
         <div class="flex justify-end mb-4">
             <a href="{{ route('operator.documents.driver.create') }}">
@@ -99,14 +100,14 @@
                         <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
                         <td class="px-4 py-2">
                             @if(isset($doc->driver))
-                                @php
-                                    $driver = $doc->driver;
-                                    $middleInitial = $driver->middle_initial ? ' ' . $driver->middle_initial . '.' : '';
-                                    $driverName = $driver->first_name . $middleInitial . ' ' . $driver->last_name;
-                                @endphp
-                                {{ $driverName }}
+                            @php
+                            $driver = $doc->driver;
+                            $middleInitial = $driver->middle_initial ? ' ' . $driver->middle_initial . '.' : '';
+                            $driverName = $driver->first_name . $middleInitial . ' ' . $driver->last_name;
+                            @endphp
+                            {{ $driverName }}
                             @else
-                                N/A
+                            N/A
                             @endif
                         </td>
                         <td class="px-4 py-2">
@@ -120,18 +121,19 @@
                             </span>
                         </td>
                         <td class="px-4 py-2 space-x-2">
-                            <x-button size="sm" onclick="openDocumentModal('{{ asset('storage/' . $doc->file_path) }}', '{{ $doc->documentType->name }}')">
+                            {{-- Use file_url directly for Cloudinary, or full_file_url as fallback --}}
+                            <x-button size="sm" onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
                                 View
                             </x-button>
                             @if($doc->status === 'rejected')
-                                <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="openResubmitModal('driver', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.driver.resubmit', $doc->id) }}')">
-                                    Resubmit
-                                </x-button>
+                            <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="openResubmitModal('driver', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.driver.resubmit', $doc->id) }}')">
+                                Resubmit
+                            </x-button>
                             @endif
                         </td>
                         <td class="px-4 py-2 text-xs text-red-600">
                             @if($doc->status === 'rejected' && $doc->rejection_reason)
-                                {{ $doc->rejection_reason }}
+                            {{ $doc->rejection_reason }}
                             @endif
                         </td>
                     </tr>
@@ -158,8 +160,8 @@
                     </svg>
                 </button>
             </div>
-            <div class="flex-1 overflow-hidden">
-                <iframe id="documentViewer" class="w-full h-full rounded-md border border-gray-300" style="min-height:600px;" frameborder="0"></iframe>
+            <div class="flex-1 overflow-hidden" id="documentViewerContainer">
+                <!-- Dynamic content will be loaded here -->
             </div>
         </div>
     </div>
@@ -188,7 +190,7 @@
                         </div>
                         <div class="flex flex-col items-center justify-center pt-5 pb-6" id="dropzone-content">
                             <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
                             </svg>
                             <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
                             <p class="text-xs text-gray-500 dark:text-gray-400">PDF, PNG, JPG, JPEG (Max 5MB)</p>
@@ -212,29 +214,58 @@
         $('#operator-documents-table').DataTable({
             "order": [],
             "pageLength": 10,
-            "columnDefs": [
-                { "orderable": false, "targets": [2,3] }
-            ]
+            "columnDefs": [{
+                "orderable": false,
+                "targets": [2, 3]
+            }]
         });
         $('#driver-documents-table').DataTable({
             "order": [],
             "pageLength": 10,
-            "columnDefs": [
-                { "orderable": false, "targets": [3,4] }
-            ]
+            "columnDefs": [{
+                "orderable": false,
+                "targets": [3, 4]
+            }]
         });
     });
 
-    function openDocumentModal(filePath, documentName) {
+    function openDocumentModal(fileUrl, documentName) {
         document.getElementById('modalTitle').textContent = documentName;
-        document.getElementById('documentViewer').src = filePath;
+        const container = document.getElementById('documentViewerContainer');
+
+        // Check if it's a PDF or image based on file extension or URL
+        const isPdf = fileUrl.toLowerCase().includes('.pdf') || fileUrl.toLowerCase().includes('image/upload') === false;
+        const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl) || fileUrl.includes('image/upload');
+
+        if (isImage && !isPdf) {
+            // Display as image
+            container.innerHTML = `
+                <img src="${fileUrl}" 
+                     alt="${documentName}" 
+                     class="w-full h-full object-contain rounded-md border border-gray-300" 
+                     style="min-height:600px;" />
+            `;
+        } else {
+            // Display as iframe (works for PDFs)
+            container.innerHTML = `
+                <iframe src="${fileUrl}" 
+                        class="w-full h-full rounded-md border border-gray-300" 
+                        style="min-height:600px;" 
+                        frameborder="0">
+                    <p>Your browser does not support iframes. 
+                       <a href="${fileUrl}" target="_blank">Click here to view the document</a>
+                    </p>
+                </iframe>
+            `;
+        }
+
         document.getElementById('documentModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 
     function closeDocumentModal() {
         document.getElementById('modalTitle').textContent = '';
-        document.getElementById('documentViewer').src = '';
+        document.getElementById('documentViewerContainer').innerHTML = '';
         document.getElementById('documentModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
@@ -271,8 +302,7 @@
         }
     });
 
-
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const fileInput = document.getElementById('dropzone-file');
         const previewContainer = document.getElementById('file-preview-container');
         const previewContent = document.getElementById('file-preview-content');
@@ -280,7 +310,10 @@
 
         // Helper to get dropzone size
         function getDropzoneSize() {
-            if (!dropzoneContent) return { width: '100%', height: '100%' };
+            if (!dropzoneContent) return {
+                width: '100%',
+                height: '100%'
+            };
             const rect = dropzoneContent.getBoundingClientRect();
             return {
                 width: rect.width + 'px',
@@ -289,7 +322,7 @@
         }
 
         if (fileInput) {
-            fileInput.addEventListener('change', function (e) {
+            fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 previewContent.innerHTML = '';
                 if (!file) {
@@ -302,8 +335,14 @@
                 let fileType = file.type;
                 let fileName = file.name;
                 let fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
- 
-                const { width, height } = { width: '450px', height: '360px' }; 
+
+                const {
+                    width,
+                    height
+                } = {
+                    width: '450px',
+                    height: '360px'
+                };
 
                 if (fileType === 'application/pdf') {
                     // PDF preview (icon + name)
@@ -321,7 +360,7 @@
                 } else if (fileType.startsWith('image/')) {
                     // Image preview
                     const reader = new FileReader();
-                    reader.onload = function (ev) {
+                    reader.onload = function(ev) {
                         previewContent.innerHTML = `
                             <div style="width:${width};height:${height};display:flex;flex-direction:column;align-items:center;justify-content:center;">
                                 <img src="${ev.target.result}" alt="Preview" style="max-width:100%;max-height:70%;object-fit:contain;display:block;margin-bottom:0.5rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);" />
@@ -346,7 +385,7 @@
             });
         }
 
-        window.removeFilePreview = function () {
+        window.removeFilePreview = function() {
             if (fileInput) fileInput.value = '';
             previewContent.innerHTML = '';
             previewContainer.classList.add('hidden');
@@ -354,15 +393,23 @@
         };
 
         // Also clear preview when modal closes
-        window.closeResubmitModal = (function (orig) {
-            return function () {
-                if (fileInput) fileInput.value = '';
-                previewContent.innerHTML = '';
-                previewContainer.classList.add('hidden');
-                dropzoneContent.classList.remove('opacity-30');
-                if (typeof orig === 'function') orig();
-            };
-        })(window.closeResubmitModal);
+        const originalCloseResubmitModal = window.closeResubmitModal;
+        window.closeResubmitModal = function() {
+            if (fileInput) fileInput.value = '';
+            previewContent.innerHTML = '';
+            previewContainer.classList.add('hidden');
+            dropzoneContent.classList.remove('opacity-30');
+            if (originalCloseResubmitModal) {
+                originalCloseResubmitModal();
+            } else {
+                document.getElementById('resubmitModalTitle').textContent = '';
+                document.getElementById('resubmitForm').action = '';
+                document.getElementById('resubmitDocId').value = '';
+                document.getElementById('dropzone-file').value = '';
+                document.getElementById('resubmitModal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        };
     });
 </script>
 @endpush

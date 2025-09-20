@@ -48,15 +48,18 @@
                         @php $doc = $submittedDocuments[$docType->document_id]; @endphp
                         <div class="mb-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    @if($doc->status === 'approved') bg-green-100 text-green-800
-                                    @elseif($doc->status === 'rejected') bg-red-100 text-red-800
-                                    @else bg-yellow-100 text-yellow-800 @endif">
+                         @if($doc->status === 'approved') bg-green-100 text-green-800
+                         @elseif($doc->status === 'rejected') bg-red-100 text-red-800
+                        @else bg-yellow-100 text-yellow-800 @endif">
                                 {{ ucfirst($doc->status) }}
                             </span>
                             <span class="ml-2 text-sm text-gray-600">
                                 {{ $doc->document_name }} ({{ $doc->formatted_file_size }})
                             </span>
-                            <a href="{{ $doc->file_url }}" target="_blank" class="ml-2 text-blue-600 hover:text-blue-800 text-sm">View</a>
+
+                            <!-- Cloudinary file URL -->
+                            <a href="{{ $doc->file_url }}" target="_blank"
+                                class="ml-2 text-blue-600 hover:text-blue-800 text-sm">View</a>
                         </div>
 
                         @if($doc->status === 'rejected' && $doc->rejection_reason)
@@ -65,6 +68,7 @@
                         </div>
                         @endif
                         @endif
+
 
                         <!-- Dropzone Upload -->
                         <div class="flex items-center justify-center w-full">

@@ -51,7 +51,6 @@
                     </select>
                 </div>
 
-
                 <!-- Document Uploads -->
                 <div class="space-y-6">
                     @foreach($documentTypes as $docType)
@@ -65,15 +64,18 @@
                         @php $doc = $submittedDocuments[$docType->document_id]; @endphp
                         <div class="mb-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    @if($doc->status === 'approved') bg-green-100 text-green-800
-                                    @elseif($doc->status === 'rejected') bg-red-100 text-red-800
-                                    @else bg-yellow-100 text-yellow-800 @endif">
+                         @if($doc->status === 'approved') bg-green-100 text-green-800
+                         @elseif($doc->status === 'rejected') bg-red-100 text-red-800
+                        @else bg-yellow-100 text-yellow-800 @endif">
                                 {{ ucfirst($doc->status) }}
                             </span>
                             <span class="ml-2 text-sm text-gray-600">
                                 {{ $doc->document_name }} ({{ $doc->formatted_file_size }})
                             </span>
-                            <a href="{{ $doc->file_url }}" target="_blank" class="ml-2 text-blue-600 hover:text-blue-800 text-sm">View</a>
+
+                            <!-- Cloudinary file URL -->
+                            <a href="{{ $doc->file_url }}" target="_blank"
+                                class="ml-2 text-blue-600 hover:text-blue-800 text-sm">View</a>
                         </div>
 
                         @if($doc->status === 'rejected' && $doc->rejection_reason)
@@ -94,7 +96,6 @@
                                     <div id="file-preview-content-{{ $docType->document_id }}"
                                         class="w-full h-full flex items-center justify-center"></div>
                                 </div>
-
 
                                 <div class="flex flex-col items-center justify-center pointer-events-none" id="dropzone-content-{{ $docType->document_id }}">
                                     <svg class="w-8 h-8 mb-3 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
@@ -127,20 +128,15 @@
                 </div>
             </form>
         </div>
-
-
     </div>
 </div>
-
 
 @push('scripts')
 <script>
     // Prepare an array of document IDs from Blade
-    const documentTypeIds = [
-        @foreach($documentTypes as $docType)
-        "{{ $docType->document_id }}",
-        @endforeach
-    ];
+    const documentTypeIds = {
+        !!json_encode($documentTypes - > pluck('document_id')) !!
+    };
 
     documentTypeIds.forEach(function(docId) {
         const input = document.getElementById('dropzone-file-' + docId);
@@ -176,7 +172,6 @@
             } else {
                 previewContent.innerHTML = '<span class="text-red-600">Unsupported file type</span>';
             }
-
 
             previewContainer.classList.remove('hidden');
             dropzoneContent.classList.add('opacity-30');
