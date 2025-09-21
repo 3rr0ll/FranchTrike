@@ -251,77 +251,79 @@
     </div>
     @endif
 
-    {{-- DataTables and SweetAlert Script --}}
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            $('#motorChangeTable').DataTable({
-                responsive: true,
-                order: [
-                    [4, 'desc']
-                ],
-                pageLength: 10
-            });
+</div>
 
-            @if($historyRequests && $historyRequests - > count() > 0)
-            $('#motorChangeHistoryTable').DataTable({
-                responsive: true,
-                order: [
-                    [4, 'desc']
-                ],
-                pageLength: 10,
-                language: {
-                    search: "Search history:",
-                    lengthMenu: "Show _MENU_ entries",
-                    info: "Showing _START_ to _END_ of _TOTAL_ history entries",
-                    paginate: {
-                        previous: "Prev",
-                        next: "Next"
-                    }
+{{-- DataTables and SweetAlert Script --}}
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        $('#motorChangeTable').DataTable({
+            responsive: true,
+            order: [
+                [4, 'desc']
+            ],
+            pageLength: 10
+        });
+
+        @if($historyRequests && $historyRequests -> count() > 0)
+        $('#motorChangeHistoryTable').DataTable({
+            responsive: true,
+            order: [
+                [4, 'desc']
+            ],
+            pageLength: 10,
+            language: {
+                search: "Search history:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ history entries",
+                paginate: {
+                    previous: "Prev",
+                    next: "Next"
                 }
-            });
-            @endif
+            }
+        });
+        @endif
 
-            // Flash messages via SweetAlert
-            @if(session('success'))
-            Swal.fire({
-                title: 'Success',
-                text: `{{ session('success') }}`,
-                icon: 'success',
-                confirmButtonColor: '#1D2761'
-            });
-            @endif
-            @if(session('error'))
-            Swal.fire({
-                title: 'Error',
-                text: `{{ session('error') }}`,
-                icon: 'error',
-                confirmButtonColor: '#E63946'
-            });
-            @endif
+        // Flash messages via SweetAlert
+        @if(session('success'))
+        Swal.fire({
+            title: 'Success',
+            text: `{{ session('success') }}`,
+            icon: 'success',
+            confirmButtonColor: '#1D2761'
+        });
+        @endif
+        @if(session('error'))
+        Swal.fire({
+            title: 'Error',
+            text: `{{ session('error') }}`,
+            icon: 'error',
+            confirmButtonColor: '#E63946'
+        });
+        @endif
 
-            // Intercept approve/reject with confirmation dialogs
-            document.querySelectorAll('.js-approval-form').forEach(function(form) {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const action = form.getAttribute('data-action');
-                    const isApprove = action === 'approve';
-                    Swal.fire({
-                        title: isApprove ? 'Approve this request?' : 'Reject this request?',
-                        text: isApprove ? 'This will update the motor details.' : 'This will mark the request as rejected.',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: isApprove ? '#16a34a' : '#dc2626',
-                        cancelButtonColor: '#6b7280',
-                        confirmButtonText: isApprove ? 'Yes, approve' : 'Yes, reject'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
+        // Intercept approve/reject with confirmation dialogs
+        document.querySelectorAll('.js-approval-form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const action = form.getAttribute('data-action');
+                const isApprove = action === 'approve';
+                Swal.fire({
+                    title: isApprove ? 'Approve this request?' : 'Reject this request?',
+                    text: isApprove ? 'This will update the motor details.' : 'This will mark the request as rejected.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: isApprove ? '#16a34a' : '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: isApprove ? 'Yes, approve' : 'Yes, reject'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
                 });
             });
         });
-    </script>
-    @endpush
-    @endsection
+    });
+</script>
+@endpush
+@endsection
