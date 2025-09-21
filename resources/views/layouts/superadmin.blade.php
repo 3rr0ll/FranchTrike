@@ -31,7 +31,7 @@
                 <div class="flex items-center justify-start rtl:justify-end">
                     <!-- Quick Action Button as Sidebar Button -->
                     <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button"
-                        class="inline-flex items-center justify-center w-10 h-10 text-white bg-primary-gold rounded-full shadow-lg sm:hidden hover:bg-primary-navy hover:text-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold transition-all duration-200"
+                        class="inline-flex items-center justify-center w-10 h-10 text-white rounded-full shadow-lg sm:hidden hover:bg-primary-navy hover:text-primary-gold focus:outline-none focus:ring-2 focus:ring-primary-gold transition-all duration-200"
                         title="Open sidebar">
                         <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -42,40 +42,62 @@
                         <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike Super Admin</span>
                     </a>
                 </div>
-                <div class="flex items-center">
-                    <div class="flex items-center ms-3">
-                        <div>
-                            <button type="button" class="flex text-sm" aria-expanded="false" data-dropdown-toggle="dropdown-user">
-                                <span class="sr-only">Open user menu</span>
-                                <img src="{{ asset('images/logo.png') }}" alt="User" class="w-10 h-10 rounded-full">
-                            </button>
+                {{-- Superadmin quick info as modal trigger --}}
+                <button id="open-profile-modal" type="button"
+                    class="flex items-center bg-white rounded shadow px-2 py-1.5 sm:px-3 sm:py-1.5 mr-2 sm:mr-4 focus:outline-none focus:ring-2 focus:ring-primary-gold transition-all min-w-[120px] sm:min-w-[0]"
+                    aria-label="Open profile modal">
+                    <svg class="w-7 h-7 text-primary-navy mr-2 hidden sm:block" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5a7.5 7.5 0 1115 0v.25a.25.25 0 01-.25.25H4.75a.25.25 0 01-.25-.25v-.25z" />
+                    </svg>
+                    <div class="flex flex-col leading-tight text-left">
+                        <span class="font-semibold text-primary-navy text-xs sm:text-sm break-words">
+                            {{ Auth::user()->name ?? 'Superadmin' }}
+                        </span>
+                    </div>
+                    <svg class="w-4 h-4 text-primary-navy ml-2 sm:ml-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                {{-- Profile Modal --}}
+                <div id="profile-modal" class="fixed inset-0 z-[60] hidden items-center justify-center">
+                    <div class="absolute inset-0 bg-black/50"></div>
+                    <div class="relative bg-white rounded-sm shadow w-full max-w-lg mx-4">
+                        <div class="flex items-center justify-between px-4 py-3 border-b">
+                            <h3 class="text-lg font-semibold text-primary-navy">My Profile</h3>
+                            <button id="close-profile-modal" class="text-gray-500 hover:text-gray-700">&times;</button>
                         </div>
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm" id="dropdown-user">
-                            <div class="px-4 py-3" role="none">
-                                <p class="text-sm text-gray-900" role="none">
-                                    {{ Auth::user()->name ?? 'Admin User' }}
-                                </p>
-                                <p class="text-sm font-medium text-gray-900 truncate" role="none">
-                                    {{ Auth::user()->email ?? 'admin@example.com' }}
-                                </p>
+                        <div class="p-4">
+                            <div class="flex items-start gap-4 mb-4">
+                                <img src="{{ Auth::user()->cloudinary_profile_photo_id ? 'https://res.cloudinary.com/' . config('cloudinary.cloud_name') . '/image/upload/' . Auth::user()->cloudinary_profile_photo_id : (Auth::user()->profile_photo_url ?? asset('images/logo.png')) }}" alt="Profile" class="w-16 h-16 rounded-full object-cover">
+                                <div>
+                                    <p class="text-lg font-semibold text-primary-navy">{{ Auth::user()->name }}</p>
+                                    <p class="text-sm text-gray-600">{{ Auth::user()->email }}</p>
+                                    <p class="text-sm text-gray-600">{{ Auth::user()->role->name ?? (Auth::user()->getRoleNames()->first() ?? 'Superadmin') }}</p>
+                                </div>
                             </div>
-                            <ul class="py-1" role="none">
-                                <li>
-                                    <a href="{{ route('superadmin.home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Settings</a>
-                                </li>
-                                <li>
-                                    <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-accent-red hover:text-white" role="menuitem" onclick="confirmLogout(event)">
-                                            sign out
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
+                            <div class="ml-2">
+                                <p class="text-sm text-gray-500">Member Since</p>
+                                <p class="text-gray-900">{{ Auth::user()->created_at?->format('M d, Y') }}</p>
+                            </div>
+                           
+                            <div class="mt-6 flex justify-end gap-3">
+                                <a href="{{ route('superadmin.settings') }}">
+                                    <x-button>
+                                        <span class="inline-flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                            </svg>
+                                            Settings
+                                        </span>
+                                    </x-button>
+                                </a>
+                            </div>
                         </div>
+
+                        
                     </div>
                 </div>
             </div>
@@ -84,7 +106,7 @@
 
     {{-- Sidebar --}}
     <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-primary-navy border-r border-primary-gold sm:translate-x-0" aria-label="Sidebar">
-        <div class="h-full px-3 pb-4 overflow-y-auto bg-primary-navy">
+        <div class="h-full px-3 pb-4 flex flex-col justify-between overflow-y-auto bg-primary-navy">
             <ul class="space-y-2 font-medium">
                 <li>
                     @php $isActive = request()->routeIs('superadmin.dashboard'); @endphp
@@ -137,6 +159,30 @@
                     </a>
                 </li>
             </ul>
+            <ul class="space-y-2 font-medium mt-4">
+                <li>
+                    @php $isActive = request()->routeIs('superadmin.settings'); @endphp
+                    <a href="{{ route('superadmin.settings') }}"
+                        class="flex items-center p-2 gap-2 rounded-lg group {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-primary-gold hover:text-primary-navy' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        <span class="ms-3">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <form id="logout-form" method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="button" class="flex items-center w-full text-left p-2 rounded-lg text-white hover:bg-accent-red hover:text-white" onclick="confirmLogout(event)">
+                            <svg class="w-5 h-5 mr-2 text-white group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 1 1-4 0v-1m0-8V5a2 2 0 1 1 4 0v1" />
+                            </svg>
+                            <span>Sign Out</span>
+                        </button>
+                    </form>
+                </li>
+            </ul>
         </div>
     </aside>
 
@@ -171,6 +217,31 @@
                 }
             });
         }
+
+
+           // Profile modal open/close handlers
+           document.addEventListener('DOMContentLoaded', function() {
+            var openBtn = document.getElementById('open-profile-modal');
+            var modal = document.getElementById('profile-modal');
+            var closeBtn = document.getElementById('close-profile-modal');
+            var backdrop = modal ? modal.querySelector('.absolute.inset-0') : null;
+
+            function openModal() {
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            function closeModal() {
+                if (!modal) return;
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            if (openBtn) openBtn.addEventListener('click', openModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            if (backdrop) backdrop.addEventListener('click', closeModal);
+        });
     </script>
 </body>
 
