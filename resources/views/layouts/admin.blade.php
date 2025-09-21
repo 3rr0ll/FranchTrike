@@ -17,6 +17,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 
     <!-- SweetAlert2 CDN -->
@@ -39,50 +40,14 @@
                         <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike Admin</span>
                     </a>
                 </div>
-                <div class="flex items-center">
-                    <div class="flex items-center ms-3">
-                        <div>
-                            <button type="button" class="flex text-sm aria-expanded=" false" data-dropdown-toggle="dropdown-user">
-                                <span class="sr-only">Open user menu</span>
-                                <img src="{{ asset('images/logo.png') }}" alt="User" class="w-10 h-10 rounded-full">
-                            </button>
-                        </div>
-                        <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-sm shadow-sm" id="dropdown-user">
-                            <div class="px-4 py-3" role="none">
-                                <p class="text-sm text-gray-900" role="none">
-                                    {{ Auth::user()->name ?? 'Admin User' }}
-                                </p>
-                                <p class="text-sm font-medium text-gray-900 truncate" role="none">
-                                    {{ Auth::user()->email ?? 'admin@example.com' }}
-                                </p>
-                            </div>
-                            <ul class="py-1" role="none">
-                                <li>
-                                    <a href="{{ route('admin.home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-navy hover:text-white" role="menuitem">Settings</a>
-                                </li>
-                                <li>
-                                    <form id="logout-form" method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-accent-red hover:text-white" role="menuitem" onclick="confirmLogout(event)">
-                                            sign out
-                                        </button>
-                                    </form>
 
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </nav>
 
     {{-- Sidebar --}}
     <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-primary-navy border-r border-primary-gold sm:translate-x-0" aria-label="Sidebar">
-        <div class="h-full px-3 pb-4 overflow-y-auto bg-primary-navy">
+        <div class="h-full px-3 pb-4 flex flex-col justify-between overflow-y-auto bg-primary-navy">
             <ul class="space-y-2 font-medium">
                 <li>
                     @php $isActive = request()->routeIs('admin.home'); @endphp
@@ -170,6 +135,31 @@
                         </svg>
                         <span class="ms-3">Payments</span>
                     </a>
+                </li>
+            </ul>
+            <ul class="space-y-2 font-medium mt-4">
+                <li>
+                    @php $isActive = request()->routeIs('admin.settings'); @endphp
+                    <a href="{{ route('admin.settings') }}"
+                        class="flex items-center p-2 gap-2 rounded-lg group {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-primary-gold hover:text-primary-navy' }}">
+                        <svg class="w-5 h-5 transition duration-75 {{ $isActive ? 'text-primary-navy' : 'text-white group-hover:text-primary-navy' }}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v1m0 14v1m8-8h1M4 12H3m15.364-7.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z" />
+                        </svg>
+                        <span class="ms-3">Settings</span>
+                    </a>
+                </li>
+                <li>
+                    <form id="logout-form" method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="button" class="flex items-center w-full text-left p-2 rounded-lg text-white hover:bg-accent-red hover:text-white" onclick="confirmLogout(event)">
+                            <svg class="w-5 h-5 mr-2 text-white group-hover:text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 1 1-4 0v-1m0-8V5a2 2 0 1 1 4 0v1" />
+                            </svg>
+                            <span>Sign Out</span>
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>
