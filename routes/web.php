@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\FranchiseApplicationController as AdminFranchiseC
 use App\Http\Controllers\Admin\MotorDetailsController;
 use App\Http\Controllers\Admin\MotorChangeApprovalController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\SettingsController;
 
 
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboard;
@@ -251,6 +252,8 @@ Route::middleware([
         ->name('admin.')
         ->group(function () {
             Route::get('/home', [AdminDashboard::class, 'index'])->name('home');
+            Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+            Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
             Route::get('/operators', [AdminOperatorController::class, 'index'])->name('operators.index');
             Route::get('/drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
@@ -326,6 +329,9 @@ Route::middleware([
         ->group(function () {
             Route::get('/home', [SuperAdminDashboard::class, 'index'])->name('home');
             Route::get('/dashboard', [SuperAdminDashboard::class, 'index'])->name('dashboard');
+            Route::get('/settings', [\App\Http\Controllers\SuperAdmin\SettingsController::class, 'index'])->name('settings');
+            Route::put('/settings', [\App\Http\Controllers\SuperAdmin\SettingsController::class, 'update'])->name('settings.update');
+
 
             // Security Settings Routes (must come before resource routes)
             Route::get('/users/security-settings', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'securitySettings'])->name('users.security-settings');
