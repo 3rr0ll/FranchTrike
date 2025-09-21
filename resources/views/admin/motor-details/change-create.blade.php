@@ -7,6 +7,8 @@
 @endsection
 
 @section('content')
+    {{-- Include Select2 CSS --}}
+
     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow">
         <form action="{{ url('admin/motor-change/store-for-client') }}" method="POST" class="space-y-6">
             @csrf
@@ -14,7 +16,7 @@
             {{-- Franchise Application --}}
             <div>
                 <label for="franchise_application_id" class="block font-medium mb-2">Select Franchise Application <span class="text-red-500">*</span></label>
-                <select name="franchise_application_id" id="franchise_application_id" class="w-full border border-gray-300 rounded-lg p-2.5" required>
+                <select name="franchise_application_id" id="franchise_application_id" class="w-full border border-gray-300 rounded-lg p-2.5 select2" required>
                     <option value="">-- Select Application --</option>
                     @foreach($applications as $application)
                         <option value="{{ $application->id }}" {{ old('franchise_application_id') == $application->id ? 'selected' : '' }}>
@@ -30,7 +32,7 @@
             {{-- New Unit Type --}}
             <div>
                 <label for="new_unit_type" class="block font-medium mb-2">New Unit Type <span class="text-red-500">*</span></label>
-                <select name="new_unit_type" id="new_unit_type" class="w-full border border-gray-300 rounded-lg p-2.5" required>
+                <select name="new_unit_type" id="new_unit_type" class="w-full border border-gray-300 rounded-lg p-2.5 select2" required>
                     <option value="">-- Select Type --</option>
                     <option value="motocab" {{ old('new_unit_type') == 'motocab' ? 'selected' : '' }}>Motocab</option>
                     <option value="tricycle" {{ old('new_unit_type') == 'tricycle' ? 'selected' : '' }}>Tricycle</option>
@@ -43,7 +45,7 @@
             {{-- New Unit Make --}}
             <div>
                 <label for="new_unit_make_id" class="block font-medium mb-2">New Unit Make <span class="text-red-500">*</span></label>
-                <select name="new_unit_make_id" id="new_unit_make_id" class="w-full border border-gray-300 rounded-lg p-2.5" required>
+                <select name="new_unit_make_id" id="new_unit_make_id" class="w-full border border-gray-300 rounded-lg p-2.5 select2" required>
                     <option value="">-- Select Make --</option>
                     @foreach($unitMakes as $make)
                         <option value="{{ $make->id }}" {{ old('new_unit_make_id') == $make->id ? 'selected' : '' }}>
@@ -90,4 +92,19 @@
             </div>
         </form>
     </div>
+
+    {{-- Include Select2 JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2({
+                width: '100%',
+                placeholder: function(){
+                    $(this).data('placeholder');
+                },
+                allowClear: true
+            });
+        });
+    </script>
 @endsection
