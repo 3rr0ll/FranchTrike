@@ -87,6 +87,8 @@ class FranchiseApplicationController extends Controller
         ]);
 
         $operator = Auth::user()->operator;
+        $userId = auth()->check() ? auth()->id() : null;
+
 
         // Create the franchise application
         $franchiseApplication = FranchiseApplication::create([
@@ -127,6 +129,8 @@ class FranchiseApplicationController extends Controller
                 'ctc_place_issued' => $request->ctc_place_issued,
                 'franchise_fee' => $request->franchise_fee,
                 'submitted_by' => auth()->user() ? auth()->user()->name : null,
+                'user_id' => $userId,
+
             ]
         );
 
@@ -153,6 +157,9 @@ class FranchiseApplicationController extends Controller
             'platenumber' => 'required|string',
         ]);
 
+        $userId = auth()->check() ? auth()->id() : null;
+
+
         \App\Models\MotorDetail::create([
             'franchise_application_id' => $franchiseApplicationId,
             'unit_type' => $request->unit_type,
@@ -175,6 +182,8 @@ class FranchiseApplicationController extends Controller
                 'chasisno' => $request->chasisno,
                 'platenumber' => $request->platenumber,
                 'added_by' => auth()->user() ? auth()->user()->name : null,
+                'user_id' => $userId,
+
             ]
         );
 
@@ -233,6 +242,8 @@ class FranchiseApplicationController extends Controller
             return back()->with('error', 'This driver already has an active application.');
         }
 
+        $userId = auth()->check() ? auth()->id() : null;
+
         try {
             // Replicate the old application for renewal, but do NOT save yet
             $renewalApplication = $franchiseApplication->replicate();
@@ -271,6 +282,8 @@ class FranchiseApplicationController extends Controller
                     'new_application_id' => $renewalApplication->id,
                     'driver_id' => $renewalApplication->driver_id,
                     'submitted_by' => auth()->user() ? auth()->user()->name : null,
+                    'user_id' => $userId,
+
                 ]
             );
 

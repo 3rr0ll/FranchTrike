@@ -42,6 +42,8 @@ class OperatorController extends Controller
         ]);
 
         $validated['user_id'] = Auth::user()->id;
+        $userId = auth()->check() ? auth()->id() : null;
+
 
         Operator::create($validated);
 
@@ -63,6 +65,8 @@ class OperatorController extends Controller
                 'civil_status' => $validated['civil_status'],
                 'contact_no' => $validated['contact_no'],
                 'created_by' => auth()->user() ? auth()->user()->name : null,
+                'user_id' => $userId,
+
             ]
         );
 

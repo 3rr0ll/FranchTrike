@@ -56,6 +56,8 @@ class DriverController extends Controller
         $validated['operator_id'] = $operator->operator_id;
 
         Driver::create($validated);
+        $userId = auth()->check() ? auth()->id() : null;
+
 
         \App\Helpers\ActivityLogger::log(
             'driver',
@@ -78,6 +80,8 @@ class DriverController extends Controller
                 'license_validity' => $validated['license_validity'],
                 'license_nature' => $validated['license_nature'],
                 'created_by' => auth()->user() ? auth()->user()->name : null,
+                'user_id' => $userId,
+
             ]
         );
 

@@ -94,6 +94,7 @@ class DocumentSubmissionController extends Controller
         }
     
         $operatorId = $operator->operator_id;
+        $userId = auth()->check() ? auth()->id() : null;
     
         // Initialize Cloudinary
         try {
@@ -180,7 +181,7 @@ class DocumentSubmissionController extends Controller
         }
     
         \App\Helpers\ActivityLogger::log(
-            'operator_document',
+            'operator document',
             'uploaded',
             'Operator uploaded documents.',
             [
@@ -189,6 +190,7 @@ class DocumentSubmissionController extends Controller
                     return $file->getClientOriginalName();
                 })->values()->all(),
                 'uploaded_by' => auth()->user() ? auth()->user()->name : null,
+                'user_id' => $userId,
             ]
         );
     
@@ -210,6 +212,8 @@ class DocumentSubmissionController extends Controller
         ]);
 
         $driverId = $request->driver_id;
+        $userId = auth()->check() ? auth()->id() : null;
+
 
         // Get the operator record for current user
         $operator = $this->getCurrentOperator();
@@ -298,6 +302,8 @@ class DocumentSubmissionController extends Controller
                     'file_size'            => $file->getSize(),
                     'cloudinary_public_id' => $cloudinaryPublicId,
                     'status'               => 'pending',
+                    'user_id' => $userId,
+
                 ]);
             } catch (\Exception $e) {
                 \Log::error('Cloudinary upload failed: ' . $e->getMessage());
@@ -307,7 +313,7 @@ class DocumentSubmissionController extends Controller
         }
 
         \App\Helpers\ActivityLogger::log(
-            'driver_document',
+            'driver document',
             'uploaded',
             'Driver documents uploaded by operator.',
             [
@@ -357,9 +363,7 @@ class DocumentSubmissionController extends Controller
             return $originalUrl; // Return original if not Cloudinary
         }
         
-        // Extract the public_id and other parts from the URL
-        // Example URL: https://res.cloudinary.com/your-cloud/image/upload/v1234567890/folder/filename.jpg
-        
+     
         $urlParts = parse_url($originalUrl);
         $pathParts = explode('/', trim($urlParts['path'], '/'));
         
@@ -486,6 +490,8 @@ class DocumentSubmissionController extends Controller
         ]);
 
         $file = $request->file('document');
+        $userId = auth()->check() ? auth()->id() : null;
+
 
         //  Delete old Cloudinary file if exists
         if ($document->cloudinary_public_id) {
@@ -496,7 +502,7 @@ class DocumentSubmissionController extends Controller
         $upload = Cloudinary::upload(
             $file->getRealPath(),
             [
-                'folder' => 'operator-documents/' . $operator->operator_id,
+                'folder' => 'operator_documents/' . $operator->operator_id,
                 'public_id' => \Str::random(16),
             ]
         );
@@ -513,7 +519,7 @@ class DocumentSubmissionController extends Controller
         ]);
 
         \App\Helpers\ActivityLogger::log(
-            'operator_document',
+            'operator document',
             'resubmitted',
             'Operator resubmitted a document.',
             [
@@ -521,6 +527,8 @@ class DocumentSubmissionController extends Controller
                 'document_id' => $document->id,
                 'document_name' => $document->document_name,
                 'uploaded_by' => auth()->user()?->name,
+                'user_id' => $userId,
+
             ]
         );
 
@@ -574,6 +582,8 @@ class DocumentSubmissionController extends Controller
         ]);
 
         $file = $request->file('document');
+        $userId = auth()->check() ? auth()->id() : null;
+
 
         //  Delete old Cloudinary file if exists
         if ($document->cloudinary_public_id) {
@@ -584,7 +594,7 @@ class DocumentSubmissionController extends Controller
         $upload = Cloudinary::upload(
             $file->getRealPath(),
             [
-                'folder' => 'driver-documents/' . $document->driver_id,
+                'folder' => 'driver_documents/' . $document->driver_id,
                 'public_id' => \Str::random(16),
             ]
         );
@@ -601,7 +611,7 @@ class DocumentSubmissionController extends Controller
         ]);
 
         \App\Helpers\ActivityLogger::log(
-            'driver_document',
+            'driver document',
             'resubmitted',
             'Operator resubmitted a Driver document.',
             [
@@ -610,6 +620,8 @@ class DocumentSubmissionController extends Controller
                 'document_id' => $document->id,
                 'document_name' => $document->document_name,
                 'uploaded_by' => auth()->user()?->name,
+                'user_id' => $userId,
+
             ]
         );
 
