@@ -102,7 +102,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($renewedFranchises as $app)
+                        @foreach ($renewedFranchises as $app)
                         <tr class="border-t">
                             <td class="p-2">{{ $app->id }}</td>
                             <td class="p-2 capitalize">{{ $app->application_type }}</td>
@@ -161,11 +161,8 @@
                                 </x-button>
                             </td>
                         </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="p-4 text-center text-gray-500">No renewed/other applications found.</td>
-                        </tr>
-                        @endforelse
+                       
+                        @endforeach
                     </tbody>
                 </table>
             </div>

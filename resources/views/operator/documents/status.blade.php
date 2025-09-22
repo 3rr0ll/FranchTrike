@@ -32,7 +32,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($operatorDocuments as $doc)
+                    @foreach ($operatorDocuments as $doc)
                     <tr>
                         <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
                         <td class="px-4 py-2">
@@ -62,11 +62,8 @@
                             @endif
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="px-4 py-4 text-gray-600 text-center">No operator documents submitted yet.</td>
-                    </tr>
-                    @endforelse
+
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -95,7 +92,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($driverDocuments as $doc)
+                    @foreach ($driverDocuments as $doc)
                     <tr>
                         <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
                         <td class="px-4 py-2">
@@ -137,11 +134,7 @@
                             @endif
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-4 py-4 text-gray-600 text-center">No driver documents submitted yet.</td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -208,37 +201,46 @@
 </div>
 @endsection
 
+
 @push('scripts')
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
+        // Operator Documents Table
         $('#operator-documents-table').DataTable({
-            "order": [],
-            "pageLength": 10,
-            "columnDefs": [{
-                "orderable": false,
-                "targets": [2, 3]
-            }]
+            order: [],
+            pageLength: 10,
+            columnDefs: [
+                { orderable: false, targets: [2, 3] }
+            ],
+            language: {
+                emptyTable: "No operator documents submitted yet."
+            }
         });
+
+        // Driver Documents Table
         $('#driver-documents-table').DataTable({
-            "order": [],
-            "pageLength": 10,
-            "columnDefs": [{
-                "orderable": false,
-                "targets": [3, 4]
-            }]
+            order: [],
+            pageLength: 10,
+            columnDefs: [
+                { orderable: false, targets: [3, 4] }
+            ],
+            language: {
+                emptyTable: "No driver documents submitted yet."
+            }
         });
     });
 
+    // ---------------------------
+    // Document Modal Functions
+    // ---------------------------
     function openDocumentModal(fileUrl, documentName) {
         document.getElementById('modalTitle').textContent = documentName;
         const container = document.getElementById('documentViewerContainer');
 
-        // Check if it's a PDF or image based on file extension or URL
         const isPdf = fileUrl.toLowerCase().includes('.pdf') || fileUrl.toLowerCase().includes('image/upload') === false;
         const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl) || fileUrl.includes('image/upload');
 
         if (isImage && !isPdf) {
-            // Display as image
             container.innerHTML = `
                 <img src="${fileUrl}" 
                      alt="${documentName}" 
@@ -246,7 +248,6 @@
                      style="min-height:600px;" />
             `;
         } else {
-            // Display as iframe (works for PDFs)
             container.innerHTML = `
                 <iframe src="${fileUrl}" 
                         class="w-full h-full rounded-md border border-gray-300" 
@@ -270,6 +271,9 @@
         document.body.style.overflow = 'auto';
     }
 
+    // ---------------------------
+    // Resubmit Modal Functions
+    // ---------------------------
     function openResubmitModal(type, docId, docName, actionUrl) {
         document.getElementById('resubmitModalTitle').textContent = 'Resubmit ' + docName;
         document.getElementById('resubmitForm').action = actionUrl;
@@ -288,41 +292,17 @@
         document.body.style.overflow = 'auto';
     }
 
-    // Optional: Validate file size (max 5MB)
-    document.addEventListener('DOMContentLoaded', function() {
-        var fileInput = document.getElementById('dropzone-file');
-        if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file && file.size > 5 * 1024 * 1024) {
-                    alert('File size must be less than 5MB');
-                    e.target.value = '';
-                }
-            });
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
+    // ---------------------------
+    // File Upload Preview + Validation
+    // ---------------------------
+    document.addEventListener('DOMContentLoaded', function () {
         const fileInput = document.getElementById('dropzone-file');
         const previewContainer = document.getElementById('file-preview-container');
         const previewContent = document.getElementById('file-preview-content');
         const dropzoneContent = document.getElementById('dropzone-content');
 
-        // Helper to get dropzone size
-        function getDropzoneSize() {
-            if (!dropzoneContent) return {
-                width: '100%',
-                height: '100%'
-            };
-            const rect = dropzoneContent.getBoundingClientRect();
-            return {
-                width: rect.width + 'px',
-                height: rect.height + 'px'
-            };
-        }
-
         if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
+            fileInput.addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 previewContent.innerHTML = '';
                 if (!file) {
@@ -331,21 +311,19 @@
                     return;
                 }
 
-                // Show preview 
-                let fileType = file.type;
-                let fileName = file.name;
-                let fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                const fileType = file.type;
+                const fileName = file.name;
+                const fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                const width = '450px';
+                const height = '360px';
 
-                const {
-                    width,
-                    height
-                } = {
-                    width: '450px',
-                    height: '360px'
-                };
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    e.target.value = '';
+                    return;
+                }
 
                 if (fileType === 'application/pdf') {
-                    // PDF preview (icon + name)
                     previewContent.innerHTML = `
                         <div style="width:${width};height:${height};display:flex;flex-direction:column;align-items:center;justify-content:center;">
                             <svg class="w-16 h-16 text-red-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,9 +336,8 @@
                         </div>
                     `;
                 } else if (fileType.startsWith('image/')) {
-                    // Image preview
                     const reader = new FileReader();
-                    reader.onload = function(ev) {
+                    reader.onload = function (ev) {
                         previewContent.innerHTML = `
                             <div style="width:${width};height:${height};display:flex;flex-direction:column;align-items:center;justify-content:center;">
                                 <img src="${ev.target.result}" alt="Preview" style="max-width:100%;max-height:70%;object-fit:contain;display:block;margin-bottom:0.5rem;border-radius:0.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);" />
@@ -372,7 +349,6 @@
                     };
                     reader.readAsDataURL(file);
                 } else {
-                    // Unknown file type
                     previewContent.innerHTML = `
                         <div style="width:${width};height:${height};display:flex;flex-direction:column;align-items:center;justify-content:center;">
                             <span class="text-red-600">Unsupported file type</span>
@@ -380,35 +356,17 @@
                         </div>
                     `;
                 }
+
                 previewContainer.classList.remove('hidden');
                 dropzoneContent.classList.add('opacity-30');
             });
         }
 
-        window.removeFilePreview = function() {
+        window.removeFilePreview = function () {
             if (fileInput) fileInput.value = '';
             previewContent.innerHTML = '';
             previewContainer.classList.add('hidden');
             dropzoneContent.classList.remove('opacity-30');
-        };
-
-        // Also clear preview when modal closes
-        const originalCloseResubmitModal = window.closeResubmitModal;
-        window.closeResubmitModal = function() {
-            if (fileInput) fileInput.value = '';
-            previewContent.innerHTML = '';
-            previewContainer.classList.add('hidden');
-            dropzoneContent.classList.remove('opacity-30');
-            if (originalCloseResubmitModal) {
-                originalCloseResubmitModal();
-            } else {
-                document.getElementById('resubmitModalTitle').textContent = '';
-                document.getElementById('resubmitForm').action = '';
-                document.getElementById('resubmitDocId').value = '';
-                document.getElementById('dropzone-file').value = '';
-                document.getElementById('resubmitModal').classList.add('hidden');
-                document.body.style.overflow = 'auto';
-            }
         };
     });
 </script>

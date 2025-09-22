@@ -21,7 +21,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($groupedPayments as $group)
+                @foreach($groupedPayments as $group)
                     <tr>
                         <td>{{ $group['application_id'] ?? '-' }}</td>
                         <td>
@@ -47,13 +47,8 @@
                             </a>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-6 text-gray-500">
-                            No payments found.
-                        </td>
-                    </tr>
-                @endforelse
+              
+                @endforeach
             </tbody>
         </table>
     </div>
