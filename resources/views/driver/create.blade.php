@@ -118,7 +118,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <div class="flex justify-end">
+                    <div class="flex justify-end gap-2">
                         <a href="{{ route('operator.dashboard') }}">
                             <x-button type="button">
                                 Back
