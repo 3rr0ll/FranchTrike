@@ -7,6 +7,8 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
+use App\Http\Controllers\ChatbotController;
+
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
 use App\Http\Controllers\Operator\OperatorController;
@@ -97,6 +99,10 @@ Route::post('/email/verification-resend', function (Request $request) {
     return back()->with('status', 'verification-link-sent');
 })->middleware(['auth'])->name('verification.resend');
 
+Route::get('/chatbot/categories', [ChatbotController::class, 'categories']);
+Route::get('/chatbot/questions/{category}', [ChatbotController::class, 'questions']);
+Route::get('/chatbot/answer/{id}', [ChatbotController::class, 'answer']);
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
@@ -148,8 +154,8 @@ Route::middleware([
             Route::post('/edit', [ProfileController::class, 'update'])->name('update');
 
 
-            
-          
+
+
             Route::prefix('franchise')->name('franchise.')->group(function () {
                 Route::get('/', [FranchiseApplicationController::class, 'index'])->name('index');
                 Route::get('/create', [FranchiseApplicationController::class, 'create'])->name('create');
@@ -321,6 +327,14 @@ Route::middleware([
             Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])
                 ->name('payments.receipt');
             Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+
+
+            Route::get('/faq', [\App\Http\Controllers\Admin\FaqController::class, 'index'])->name('faq.index');
+            Route::get('/faq/create', [\App\Http\Controllers\Admin\FaqController::class, 'create'])->name('faq.create');
+            Route::post('/faq', [\App\Http\Controllers\Admin\FaqController::class, 'store'])->name('faq.store');
+            Route::get('/faq/{faq}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('faq.edit');
+            Route::put('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('faq.update');
+        Route::delete('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('faq.destroy');
         });
 
     Route::middleware([RoleMiddleware::class . ':superadmin'])
