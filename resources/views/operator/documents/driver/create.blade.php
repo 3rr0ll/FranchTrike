@@ -88,7 +88,9 @@
                         <!-- Dropzone Upload -->
                         <div class="flex items-center justify-center w-full">
                             <label for="dropzone-file-{{ $docType->document_id }}"
-                                class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 relative">
+                                class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 relative"
+                                id="dropzone-label-{{ $docType->document_id }}"
+                                >
 
                                 <!-- Preview Container -->
                                 <div id="file-preview-container-{{ $docType->document_id }}"
@@ -134,17 +136,44 @@
 @push('scripts')
 <script>
     // Prepare an array of document IDs from Blade
-    const documentTypeIds = {
-        !!json_encode($documentTypes - > pluck('document_id')) !!
-    };
+    const documentTypeIds = {!! json_encode($documentTypes->pluck('document_id')) !!};
 
     documentTypeIds.forEach(function(docId) {
         const input = document.getElementById('dropzone-file-' + docId);
         const previewContainer = document.getElementById('file-preview-container-' + docId);
         const previewContent = document.getElementById('file-preview-content-' + docId);
         const dropzoneContent = document.getElementById('dropzone-content-' + docId);
+        const dropzoneLabel = document.getElementById('dropzone-label-' + docId);
 
         if (!input) return;
+
+        // Drag & drop support
+        if (dropzoneLabel) {
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropzoneLabel.addEventListener(eventName, function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            // Highlight on dragover
+            dropzoneLabel.addEventListener('dragover', function(e) {
+                dropzoneLabel.classList.add('ring-2', 'ring-indigo-300');
+            });
+            dropzoneLabel.addEventListener('dragleave', function(e) {
+                dropzoneLabel.classList.remove('ring-2', 'ring-indigo-300');
+            });
+            dropzoneLabel.addEventListener('drop', function(e) {
+                dropzoneLabel.classList.remove('ring-2', 'ring-indigo-300');
+                if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    input.files = e.dataTransfer.files;
+                    // Manually trigger change event for preview
+                    const event = new Event('change', { bubbles: true });
+                    input.dispatchEvent(event);
+                }
+            });
+        }
 
         input.addEventListener('change', function(e) {
             const file = e.target.files[0];
