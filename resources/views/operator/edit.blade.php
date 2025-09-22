@@ -1,18 +1,15 @@
 
 @extends('layouts.operator')
 
+@section('header')
+    <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+        Edit Profile
+    </h2>
+@endsection
+
 @section('content')
     <div class="w-full mx-auto mt-8 bg-white rounded-2xl shadow-2xl border border-gray-100 p-8">
-        <h2 class="text-2xl font-bold text-primary-navy mb-6 flex items-center gap-2">
-            <svg class="w-7 h-7 text-primary-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M19.428 15.341A8 8 0 104.572 15.34"/>
-            </svg>
-            Edit Profile
-        </h2>
-
+       
         @if(session('status'))
             @if(session('status') !== 'No changes detected.')
                 <div class="mb-6 flex items-center gap-2 bg-green-100 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded shadow">
@@ -181,14 +178,9 @@
             </div>
 
             <div class="pt-4 flex justify-end">
-                <button type="submit"
-                        class="inline-flex items-center gap-2 bg-primary-gold hover:bg-primary-navy text-white font-semibold px-6 py-2 rounded shadow transition-colors duration-150">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M5 13l4 4L19 7"/>
-                    </svg>
+                <x-button type="submit">
                     Update Profile
-                </button>
+                </x-button>
             </div>
         </form>
     </div>
