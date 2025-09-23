@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
-use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\ChatBotController;
 
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
@@ -99,9 +99,12 @@ Route::post('/email/verification-resend', function (Request $request) {
     return back()->with('status', 'verification-link-sent');
 })->middleware(['auth'])->name('verification.resend');
 
-Route::get('/chatbot/categories', [ChatbotController::class, 'categories']);
-Route::get('/chatbot/questions/{category}', [ChatbotController::class, 'questions']);
-Route::get('/chatbot/answer/{id}', [ChatbotController::class, 'answer']);
+
+
+Route::get('/chatbot/categories', [ChatBotController::class, 'getCategories']);
+Route::get('/chatbot/questions/{category}', [ChatBotController::class, 'questions']);
+Route::get('/chatbot/answer/{id}', [ChatBotController::class, 'answer']);
+
 
 Route::middleware([
     'auth:sanctum',
@@ -334,7 +337,7 @@ Route::middleware([
             Route::post('/faq', [\App\Http\Controllers\Admin\FaqController::class, 'store'])->name('faq.store');
             Route::get('/faq/{faq}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('faq.edit');
             Route::put('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('faq.update');
-        Route::delete('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('faq.destroy');
+            Route::delete('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('faq.destroy');
         });
 
     Route::middleware([RoleMiddleware::class . ':superadmin'])
