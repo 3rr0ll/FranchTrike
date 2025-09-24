@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\ActivityLogger;
 
 class SettingsController extends Controller
 {
@@ -52,6 +53,16 @@ class SettingsController extends Controller
             }
             $admin->save();
 
+            ActivityLogger::log(
+                'admin_profile',
+                'updated',
+                'Admin profile updated.',
+                [
+                    'admin_id' => $admin->id,
+                    'changes' => $changes
+                ]
+            );
+
             return redirect()->route('admin.settings')->with('success', 'Profile updated successfully.');
         }
 
@@ -72,6 +83,15 @@ class SettingsController extends Controller
 
             $admin->password = Hash::make($validated['password']);
             $admin->save();
+
+            ActivityLogger::log(
+                'admin_profile',
+                'password_changed',
+                'Admin password was changed.',
+                [
+                    'admin_id' => $admin->id,
+                ]
+            );
 
             return redirect()->route('admin.settings')->with('success', 'Password updated successfully.');
         }
@@ -133,8 +153,21 @@ class SettingsController extends Controller
                 $admin->cloudinary_profile_photo_id = $newPublicId;
                 $admin->save();
 
-                return redirect()->route('admin.settings')->with('success', 'Profile photo updated successfully.');
 
+                // Log the profile photo update activity
+                ActivityLogger::log(
+                    'admin_profile',
+                    'updated',
+                    'Admin profile photo updated.',
+                    [
+                        'admin_id' => $admin->id,
+                        'profile_photo_path' => $admin->profile_photo_path,
+                        'cloudinary_profile_photo_id' => $admin->cloudinary_profile_photo_id,
+                    ]
+                );
+
+
+                return redirect()->route('admin.settings')->with('success', 'Profile photo updated successfully.');
             } catch (\Exception $e) {
                 \Log::error('Cloudinary admin profile photo upload failed: ' . $e->getMessage());
                 return back()->withErrors(['profile_photo' => 'Profile photo upload failed. Please try again.']);
