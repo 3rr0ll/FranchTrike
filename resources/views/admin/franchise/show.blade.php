@@ -157,20 +157,15 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="flex space-x-2">
-                            <button onclick="previewMTOP({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <div class="flex">
+                            <x-button onclick="previewMTOP({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                                 Preview
-                            </button>
-                            <button onclick="generateMTOP({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Generate
-                            </button>
+                            </x-button>
+                          
                         </div>
                     </div>
 
@@ -184,20 +179,15 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="flex space-x-2">
-                            <button onclick="previewMayorsPermit({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <div class="flex">
+                            <x-button onclick="previewMayorsPermit({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                                 Preview
-                            </button>
-                            <button onclick="generateMayorsPermit({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Generate
-                            </button>
+                            </x-button>
+                           
                         </div>
                     </div>
 
@@ -211,44 +201,18 @@
                                 </svg>
                             </div>
                         </div>
-                        <div class="flex space-x-2">
-                            <button onclick="previewApplication({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                        <div class="flex">
+                            <x-button onclick="previewApplication({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                                 Preview
-                            </button>
-                            <button onclick="generateApplication({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Generate
-                            </button>
+                            </x-button>
                         </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-1 mt-4">
-                    <!-- Generate All Certificates -->
-                    <div class="bg-white rounded-lg p-4 shadow-sm border border-primary-navy">
-                        <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-sm font-medium text-gray-900">All Certificates</h4>
-                            <div class="w-8 h-8 bg-primary-navy rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="generateAllCertificates({{ $franchiseApplication->motorDetail->id }})" class="w-full inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-navy hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Generate All
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
             @endif
 
@@ -456,28 +420,16 @@
         window.open(`http://localhost/Franchise/franchtrike/public/admin/certificates/mtop/${motorDetailId}/preview`, '_blank');
     }
 
-    function generateMTOP(motorDetailId) {
-        window.location.href = `http://localhost/Franchise/franchtrike/public/admin/certificates/mtop/${motorDetailId}/generate`;
-    }
 
     function previewMayorsPermit(motorDetailId) {
         window.open(`http://localhost/Franchise/franchtrike/public/admin/certificates/mayors-permit/${motorDetailId}/preview`, '_blank');
     }
 
-    function generateMayorsPermit(motorDetailId) {
-        window.location.href = `http://localhost/Franchise/franchtrike/public/admin/certificates/mayors-permit/${motorDetailId}/generate`;
-    }
 
     function previewApplication(motorDetailId) {
         window.open(`http://localhost/Franchise/franchtrike/public/admin/certificates/application/${motorDetailId}/preview`, '_blank');
     }
 
-    function generateApplication(motorDetailId) {
-        window.location.href = `http://localhost/Franchise/franchtrike/public/admin/certificates/application/${motorDetailId}/generate`;
-    }
 
-    function generateAllCertificates(motorDetailId) {
-        window.location.href = `http://localhost/Franchise/franchtrike/public/admin/certificates/all/${motorDetailId}/generate`;
-    }
 </script>
 @endsection
