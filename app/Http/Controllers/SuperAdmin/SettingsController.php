@@ -51,6 +51,16 @@ class SettingsController extends Controller
             }
             $superadmin->save();
 
+            \App\Helpers\ActivityLogger::log(
+                'superadmin_profile',
+                'updated',
+                'SuperAdmin profile updated.',
+                [
+                    'superadmin_id' => $superadmin->id,
+                    'changes' => $changes
+                ]
+            );
+
             return redirect()->route('superadmin.settings')->with('success', 'Profile updated successfully.');
         }
 
@@ -71,6 +81,15 @@ class SettingsController extends Controller
 
             $superadmin->password = Hash::make($validated['password']);
             $superadmin->save();
+
+            \App\Helpers\ActivityLogger::log(
+                'superadmin_profile',
+                'password_changed',
+                'SuperAdmin password was changed.',
+                [
+                    'superadmin_id' => $superadmin->id,
+                ]
+            );
 
             return redirect()->route('superadmin.settings')->with('success', 'Password updated successfully.');
         }
@@ -127,6 +146,17 @@ class SettingsController extends Controller
                 $superadmin->profile_photo_path = $newPhotoUrl;
                 $superadmin->cloudinary_profile_photo_id = $newPublicId;
                 $superadmin->save();
+
+                ActivityLogger::log(
+                    'superadmin_profile',
+                    'updated',
+                    'Superadmin profile photo updated.',
+                    [
+                        'superadmin_id' => $superadmin->id,
+                        'profile_photo_path' => $superadmin->profile_photo_path,
+                        'cloudinary_profile_photo_id' => $superadmin->cloudinary_profile_photo_id,
+                    ]
+                );
 
                 return redirect()->route('superadmin.settings')->with('success', 'Profile photo updated successfully.');
 
