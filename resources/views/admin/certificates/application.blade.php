@@ -7,9 +7,19 @@
     <title>Motorized Tricycle Franchising Application Form</title>
     <style>
         @media print {
-            .no-print { display: none !important; }
-            body { margin: 0; padding: 0; }
-            .application-container { margin: 0; padding: 0; }
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            .application-container {
+                margin: 0;
+                padding: 0;
+            }
         }
     </style>
 </head>
@@ -68,11 +78,11 @@
     @endphp
 
     <!-- Print Controls -->
-    <div class="no-print" style="text-align: center; margin: 20px 0; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-        <h2 style="margin-bottom: 20px; color: #333;">Application Form Preview</h2>
+    <div class="no-print" style="text-align: center; margin: 20px 0; padding: 20px; border-radius: 8px;">
+        <h1 style="margin-bottom: 20px; color: #333;">Application Form Preview</h1>
         <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-            <button onclick="window.print()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
-                🖨️ Print Certificate
+            <button id="printBtn" style="background-color: #1a237e; color: #fff; border: none; padding: 10px 24px; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 2px 6px rgba(26,35,126,0.08); transition: background 0.2s;">
+                Print
             </button>
         </div>
     </div>
@@ -425,9 +435,20 @@
     </div>
 
     <script>
-        function downloadPDF() {
-            window.location.href = "{{ route('admin.certificates.application.generate', $motorDetail->id) }}";
-        }
+        document.getElementById('printBtn').addEventListener('click', function() {
+            fetch("{{ route('admin.certificates.print.log', $motorDetail->id) }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    certificate_type: "Application"
+                })
+            }).then(res => {
+                window.print();
+            });
+        });
     </script>
 </body>
 
