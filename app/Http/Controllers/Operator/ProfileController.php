@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Cloudinary\Cloudinary;
-
+use App\Helpers\ActivityLogger;
 class ProfileController extends Controller
 {
     /**
@@ -50,8 +50,6 @@ class ProfileController extends Controller
                     ]
                 ]);
 
-                // Optionally, delete old photo from Cloudinary if you store public_id
-                // (Assuming $operator->cloudinary_profile_photo_id exists)
                 if (!empty($operator->cloudinary_profile_photo_id)) {
                     try {
                         $cloudinary->uploadApi()->destroy(
@@ -76,6 +74,18 @@ class ProfileController extends Controller
                     ]
                 );
 
+                // Log the profile photo update activity
+                ActivityLogger::log(
+                    'operator_profile',
+                    'updated',
+                    'Operator profile photo updated.',
+                    [
+                        'operator_id' => $operator->id,
+                        'profile_photo_path' => $upload['secure_url'] ?? null,
+                        'cloudinary_profile_photo_id' => $upload['public_id'] ?? null,
+                    ]
+                );
+
                 $operator->profile_photo_path = $upload['secure_url'] ?? null;
                 $operator->cloudinary_profile_photo_id = $upload['public_id'] ?? null;
 
@@ -85,13 +95,41 @@ class ProfileController extends Controller
             }
         }
 
+        $changes = [];
+
         // Update password if provided
         if ($request->filled('password')) {
             $operator->password = Hash::make($request->password);
+            $changes['password'] = 'changed';
+            ActivityLogger::log(
+                'operator_profile',
+                'password_changed',
+                'Operator password was changed.',
+                [
+                    'operator_id' => $operator->id,
+                ]
+            );
         }
 
-        // Update name
-        $operator->name = $request->name;
+        // Update name if changed
+        if ($request->name !== $operator->name) {
+            $oldName = $operator->name;
+            $operator->name = $request->name;
+            $changes['name'] = [
+                'old' => $oldName,
+                'new' => $request->name,
+            ];
+            ActivityLogger::log(
+                'operator_profile',
+                'updated',
+                'Operator name updated.',
+                [
+                    'operator_id' => $operator->id,
+                    'old_name' => $oldName,
+                    'new_name' => $request->name,
+                ]
+            );
+        }
 
         $operator->save();
 
