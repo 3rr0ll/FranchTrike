@@ -146,7 +146,6 @@ Route::middleware([
             // Operator dashboard
             Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
             Route::get('/dashboard', [OperatorDashboard::class, 'index'])->name('dashboard');
-            Route::get('/home', [OperatorDashboard::class, 'index'])->name('home');
             // Operator resource routes
             Route::get('/', [OperatorController::class, 'index'])->name('index');
             Route::get('/create', [OperatorController::class, 'create'])->name('create');
