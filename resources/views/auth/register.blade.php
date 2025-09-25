@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Sign up">
   <section class="min-h-screen flex items-center justify-center bg-gray-100" style="background-image: url('{{ asset('images/login_bg.jpg') }}'); background-size: cover; background-position: center;">
     <div class="w-full min-h-screen flex items-center justify-center px-2 sm:px-6">
       <div class="w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-stretch bg-transparent my-8 sm:my-12">
@@ -123,10 +123,9 @@
         <!-- Logo & Welcome Side (collapses on mobile) -->
         <div class="hidden lg:flex w-1/2 bg-gradient-to-br from-primary-navy to-accent-purple items-center justify-center rounded-r-xl">
           <div class="w-full flex flex-col items-center justify-center px-8 py-10">
-            <img class="w-32 h-32 mb-6 rounded-full border-4 border-primary-white shadow-lg bg-white object-contain"
+            <img class="w-60 h-60 mb-6 rounded-full border-4 border-primary-white shadow-lg bg-white object-contain"
               src="{{ asset('images/logo.png') }}" alt="Padre Garcia Logo">
             <h2 class="text-xl font-bold mb-2 text-primary-gold">Welcome to Franchise System</h2>
-            <p class="text-base text-white text-center">Start managing your franchise applications and motor details today.</p>
           </div>
         </div>
       </div>
