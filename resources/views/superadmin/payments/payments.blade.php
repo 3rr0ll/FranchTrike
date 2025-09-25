@@ -1,10 +1,15 @@
 @extends('layouts.superadmin')
 
-
+@section('title', 'Payments Record')
 
 @section('content')
 <div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
-
+    <a href="{{ route('superadmin.payments.index') }}" class="inline-flex items-center px-4 mb-5 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Payments
+    </a>
     <!-- Date Filter & Export Buttons -->
     <div class="bg-white shadow rounded-lg mb-6 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0 sm:space-x-4">
         <div class="flex items-center space-x-4">
@@ -55,14 +60,14 @@
                                 </span>
                             </td>
                             <td>
-                        @if($group['reviewer'])
-                        {{ $group['reviewer']->name }}
-                        @else
-                        <span class="text-gray-400 italic">Not reviewed</span>
-                        @endif
-                    </td>
+                                @if($group['reviewer'])
+                                {{ $group['reviewer']->name }}
+                                @else
+                                <span class="text-gray-400 italic">Not reviewed</span>
+                                @endif
+                            </td>
                             <td>{{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('M d, Y H:i') : 'Pending' }}</td>
-                            
+
                         </tr>
                         @empty
                         <tr>
@@ -81,8 +86,7 @@
         var table = $('#grouped-payments-table').DataTable({
             responsive: true,
             dom: 'Bfrtip',
-            buttons: [
-                {
+            buttons: [{
                     extend: 'csv',
                     text: '<i class="fas fa-file-csv mr-2"></i> CSV',
                     className: 'bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1.5 px-3 rounded-md shadow-sm text-xs'

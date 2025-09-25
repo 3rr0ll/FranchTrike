@@ -1,4 +1,11 @@
 @extends('layouts.superadmin')
+@section('title', 'Security Settings')
+
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2" >
+    Security Settings
+</h2>
+@endsection
 
 @section('content')
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">

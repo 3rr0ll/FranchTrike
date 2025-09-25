@@ -1,14 +1,19 @@
 @extends('layouts.superadmin')
 
+@section('title', 'Password Reset')
+
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2" >
+    Password Reset
+</h2>
+@endsection
+
 @section('content')
 <div class="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-6">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Reset Password for {{ $user->name }}
         </h2>
-        <a href="{{ route('superadmin.users.index') }}" class="text-blue-600 hover:text-blue-800">
-            ← Back to Users
-        </a>
     </div>
 
     @if ($errors->any())

@@ -1,14 +1,13 @@
 @extends('layouts.superadmin')
 
+@section('title', 'Edit User')
+
 @section('content')
 <div class="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center mb-6">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             Edit User: {{ $user->name }}
-        </h2>
-        <a href="{{ route('superadmin.users.index') }}" class="text-blue-600 hover:text-blue-800">
-            ← Back to Users
-        </a>
+        </h2>   
     </div>
 
     @if ($errors->any())

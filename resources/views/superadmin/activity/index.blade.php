@@ -1,15 +1,15 @@
 @extends('layouts.superadmin')
 
-@section('header')
-    <div class="bg-primary-navy text-white py-4 px-6 mb-6 rounded-lg shadow">
-        <h1 class="text-3xl font-bold">Superadmin Activity Logs</h1>
-        <p class="text-sm mt-1">Monitor all recent activities performed by users and the system.</p>
-    </div>
-@endsection
+@section('title', 'Activity Logs')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+    Activity Logs
+</h2>
+@endsection
 @section('content')
 <div class="p-6 bg-white shadow rounded-lg">
-   
+
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4 ">
         <!-- Category Filter -->
         <div>
@@ -17,10 +17,10 @@
             <select id="categoryFilter" class="border rounded-lg p-2 focus:ring focus:ring-primary-navy focus:border-primary-navy">
                 <option value="">All Categories</option>
                 @php
-                    $categories = $logs->pluck('category')->unique();
+                $categories = $logs->pluck('category')->unique();
                 @endphp
                 @foreach($categories as $category)
-                    <option value="{{ $category }}">{{ ucfirst($category) }}</option>
+                <option value="{{ $category }}">{{ ucfirst($category) }}</option>
                 @endforeach
             </select>
         </div>
@@ -29,10 +29,10 @@
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Filter by Date</label>
             <div class="flex gap-2">
-                <input type="text" id="minDate" placeholder="From" 
-                       class="border rounded-lg p-2 focus:ring focus:ring-primary-navy focus:border-primary-navy w-32">
-                <input type="text" id="maxDate" placeholder="To" 
-                       class="border rounded-lg p-2 focus:ring focus:ring-primary-navy focus:border-primary-navy w-32">
+                <input type="text" id="minDate" placeholder="From"
+                    class="border rounded-lg p-2 focus:ring focus:ring-primary-navy focus:border-primary-navy w-32">
+                <input type="text" id="maxDate" placeholder="To"
+                    class="border rounded-lg p-2 focus:ring focus:ring-primary-navy focus:border-primary-navy w-32">
             </div>
         </div>
     </div>
@@ -50,21 +50,21 @@
             </thead>
             <tbody>
                 @foreach($logs as $log)
-                    <tr>
-                        <td class="px-4 py-2 border">{{ $log->user->name ?? 'System' }}</td>
-                        <td class="px-4 py-2 border">{{ ucfirst($log->category) }}</td>
-                        <td class="px-4 py-2 border">{{ $log->description }}</td>
-                        <td class="px-4 py-2 border">
-                            <pre class="text-xs bg-gray-50 p-2 rounded">
-                                {{ json_encode($log->data, JSON_PRETTY_PRINT) }}
-                            </pre>
-                        </td>
-                        <td class="px-4 py-2 border">{{ $log->created_at->format('M d, Y h:i A') }}</td>
-                    </tr>
+                <tr>
+                    <td class="px-4 py-2 border">{{ $log->user->name ?? 'System' }}</td>
+                    <td class="px-4 py-2 border">{{ ucfirst($log->category) }}</td>
+                    <td class="px-4 py-2 border">{{ $log->description }}</td>
+                    <td class="px-4 py-2 border">
+                        <pre class="text-xs bg-gray-50 p-2 rounded">
+                        {{ json_encode($log->data, JSON_PRETTY_PRINT) }}
+                        </pre>
+                    </td>
+                    <td class="px-4 py-2 border">{{ $log->created_at->format('M d, Y h:i A') }}</td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
-    </div>  
+    </div>
 </div>
 @endsection
 
@@ -78,7 +78,9 @@
         var table = $('#logsTable').DataTable({
             responsive: true,
             pageLength: 10,
-            order: [[4, 'desc']],
+            order: [
+                [4, 'desc']
+            ],
             language: {
                 search: "",
                 searchPlaceholder: "Search logs..."
@@ -94,7 +96,7 @@
         // Category filter
         $('#categoryFilter').on('change', function() {
             var selected = $(this).val();
-            table.column(1).search(selected).draw(); 
+            table.column(1).search(selected).draw();
         });
 
         // Datepickers

@@ -316,7 +316,7 @@ Route::middleware([
             Route::get('/certificates/application/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewApplication'])->name('certificates.application.preview');
             Route::get('/certificates/all/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateAllCertificates'])->name('certificates.all.generate');
 
-            Route::post('/certificates/{motorDetailId}/print-log', [\App\Http\Controllers\Admin\CertificateController::class, 'logPrint']) ->name('certificates.print.log');
+            Route::post('/certificates/{motorDetailId}/print-log', [\App\Http\Controllers\Admin\CertificateController::class, 'logPrint'])->name('certificates.print.log');
 
 
             // Payments routes
@@ -376,9 +376,9 @@ Route::middleware([
             Route::patch('/users/{user}/force-logout', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'forceLogout'])->name('users.force-logout');
             Route::get('/users/{user}/login-history', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'loginHistory'])->name('users.login-history');
             Route::get('/users/login-logs', [\App\Http\Controllers\SuperAdmin\UserManagementController::class, 'allLoginLogs'])->name('users.login-logs');
-
             Route::get('/activity', [\App\Http\Controllers\SuperAdmin\ActivityController::class, 'index'])->name('activity.index');
 
+            
             // Payment Management Routes
             Route::prefix('payments')->name('payments.')->group(function () {
                 Route::get('/', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'index'])->name('index');

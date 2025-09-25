@@ -1,5 +1,7 @@
 @extends('layouts.superadmin')
 
+@section('title', 'Dashboard')
+
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2" >
 Super Admin Dashboard
@@ -217,7 +219,7 @@ Super Admin Dashboard
         </div>
 
         <!-- Franchise Timeline/Calendar -->
-        <div class="bg-white overflow-hidden shadow rounded-lg mb-8">
+        <div class="bg-white overflow-hidden shadow rounded-lg mb-8 mt-6">
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Franchise Timeline</h3>
                 <div class="overflow-x-auto">
