@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('title', 'Input Details')
+
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
     Input New Motor Details
