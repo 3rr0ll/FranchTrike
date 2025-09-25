@@ -1,5 +1,8 @@
 @extends('layouts.operator')
 
+@section('title', 'Receipt')
+
+
 @section('content')
 <div id="receipt" class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-8">
     <!-- Header -->

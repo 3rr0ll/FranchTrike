@@ -1,5 +1,7 @@
 @extends('layouts.operator')
 
+@section('title', 'Apply Franchise')
+
 @section('content')
 <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-lg shadow">
     @if (session('error'))

@@ -1,5 +1,7 @@
 @extends('layouts.operator')
 
+@section('title', 'Home')
+
 @section('header')
 <h2 class="font-bold text-3xl text-primary-navy flex items-center gap-2">
     Operator Home
