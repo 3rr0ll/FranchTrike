@@ -3,103 +3,80 @@
 @section('title', 'Dashboard')
 
 @section('header')
-<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2" >
-Admin Dashboard
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+    Admin Dashboard
 </h2>
 @endsection
 
 @section('content')
 <div class="p-6">
-
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Applications -->
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Applications</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $totalApplications ?? 0 }}</p>
-                </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Total Applications Chart -->
+        <div class="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-semibold text-gray-900">Applications Over Time</h3>
+                <a href="{{ route('admin.franchise.index') }}" class="text-blue-600 hover:text-blue-800" title="View Applications">
+                    <x-button>
+                        View
+                    </x-button>
+                </a>
             </div>
-            <a href="{{ route('admin.franchise.index') }}" class="ml-4 text-blue-600 hover:text-blue-800" title="View Applications">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+            <canvas id="applicationsChart" height="300"></canvas>
         </div>
 
-        <!-- Pending Review -->
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Pending Review</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $pendingReview ?? 0 }}</p>
-                </div>
+        <!-- Pending Review Chart -->
+        <div class="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Pending Review Over Time</h3>
+                <a href="{{ route('admin.franchise.index', ['status' => 'under_review']) }}" class="ml-4 text-yellow-600 hover:text-yellow-800" title="View Pending Review">
+                    <x-button>
+                        View
+                    </x-button>
+                </a>
             </div>
-            <a href="{{ route('admin.franchise.index', ['status' => 'under_review']) }}" class="ml-4 text-yellow-600 hover:text-yellow-800" title="View Pending Review">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+            <canvas id="pendingChart" height="300"></canvas>
         </div>
 
-        <!-- Total Operators -->
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-green-100 text-green-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Operators</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $totalOperators ?? 0 }}</p>
-                </div>
+        <!-- Operators Chart -->
+        <div class="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Operators Registered Over Time</h3>
+                <a href="{{ route('admin.operators.index') }}" class="ml-4 text-green-600 hover:text-green-800" title="View Operators">
+                    <x-button>
+                        VIew
+                    </x-button>
+                </a>
             </div>
-            <a href="{{ route('admin.operators.index') }}" class="ml-4 text-green-600 hover:text-green-800" title="View Operators">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+            <canvas id="operatorsChart" height="300"></canvas>
         </div>
 
-        <!-- Total Drivers -->
-        <div class="bg-white rounded-lg shadow p-6 flex items-center justify-between">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                </div>
-                <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-600">Total Drivers</p>
-                    <p class="text-2xl font-semibold text-gray-900">{{ $totalDrivers ?? 0 }}</p>
-                </div>
+        <!-- Drivers Chart -->
+        <div class="bg-white rounded-lg shadow p-4 flex flex-col">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Drivers Registered Over Time</h3>
+                <a href="{{ route('admin.drivers.index') }}" class="ml-4 text-purple-600 hover:text-purple-800" title="View Drivers">
+                    <x-button>
+                        View
+                    </x-button>
+                </a>
             </div>
-            <a href="{{ route('admin.drivers.index') }}" class="ml-4 text-purple-600 hover:text-purple-800" title="View Drivers">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-            </a>
+            <canvas id="driversChart" height="300"></canvas>
         </div>
+
     </div>
+
 
     <!-- Application Status Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Status Distribution -->
         <div class="bg-white rounded-lg shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Application Status Distribution</h3>
-            <div class="space-y-4">
+
+            <!-- Chart -->
+            <div class="w-full h-64">
+                <canvas id="statusChart"></canvas>
+            </div>
+
+            <div class="mt-6 space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
@@ -157,8 +134,6 @@ Admin Dashboard
             </div>
         </div>
     </div>
-
-  
 
     <!-- System Overview -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -225,3 +200,104 @@ Admin Dashboard
     </div>
 </div>
 @endsection
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Total Applications
+    new Chart(document.getElementById('applicationsChart'), {
+        type: 'line',
+        data: {
+            labels: @json($labels),
+            datasets: [{
+                label: 'Applications',
+                data: @json($data),
+                borderColor: 'rgb(37, 99, 235)',
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        }
+    });
+
+    // Pending Review
+    new Chart(document.getElementById('pendingChart'), {
+        type: 'line',
+        data: {
+            labels: @json($labels),
+            datasets: [{
+                label: 'Pending Review',
+                data: @json($pendingData),
+                borderColor: 'rgb(202, 138, 4)', // yellow-600
+                backgroundColor: 'rgba(202, 138, 4, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        }
+    });
+
+    // Operators
+    new Chart(document.getElementById('operatorsChart'), {
+        type: 'line',
+        data: {
+            labels: @json($labels),
+            datasets: [{
+                label: 'Operators',
+                data: @json($operatorsData),
+                borderColor: 'rgb(22, 163, 74)', // green-600
+                backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        }
+    });
+
+    // Drivers
+    new Chart(document.getElementById('driversChart'), {
+        type: 'line',
+        data: {
+            labels: @json($labels),
+            datasets: [{
+                label: 'Drivers',
+                data: @json($driversData),
+                borderColor: 'rgb(147, 51, 234)', // purple-600
+                backgroundColor: 'rgba(147, 51, 234, 0.2)',
+                tension: 0.3,
+                fill: true
+            }]
+        }
+    });
+</script>
+
+<script>
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Submitted', 'Under Review', 'Approved', 'Rejected'],
+            datasets: [{
+                label: 'Applications',
+                data: [
+                    {{ $statusCounts['submitted'] ?? 0 }},
+                    {{ $statusCounts['under_review'] ?? 0 }},
+                    {{ $statusCounts['approved'] ?? 0 }},
+                    {{ $statusCounts['rejected'] ?? 0 }}
+                ],
+                backgroundColor: [
+                    '#3B82F6', // blue
+                    '#FACC15', // yellow
+                    '#22C55E', // green
+                    '#EF4444'  // red
+                ],
+                borderWidth: 1,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false } // we already show custom legend
+            }
+        }
+    });
+</script>
+@endpush

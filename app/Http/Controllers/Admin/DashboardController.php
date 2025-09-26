@@ -35,7 +35,7 @@ class DashboardController extends Controller
         // Recent Applications
         $recentApplications = FranchiseApplication::with(['operator', 'driver'])
             ->latest()
-            ->take(5)
+            ->take(6)
             ->get();
 
         // Today's Statistics
@@ -51,12 +51,12 @@ class DashboardController extends Controller
 
         // Document Statistics
         $documentStats = [
-            'pending_review' => OperatorDocument::where('status', 'pending')->count() + 
-                               DriverDocument::where('status', 'pending')->count(),
-            'approved' => OperatorDocument::where('status', 'approved')->count() + 
-                         DriverDocument::where('status', 'approved')->count(),
-            'rejected' => OperatorDocument::where('status', 'rejected')->count() + 
-                         DriverDocument::where('status', 'rejected')->count(),
+            'pending_review' => OperatorDocument::where('status', 'pending')->count() +
+                DriverDocument::where('status', 'pending')->count(),
+            'approved' => OperatorDocument::where('status', 'approved')->count() +
+                DriverDocument::where('status', 'approved')->count(),
+            'rejected' => OperatorDocument::where('status', 'rejected')->count() +
+                DriverDocument::where('status', 'rejected')->count(),
         ];
 
         // System Statistics
@@ -65,16 +65,103 @@ class DashboardController extends Controller
             'total_routes' => Route::count(),
         ];
 
+
+        // Get the first day of the month 5 months ago (to include this month and previous 5)
+        $startMonth = now()->copy()->startOfMonth()->subMonths(5);
+
+        // Applications Over Time
+        $applicationsOverTime = FranchiseApplication::select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->where('created_at', '>=', $startMonth)
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // Applications Pending Review Over Time
+        $pendingOverTime = FranchiseApplication::select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->where('status', 'under_review')
+            ->where('created_at', '>=', $startMonth)
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // Operators Over Time
+        $operatorsOverTime = Operator::select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->where('created_at', '>=', $startMonth)
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // Drivers Over Time
+        $driversOverTime = Driver::select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as count')
+            )
+            ->where('created_at', '>=', $startMonth)
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT);
+            });
+
+        // Prepare labels and data arrays for the last 6 months
+        $labels = [];
+        $data = [];
+        $pendingData = [];
+        $operatorsData = [];
+        $driversData = [];
+
+        for ($i = 0; $i < 6; $i++) {
+            $date = $startMonth->copy()->addMonths($i);
+            $key = $date->format('Y-m');
+            $labels[] = $date->format('M');
+            $data[] = isset($applicationsOverTime[$key]) ? $applicationsOverTime[$key]->count : 0;
+            $pendingData[] = isset($pendingOverTime[$key]) ? $pendingOverTime[$key]->count : 0;
+            $operatorsData[] = isset($operatorsOverTime[$key]) ? $operatorsOverTime[$key]->count : 0;
+            $driversData[] = isset($driversOverTime[$key]) ? $driversOverTime[$key]->count : 0;
+        }
+
         return view('admin.dashboard', compact(
             'totalApplications',
-            'totalOperators', 
+            'totalOperators',
             'totalDrivers',
             'pendingReview',
             'statusCounts',
             'recentApplications',
             'todayStats',
             'documentStats',
-            'systemStats'
+            'systemStats',
+            'labels',
+            'data',
+            'pendingData',
+            'operatorsData',
+            'driversData'
         ));
     }
 }
