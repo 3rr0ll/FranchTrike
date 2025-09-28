@@ -1,5 +1,5 @@
 <x-guest-layout title="Reset Password">
-    <div class="flex justify-center items-center min-h-screen bg-[#e5e5e4]">
+    <div class="flex justify-center items-center min-h-screen" style="background-image: url('{{ asset("images/login_bg.jpg") }}'); background-size: cover; background-position: center;">
         <div class="w-full max-w-md mx-auto mt-12 bg-white rounded-2xl shadow-2xl border border-gray-100 p-8 relative">
             <a href="{{ route('login') }}" class="absolute top-6 left-6 flex items-center text-primary-navy hover:text-primary-gold transition-colors">
                 <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

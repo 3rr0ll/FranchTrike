@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-indigo-100 to-indigo-200 py-10 px-4">
+    <div class="min-h-screen flex items-center justify-center py-10 px-4" style="background-image: url('{{ asset("images/login_bg.jpg") }}'); background-size: cover; background-position: center;">
         <div class="w-full max-w-lg bg-white rounded-2xl shadow-2xl p-10 flex flex-col items-center">
             <img src="{{ asset('images/logo.png') }}" alt="FranchTrike Logo" class="h-20 w-20 mb-6 drop-shadow-lg ">
             <h2 class="text-3xl font-extrabold text-indigo-800 mb-3 text-center tracking-tight">Verify Your Email Address</h2>
