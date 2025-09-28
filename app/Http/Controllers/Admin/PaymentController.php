@@ -21,7 +21,7 @@ class PaymentController extends Controller
         $fees = Fee::all();
 
         // Get all payments with related data
-        $payments = Payment::with(['fee', 'franchiseApplication.operator'])
+        $payments = Payment::with(['fee', 'franchiseApplication.operator', 'reviewer'])
             ->orderByDesc('created_at')
             ->get();
 
@@ -76,20 +76,23 @@ class PaymentController extends Controller
         $application = FranchiseApplication::findOrFail($request->franchise_application_id);
         $fees = Fee::whereIn('id', $request->fees)->get();
 
+        // Get the currently authenticated user's id
+        $userId = Auth::id();
+
         foreach ($fees as $fee) {
             $payment = Payment::create([
                 'franchise_application_id' => $application->id,
                 'fee_id' => $fee->id,
                 'amount_paid' => $fee->amount,
                 'paid_at' => now(),
-                'reviewed_by' =>  Auth::user()->name,
+                'reviewed_by' => $userId, // Store the id of the user who created the payment
             ]);
 
-           ActivityLogger::log(
+            ActivityLogger::log(
                 'payment',
                 'created',
-                'Payment of ₱' . $payment->amount_paid . ' recorded.',
-                ['payment_id' => $payment->id]
+                'Payment of ₱' . $payment->amount_paid . '.',
+                ['payment_id' => $payment->id, 'reviewed_by' => $userId]
             );
         }
 

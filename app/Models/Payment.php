@@ -11,6 +11,7 @@ class Payment extends Model
         'fee_id',
         'amount_paid',
         'paid_at',
+        'reviewed_by',
         'stripe_payment_intent_id',
         'stripe_payment_status'
     ];
