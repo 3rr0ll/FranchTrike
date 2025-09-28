@@ -8,6 +8,8 @@ use App\Models\MotorDetail;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\PDF;
 use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
+
 
 class CertificateController extends Controller
 {
@@ -145,10 +147,10 @@ class CertificateController extends Controller
             'printed',
             'Certificate printed by Admin',
             [
-                'motor_detail_id' => $motorDetail->id,
-                'franchise_application_id' => $franchiseApplication?->id,
-                'operator_id' => $operator?->operator_id,
-                'printed_by_admin_name' => auth()->user()?->name,
+                'motor detail id' => $motorDetail->id,
+                'franchise application id' => $franchiseApplication?->id,
+                'operator id' => $operator?->operator_id,
+                'printed by admin name' => Auth::user()->name,
             ]
         );
 

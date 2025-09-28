@@ -144,14 +144,14 @@ class FranchiseApplicationController extends Controller
             'status updated',
             'Franchise application status updated to "' . $request->status . '".',
             [
-                'franchise_application_id' => $franchiseApplication->id,
+                'franchise application id' => $franchiseApplication->id,
                 'status' => $request->status,
-                'updated_by' => \Auth::user() ? \Auth::user()->name : null,
-                'rejection_reason' => $request->rejection_reason ?? null,
-                'franchise_no' => $request->franchise_no ?? null,
-                'sticker_no' => $request->sticker_no ?? null,
-                'franchise_start_date' => $request->franchise_start_date ?? null,
-                'franchise_end_date' => $request->franchise_end_date ?? null,
+                'updated by' =>  Auth::user()->name,
+                'rejection reason' => $request->rejection_reason ?? null,
+                'franchise no' => $request->franchise_no ?? null,
+                'sticker no' => $request->sticker_no ?? null,
+                'franchise start date' => $request->franchise_start_date ?? null,
+                'franchise end date' => $request->franchise_end_date ?? null,
             ]
         );
 
@@ -421,13 +421,13 @@ class FranchiseApplicationController extends Controller
                 'created',
                 'Franchise application created for client.',
                 [
-                    'franchise_application_id' => $franchiseApplication->id,
-                    'operator_id' => $operator->operator_id,
-                    'driver_id' => $driver->driver_id,
-                    'created_by' => \Auth::user() ? \Auth::user()->name : null,
-                    'application_type' => $request->application_type,
-                    'franchise_fee' => $request->franchise_fee,
-                    'route_id' => $request->route_id,
+                    'franchise application id' => $franchiseApplication->id,
+                    'operator id' => $operator->operator_id,
+                    'driver id' => $driver->driver_id,
+                    'created by' => Auth::user()->name,
+                    'application type' => $request->application_type,
+                    'franchise fee' => $request->franchise_fee,
+                    'route id' => $request->route_id,
                 ]
             );
 

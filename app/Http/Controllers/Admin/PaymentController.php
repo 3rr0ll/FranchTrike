@@ -8,6 +8,8 @@ use App\Models\Payment;
 use App\Models\FranchiseApplication;
 use Illuminate\Http\Request;
 use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Auth;
+
 class PaymentController extends Controller
 {
     /**
@@ -80,7 +82,7 @@ class PaymentController extends Controller
                 'fee_id' => $fee->id,
                 'amount_paid' => $fee->amount,
                 'paid_at' => now(),
-                'reviewed_by' => auth()->id(),
+                'reviewed_by' =>  Auth::user()->name,
             ]);
 
            ActivityLogger::log(

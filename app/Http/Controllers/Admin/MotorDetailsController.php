@@ -87,10 +87,10 @@ class MotorDetailsController extends Controller
         ]);
 
         \App\Helpers\ActivityLogger::log(
-            'motor_detail',
+            'motor detail',
             'updated',
             'Motor details for franchise id ' . ($motorDetail->franchiseApplication->id ?? 'N/A') . ' updated.',
-            ['motor_detail_id' => $motorDetail->id]
+            ['motor detail id' => $motorDetail->id]
         );
        
 
@@ -105,7 +105,7 @@ class MotorDetailsController extends Controller
         $motorDetail->delete();
 
         \App\Helpers\ActivityLogger::log(
-            'motor_detail',
+            'motor detail',
             'deleted',
             'Motor detail with ID ' . $motorDetail->id . ' deleted.',
             ['motor_detail_id' => $motorDetail->id]

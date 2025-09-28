@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Helpers\ActivityLogger;
 
 class SettingsController extends Controller
@@ -48,10 +50,8 @@ class SettingsController extends Controller
                 return back()->with('info', 'No changes detected in profile.');
             }
 
-            foreach ($changes as $key => $value) {
-                $admin->$key = $value;
-            }
-            $admin->save();
+            // Use DB update instead of save()
+            DB::table('users')->where('id', $admin->id)->update($changes);
 
             ActivityLogger::log(
                 'admin_profile',
@@ -81,8 +81,10 @@ class SettingsController extends Controller
                 return back()->with('info', 'New password is the same as the current password.');
             }
 
-            $admin->password = Hash::make($validated['password']);
-            $admin->save();
+            // Use DB update instead of save()
+            DB::table('users')->where('id', $admin->id)->update([
+                'password' => Hash::make($validated['password'])
+            ]);
 
             ActivityLogger::log(
                 'admin_profile',
@@ -122,7 +124,7 @@ class SettingsController extends Controller
                         );
                     } catch (\Exception $e) {
                         // Log error but continue
-                        \Log::error('Failed to delete old Cloudinary admin profile photo: ' . $e->getMessage());
+                        Log::error('Failed to delete old Cloudinary admin profile photo: ' . $e->getMessage());
                     }
                 }
 
@@ -149,10 +151,11 @@ class SettingsController extends Controller
                     return back()->with('info', 'No changes detected in profile photo.');
                 }
 
-                $admin->profile_photo_path = $newPhotoUrl;
-                $admin->cloudinary_profile_photo_id = $newPublicId;
-                $admin->save();
-
+                // Use DB update instead of save()
+                DB::table('users')->where('id', $admin->id)->update([
+                    'profile_photo_path' => $newPhotoUrl,
+                    'cloudinary_profile_photo_id' => $newPublicId,
+                ]);
 
                 // Log the profile photo update activity
                 ActivityLogger::log(
@@ -161,15 +164,14 @@ class SettingsController extends Controller
                     'Admin profile photo updated.',
                     [
                         'admin_id' => $admin->id,
-                        'profile_photo_path' => $admin->profile_photo_path,
-                        'cloudinary_profile_photo_id' => $admin->cloudinary_profile_photo_id,
+                        'profile_photo_path' => $newPhotoUrl,
+                        'cloudinary_profile_photo_id' => $newPublicId,
                     ]
                 );
 
-
                 return redirect()->route('admin.settings')->with('success', 'Profile photo updated successfully.');
             } catch (\Exception $e) {
-                \Log::error('Cloudinary admin profile photo upload failed: ' . $e->getMessage());
+                Log::error('Cloudinary admin profile photo upload failed: ' . $e->getMessage());
                 return back()->withErrors(['profile_photo' => 'Profile photo upload failed. Please try again.']);
             }
         }

@@ -131,10 +131,10 @@ class DocumentController extends Controller
             'status updated',
             'Operator document status updated to "' . $request->status . '".',
             [
-                'operator_document_id' => $document->id,
+                'operator document id' => $document->id,
                 'status' => $request->status,
                 'verified_by' => Auth::user() ? Auth::user()->name : null,
-                'rejection_reason' => $request->rejection_reason ?? null,
+                'rejection reason' => $request->rejection_reason ?? null,
             ]
         );
 
@@ -169,10 +169,10 @@ class DocumentController extends Controller
             'status updated',
             'Driver document status updated to "' . $request->status . '".',
             [
-                'driver_document_id' => $document->id,
+                'driver document id' => $document->id,
                 'status' => $request->status,
-                'verified_by' => Auth::user() ? Auth::user()->name : null,
-                'rejection_reason' => $request->rejection_reason ?? null,
+                'verified by' => Auth::user() ? Auth::user()->name : null,
+                'rejection reason' => $request->rejection_reason ?? null,
             ]
         );
 
