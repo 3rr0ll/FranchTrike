@@ -87,7 +87,7 @@ class FranchiseApplicationController extends Controller
         ]);
 
         $operator = Auth::user()->operator;
-        $userId = auth()->check() ? auth()->id() : null;
+        $userId = Auth::check() ? Auth::id() : null;
 
 
         // Create the franchise application
@@ -128,7 +128,7 @@ class FranchiseApplicationController extends Controller
                 'ctc_date_issued' => $request->ctc_date_issued,
                 'ctc_place_issued' => $request->ctc_place_issued,
                 'franchise_fee' => $request->franchise_fee,
-                'submitted_by' => auth()->user() ? auth()->user()->name : null,
+                'submitted_by' => Auth::user()->name,
                 'user_id' => $userId,
 
             ]
@@ -141,7 +141,7 @@ class FranchiseApplicationController extends Controller
     public function motorDetails($franchiseApplicationId)
     {
         $franchiseApplication = FranchiseApplication::findOrFail($franchiseApplicationId);
-        $unitMakes = \App\Models\UnitMake::all();
+        $unitMakes = UnitMake::all();
 
         return view('operator.franchise.motor-details', compact('franchiseApplication', 'unitMakes'));
     }
@@ -157,7 +157,7 @@ class FranchiseApplicationController extends Controller
             'platenumber' => 'required|string',
         ]);
 
-        $userId = auth()->check() ? auth()->id() : null;
+        $userId = Auth::check() ? Auth::id() : null;
 
 
         \App\Models\MotorDetail::create([
@@ -175,13 +175,13 @@ class FranchiseApplicationController extends Controller
             'Operator added motor details to franchise application.',
             [
                 'franchise_application_id' => $franchiseApplicationId,
-                'operator_id' => auth()->user() && auth()->user()->operator ? auth()->user()->operator->operator_id : null,
+                'operator' => Auth::user()->name,
                 'unit_type' => $request->unit_type,
                 'unit_make_id' => $request->unit_make_id,
                 'motorno' => $request->motorno,
                 'chasisno' => $request->chasisno,
                 'platenumber' => $request->platenumber,
-                'added_by' => auth()->user() ? auth()->user()->name : null,
+                'added by' => Auth::user()->name,
                 'user_id' => $userId,
 
             ]
@@ -242,7 +242,7 @@ class FranchiseApplicationController extends Controller
             return back()->with('error', 'This driver already has an active application.');
         }
 
-        $userId = auth()->check() ? auth()->id() : null;
+        $userId = Auth::check() ? Auth::id() : null;
 
         try {
             // Replicate the old application for renewal, but do NOT save yet
@@ -281,7 +281,7 @@ class FranchiseApplicationController extends Controller
                     'old_application_id' => $franchiseApplication->id,
                     'new_application_id' => $renewalApplication->id,
                     'driver_id' => $renewalApplication->driver_id,
-                    'submitted_by' => auth()->user() ? auth()->user()->name : null,
+                    'submitted by' => Auth::user()->name,
                     'user_id' => $userId,
 
                 ]

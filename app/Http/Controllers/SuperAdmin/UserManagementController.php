@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Auth;
 
 class UserManagementController extends Controller
 {
@@ -387,7 +388,7 @@ class UserManagementController extends Controller
                 'enable_login_logging' => $validated['enable_login_logging'] ?? false,
                 'enable_account_lockout' => $validated['enable_account_lockout'] ?? false,
                 'session_timeout_minutes' => $validated['session_timeout_minutes'],
-                'updated_by' => auth()->id(),
+                'updated_by' => Auth::user()->name,
             ]
         );
 

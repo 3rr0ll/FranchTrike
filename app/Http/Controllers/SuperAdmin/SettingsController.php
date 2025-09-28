@@ -147,7 +147,7 @@ class SettingsController extends Controller
                 $superadmin->cloudinary_profile_photo_id = $newPublicId;
                 $superadmin->save();
 
-                ActivityLogger::log(
+                \App\Helpers\ActivityLogger::log(
                     'superadmin_profile',
                     'updated',
                     'Superadmin profile photo updated.',

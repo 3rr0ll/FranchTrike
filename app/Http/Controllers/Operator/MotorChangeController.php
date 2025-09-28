@@ -64,7 +64,7 @@ class MotorChangeController extends Controller
                 ->with('error', 'You already have a pending motor change request for this franchise.');
         }
 
-        $userId = auth()->check() ? auth()->id() : null;
+        $userId = Auth::check() ? Auth::id() : null;
 
 
         // Directly create the motor change request with only old details
@@ -95,7 +95,7 @@ class MotorChangeController extends Controller
                 'old_motorno' => $motorDetail->motorno,
                 'old_chasisno' => $motorDetail->chasisno,
                 'old_platenumber' => $motorDetail->platenumber,
-                'submitted_by' => auth()->user() ? auth()->user()->name : null,
+                'submitted_by' => Auth::user()->name,
                 'user_id' => $userId,
             ]
         );

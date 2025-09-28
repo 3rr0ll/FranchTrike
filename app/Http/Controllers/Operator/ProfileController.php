@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Cloudinary\Cloudinary;
 use App\Helpers\ActivityLogger;
+use Illuminate\Support\Facades\Log;
 class ProfileController extends Controller
 {
     /**
@@ -58,7 +59,7 @@ class ProfileController extends Controller
                         );
                     } catch (\Exception $e) {
                         // Log error but continue
-                        \Log::error('Failed to delete old Cloudinary profile photo: ' . $e->getMessage());
+                        Log::error('Failed to delete old Cloudinary profile photo: ' . $e->getMessage());
                     }
                 }
 
@@ -90,7 +91,7 @@ class ProfileController extends Controller
                 $operator->cloudinary_profile_photo_id = $upload['public_id'] ?? null;
 
             } catch (\Exception $e) {
-                \Log::error('Cloudinary profile photo upload failed: ' . $e->getMessage());
+                Log::error('Cloudinary profile photo upload failed: ' . $e->getMessage());
                 return back()->withErrors(['profile_photo' => 'Profile photo upload failed. Please try again.']);
             }
         }

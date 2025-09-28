@@ -14,6 +14,7 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
+
     public function index()
     {
         $user = Auth::user();
@@ -23,21 +24,68 @@ class DashboardController extends Controller
             return redirect()->route('login')->with('error', 'Operator record not found.');
         }
 
-        $alerts = [];
+        $applications = $this->getFranchiseApplications($operator);
+        $latestApp = $this->getLatestApplication($applications);
+        $franchiseApplications = $this->getSortedApplications($applications);
 
-        // Franchise Applications (with motorDetail for eligibility checks)
-        $applications = $operator->franchiseApplications()->with('motorDetail')->get();
-        $latestApp = $applications->sortByDesc('created_at')->first();
+        $franchiseStatus = $this->getFranchiseStatus($latestApp);
+        $franchiseEndDate = $this->getFranchiseEndDate($latestApp);
 
-        // Expose sorted list for dashboard franchise cards
-        $franchiseApplications = $applications->sortByDesc('created_at')->values();
+        $alerts = $this->buildAlerts($operator, $applications, $latestApp);
 
-        // --- Franchise Status & End Date ---
-        $franchiseStatus = $latestApp ? ucfirst($latestApp->status) : 'No Application';
-        $franchiseEndDate = $latestApp && $latestApp->franchise_end_date
+        $incompleteApplications = $this->getIncompleteApplications($applications);
+        $expiringDocuments = $this->getExpiringDocuments($operator);
+        $driversCount = $this->getDriversCount($operator);
+        $applicationsInProgressCount = $franchiseApplications
+            ? $franchiseApplications->whereIn('status', ['submitted', 'pending', 'under_review'])->count()
+            : 0;
+        $expiringDocumentsCount = $expiringDocuments->count();
+
+        return view('operator.dashboard', compact(
+            'alerts',
+            'incompleteApplications',
+            'expiringDocuments',
+            'franchiseStatus',
+            'franchiseEndDate',
+            'franchiseApplications',
+            'applicationsInProgressCount',
+            'expiringDocumentsCount',
+            'driversCount'
+        ));
+    }
+
+    private function getFranchiseApplications($operator)
+    {
+        return $operator->franchiseApplications()->with('motorDetail')->get();
+    }
+
+    private function getLatestApplication($applications)
+    {
+        return $applications->sortByDesc('created_at')->first();
+    }
+
+    private function getSortedApplications($applications)
+    {
+        return $applications->sortByDesc('created_at')->values();
+    }
+
+    private function getFranchiseStatus($latestApp)
+    {
+        return $latestApp ? ucfirst($latestApp->status) : 'No Application';
+    }
+
+    private function getFranchiseEndDate($latestApp)
+    {
+        return $latestApp && $latestApp->franchise_end_date
             ? Carbon::parse($latestApp->franchise_end_date)->format('F j, Y')
             : null;
+    }
 
+    private function buildAlerts($operator, $applications, $latestApp)
+    {
+        $alerts = [];
+
+        // Franchise application status alerts
         if ($latestApp) {
             if ($latestApp->status === 'submitted') {
                 $alerts[] = [
@@ -116,9 +164,6 @@ class DashboardController extends Controller
             ];
         }
 
-        // Incomplete applications (not approved/rejected/submitted)
-        $incompleteApplications = $applications->whereNotIn('status', ['approved', 'rejected', 'submitted']);
-
         // Drivers presence
         $driversCount = Driver::where('operator_id', $operator->operator_id)->count();
         if ($driversCount === 0) {
@@ -156,23 +201,24 @@ class DashboardController extends Controller
             }
         }
 
+        return $alerts;
+    }
 
-        $applicationsInProgressCount = $franchiseApplications
-            ? $franchiseApplications->whereIn('status', ['submitted', 'pending', 'under_review'])->count()
-            : 0;
+    private function getIncompleteApplications($applications)
+    {
+        return $applications->whereNotIn('status', ['approved', 'rejected', 'submitted']);
+    }
 
-        $expiringDocumentsCount = $expiringDocuments->count();
+    private function getExpiringDocuments($operator)
+    {
+        $submittedDocs = $operator->documents ?? collect();
+        return $submittedDocs->filter(function ($doc) {
+            return $doc->expiry_date && Carbon::now()->diffInDays($doc->expiry_date, false) <= 30;
+        });
+    }
 
-        return view('operator.dashboard', compact(
-            'alerts',
-            'incompleteApplications',
-            'expiringDocuments',
-            'franchiseStatus',
-            'franchiseEndDate',
-            'franchiseApplications',
-            'applicationsInProgressCount',
-            'expiringDocumentsCount',
-            'driversCount'
-        ));
+    private function getDriversCount($operator)
+    {
+        return Driver::where('operator_id', $operator->operator_id)->count();
     }
 }

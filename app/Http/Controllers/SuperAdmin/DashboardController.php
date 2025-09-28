@@ -61,11 +61,11 @@ class DashboardController extends Controller
         $applications = collect();
         $documents = collect();
         if ($q) {
-            $users = \App\Models\User::where('name', 'like', "%$q%")
+            $users = User::where('name', 'like', "%$q%")
                 ->orWhere('email', 'like', "%$q%")
                 ->with('role')
                 ->get();
-            $applications = \App\Models\FranchiseApplication::where('application_number', 'like', "%$q%")
+            $applications = FranchiseApplication::where('application_number', 'like', "%$q%")
                 ->orWhere('franchise_no', 'like', "%$q%")
                 ->orWhere('operator_name', 'like', "%$q%")
                 ->with(['operator', 'driver'])
