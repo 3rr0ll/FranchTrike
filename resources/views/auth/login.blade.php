@@ -1,5 +1,7 @@
 <x-guest-layout title="Login">
-<section class="min-h-screen flex items-center justify-center bg-gray-100" style="background-image: url('{{ asset('images/login_bg.jpg') }}'); background-size: cover; background-position: center;">
+<section 
+    class="min-h-screen flex items-center justify-center bg-gray-100"
+    style="background-image: url('{{ asset("images/login_bg.jpg") }}'); background-size: cover; background-position: center;">
     <div class="w-full min-h-screen flex items-center justify-center px-2 sm:px-6">
       <div class="w-full max-w-5xl mx-auto flex flex-col lg:flex-row items-stretch bg-transparent my-8 sm:my-12">
         <!-- Login Form Side -->
@@ -119,5 +121,6 @@
         });
       }
     });
+  
   </script>
 </x-guest-layout>
