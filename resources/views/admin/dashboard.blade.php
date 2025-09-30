@@ -105,6 +105,13 @@
                     </div>
                     <span class="text-sm font-medium text-gray-900">{{ $statusCounts['rejected'] ?? 0 }}</span>
                 </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
+                        <span class="text-sm text-gray-600">Expired</span>
+                    </div>
+                    <span class="text-sm font-medium text-gray-900">{{ $statusCounts['expired'] ?? 0 }}</span>
+                </div>
             </div>
         </div>
 
@@ -273,20 +280,22 @@
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Submitted', 'Under Review', 'Approved', 'Rejected'],
+            labels: ['Submitted', 'Under Review', 'Approved', 'Rejected', 'Expired'],
             datasets: [{
                 label: 'Applications',
                 data: [
                     {{ $statusCounts['submitted'] ?? 0 }},
                     {{ $statusCounts['under_review'] ?? 0 }},
                     {{ $statusCounts['approved'] ?? 0 }},
-                    {{ $statusCounts['rejected'] ?? 0 }}
+                    {{ $statusCounts['rejected'] ?? 0 }},
+                    {{ $statusCounts['expired'] ?? 0 }}
                 ],
                 backgroundColor: [
                     '#3B82F6', // blue
                     '#FACC15', // yellow
                     '#22C55E', // green
-                    '#EF4444'  // red
+                    '#EF4444', // red
+                    '#6B7280'  // gray for expired
                 ],
                 borderWidth: 1,
             }]

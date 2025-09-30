@@ -30,6 +30,7 @@ class DashboardController extends Controller
             'under_review' => FranchiseApplication::where('status', 'under_review')->count(),
             'approved' => FranchiseApplication::where('status', 'approved')->count(),
             'rejected' => FranchiseApplication::where('status', 'rejected')->count(),
+            'expired' => FranchiseApplication::where('status', 'expired')->count(),
         ];
 
         // Recent Applications
