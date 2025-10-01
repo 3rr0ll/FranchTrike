@@ -12,6 +12,46 @@ use Illuminate\Support\Facades\Auth;
 
 class DocumentController extends Controller
 {
+
+    public function index()
+    {
+        $driverDocs = DriverDocument::with(['driver', 'documentType'])
+            ->get()
+            ->map(function ($doc) {
+                return [
+                    'id' => $doc->id,
+                    'user_name' => $doc->driver ? $doc->driver->first_name . ' ' . $doc->driver->last_name : 'N/A',
+                    'user_type' => 'Driver',
+                    'document_type' => $doc->documentType ? $doc->documentType->name : 'N/A',
+                    'status' => $doc->status,
+                    'created_at' => $doc->created_at,
+                    'url' => $doc->file_url ?: $doc->full_file_url,
+                ];
+            });
+    
+        $operatorDocs = OperatorDocument::with(['operator', 'documentType'])
+            ->get()
+            ->map(function ($doc) {
+                return [
+                    'id' => $doc->id,
+                    'user_name' => $doc->operator ? ($doc->operator->full_name ?? ($doc->operator->first_name . ' ' . $doc->operator->last_name)) : 'N/A',
+                    'user_type' => 'Operator',
+                    'document_type' => $doc->documentType ? $doc->documentType->name : 'N/A',
+                    'status' => $doc->status,
+                    'created_at' => $doc->created_at,
+                    'url' => $doc->file_url ?: $doc->full_file_url,
+                ];
+            });
+    
+        // Merge into one collection
+        $documents = $driverDocs->merge($operatorDocs);
+    
+        return view('admin.documents.index', compact('documents'));
+    }
+    
+
+
+
     public function viewOperatorDocuments(Operator $operator)
     {
         $documents = OperatorDocument::where('operator_id', $operator->operator_id)

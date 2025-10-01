@@ -288,6 +288,7 @@ Route::middleware([
             Route::get('/motor-details/statistics', [MotorDetailsController::class, 'statistics'])->name('motor-details.statistics');
             Route::get('/motor-details/export', [MotorDetailsController::class, 'export'])->name('motor-details.export');
 
+            Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
             Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
             Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
 
