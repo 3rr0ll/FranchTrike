@@ -268,6 +268,8 @@ Route::middleware([
 
             // Franchise Applications Routes
             Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
+            Route::get('/franchise/master-list', [AdminFranchiseController::class, 'masterList'])->name('franchise.master-list');
+            Route::post('/franchise/master-list/print-log', [AdminFranchiseController::class, 'masterListPrintLog'])->name('franchise.master-list.print-log');
             Route::get('/franchise/create', [AdminFranchiseController::class, 'create'])->name('franchise.create');
             Route::post('/franchise', [AdminFranchiseController::class, 'store'])->name('franchise.store');
             Route::get('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'show'])->name('franchise.show');
@@ -317,6 +319,8 @@ Route::middleware([
             Route::get('/certificates/all/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateAllCertificates'])->name('certificates.all.generate');
 
             Route::post('/certificates/{motorDetailId}/print-log', [\App\Http\Controllers\Admin\CertificateController::class, 'logPrint'])->name('certificates.print.log');
+            // Log print action for Master List (admin)
+            Route::post('/franchise/master-list/print-log', [AdminFranchiseController::class, 'logPrint'])->name('franchise.master-list.print-log');
 
 
             // Payments routes

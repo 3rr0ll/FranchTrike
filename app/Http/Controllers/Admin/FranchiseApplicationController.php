@@ -240,6 +240,45 @@ class FranchiseApplicationController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
+    public function masterList(Request $request)
+    {
+        $applications = FranchiseApplication::with([
+            'operator',
+            'driver',
+            'route',
+            'motorDetail.unitMake',
+        ])->latest('submitted_at')->get();
+
+        return view('admin.franchise.master-list', compact('applications'));
+    }
+
+
+    /**
+     * Log the print action for the Master List.
+     */
+    public function logPrint(Request $request)
+    {
+        // Optionally, you can log additional filter info from the request if sent
+        $filters = $request->only(['date_start', 'date_end', 'route']);
+
+        // Compose log details
+        $details = [
+            'printed by admin name' => Auth::user()->name,
+            'filters' => $filters,
+        ];
+
+        // Log the activity (adjust ActivityLogger namespace as needed)
+        \App\Helpers\ActivityLogger::log(
+            'franchise master list',
+            'printed',
+            'Master List printed by Admin',
+            $details
+        );
+
+        return response()->json(['status' => 'success']);
+    }
+
+
     public function create()
     {
         $routes = Route::all();

@@ -94,14 +94,21 @@
 
 <div class="p-4 border-b border-gray-200 lg:mt-1.5">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <!-- Left: Add Franchise Button (hidden on mobile) -->
-        <div class="hidden md:flex items-center">
+        <!-- Left: Add Franchise Button (hidden on mobile) + Master List -->
+        <div class="hidden md:flex items-center gap-2">
             <a href="{{ route('admin.franchise.create') }}"
                 class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Add Franchise
+            </a>
+            <a href="{{ route('admin.franchise.master-list') }}"
+                class="inline-flex items-center px-4 py-2 bg-primary-gold border border-transparent rounded-md font-semibold text-sm text-primary-navy tracking-widest hover:bg-yellow-400 focus:bg-yellow-400 active:bg-yellow-500 focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18" />
+                </svg>
+                Master List
             </a>
         </div>
 
@@ -138,10 +145,7 @@
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
             </div>
 
-            <!-- Export Buttons -->
-            <div id="export-buttons" class="flex flex-wrap gap-2 items-center">
-                <!-- Buttons will be injected here by DataTables -->
-            </div>
+           
         </div>
     </div>
 </div>
