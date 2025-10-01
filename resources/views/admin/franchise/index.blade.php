@@ -158,7 +158,7 @@
     <div class="overflow-x-auto">
         <table class="table-auto w-full text-left row-border" id="applications-table">
             <thead>
-                <tr>
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th class="px-8 py-4">Application #</th>
                     <th class="px-8 py-4">Operator</th>
                     <th class="px-8 py-4">Driver</th>
@@ -173,8 +173,8 @@
                 @foreach($applications as $application)
                 <tr>
                     <td class="px-8 py-5 font-medium">{{ $application->id }}</td>
-                    <td class="px-8 py-5">{{ $application->operator->last_name }}</td>
-                    <td class="px-8 py-5">{{ $application->driver->last_name ?? 'N/A' }}</td>
+                    <td class="px-8 py-5">{{ $application->operator->full_name }}</td>
+                    <td class="px-8 py-5">{{ $application->driver?->full_name ?? 'N/A' }}</td>
                     <td class="px-8 py-5">{{ ucfirst($application->application_type) }}</td>
                     <td class="px-8 py-5">
                         @php
@@ -221,7 +221,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [5, 'desc']
+                [6, 'desc']
             ], // Submitted column
             columnDefs: [{
                 targets: 6, // Actions column
