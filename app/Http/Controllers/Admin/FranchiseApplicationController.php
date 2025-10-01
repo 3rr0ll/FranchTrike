@@ -280,7 +280,7 @@ class FranchiseApplicationController extends Controller
             'driver_contact_no' => 'required|string|max:20',
             'driver_license_no' => 'required|string|max:50',
             'driver_license_validity' => 'required|date|after:today',
-
+            'driver_license_nature' => 'required|string',
             // Franchise application details
             'application_type' => 'required|in:new,renewal',
             'route_id' => 'required|exists:routes,id',
@@ -358,6 +358,7 @@ class FranchiseApplicationController extends Controller
                 'contact_no' => $request->driver_contact_no,
                 'license_no' => $request->driver_license_no,
                 'license_validity' => $request->driver_license_validity,
+                'license_nature' => $request->driver_license_nature,
             ]);
 
             // Generate application number

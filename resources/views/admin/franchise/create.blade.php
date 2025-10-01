@@ -213,6 +213,17 @@
                     <label class="block text-sm font-medium text-gray-700">License Validity *</label>
                     <input type="date" name="driver_license_validity" value="{{ old('driver_license_validity') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">License Nature *</label>
+                    <select name="driver_license_nature" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                        <option value="">Select license nature</option>
+                        <option value="Professional" {{ old('driver_license_nature') == 'Professional' ? 'selected' : '' }}>Professional</option>
+                        <option value="Non-Professional" {{ old('driver_license_nature') == 'Non-Professional' ? 'selected' : '' }}>Non-Professional</option>
+                        <option value="Student" {{ old('driver_license_nature') == 'Student' ? 'selected' : '' }}>Student</option>
+                        <option value="Restriction 1" {{ old('driver_license_nature') == 'Restriction 1' ? 'selected' : '' }}>Restriction 1</option>
+                        <option value="Restriction 2" {{ old('driver_license_nature') == 'Restriction 2' ? 'selected' : '' }}>Restriction 2</option>
+                    </select>
+                </div>
             </div>
         </div>
 
