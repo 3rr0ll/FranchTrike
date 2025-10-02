@@ -30,7 +30,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            // Add any other default fields you need
+            'role_id' => 1, 
             'is_active' => true,
         ]);
 
