@@ -20,6 +20,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        // Seed roles first
+        $this->call([
+            RoleSeeder::class,
+        ]);
+
         // Seed document types
         $this->call([
             DocumentTypeSeeder::class,
