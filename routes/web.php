@@ -6,6 +6,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Http\Controllers\ChatBotController;
 
@@ -56,11 +57,35 @@ Route::get('/email/verify', function () {
     return view('auth.verify-email', ['secondsLeft' => $secondsLeft]);
 })->middleware('auth')->name('verification.notice');
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
+Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
+    $user = \App\Models\User::find($id);
+    
+    if (!$user) {
+        return redirect('/login')->with('error', 'User not found.');
+    }
+    
+    // Check if the hash matches
+    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+        return redirect('/login')->with('error', 'Invalid verification link.');
+    }
+    
+    // Check if user is already verified
+    if ($user->hasVerifiedEmail()) {
+        return redirect('/operator/create')->with('message', 'Email already verified!');
+    }
+    
+    // Mark email as verified
+    $user->markEmailAsVerified();
+    
+    // Log the verification for debugging
+    Log::info('Email verified for user: ' . $user->email);
+    
+    // Log in the user
+    Auth::login($user);
+    
     // After verifying, redirect to operator/create so user can access it
-    return redirect('/operator/create');
-})->middleware(['auth', 'signed'])->name('verification.verify');
+    return redirect('/operator/create')->with('message', 'Email verified successfully!');
+})->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
     $request->user()->sendEmailVerificationNotification();
@@ -105,38 +130,22 @@ Route::get('/chatbot/categories', [ChatBotController::class, 'getCategories']);
 Route::get('/chatbot/questions/{category}', [ChatBotController::class, 'questions']);
 Route::get('/chatbot/answer/{id}', [ChatBotController::class, 'answer']);
 
+// Debug route to manually verify email (remove in production)
+Route::get('/debug/verify-email/{user_id}', function ($user_id) {
+    $user = \App\Models\User::find($user_id);
+    if ($user) {
+        $user->markEmailAsVerified();
+        return "Email verified for user: " . $user->email;
+    }
+    return "User not found";
+})->middleware('auth');
+
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-
-    Route::get('/dashboard', function () {
-        $user = Auth::user();
-        // Determine dashboard view based on user type/role
-        if (method_exists($user, 'hasRole')) {
-            if ($user->hasRole('operator')) {
-                return redirect()->route('operator.dashboard');
-            } elseif ($user->hasRole('admin')) {
-                return redirect()->route('admin.dashboard');
-            } elseif ($user->hasRole('superadmin')) {
-                return redirect()->route('superadmin.dashboard');
-            }
-        } elseif (property_exists($user, 'usertype')) {
-            switch ($user->usertype) {
-                case 'operator':
-                    return redirect()->route('operator.dashboard');
-                case 'admin':
-                    return redirect()->route('admin.dashboard');
-                case 'superadmin':
-                    return redirect()->route('superadmin.dashboard');
-            }
-        }
-        // Default fallback
-        return view('welcome');
-    })->name('dashboard');
-
 
 
     Route::middleware([RoleMiddleware::class . ':operator'])
