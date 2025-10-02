@@ -58,16 +58,41 @@
       </nav>
 
       <nav class="hidden md:flex gap-4 items-center justify-end">
-        <a
-          href="{{ route('register') }}"
-          class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
-          Register
-        </a>
-        <a
-          href="{{ route('login') }}"
-          class="border-2 border-white text-white font-semibold px-6 py-2 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-sm">
-          Login
-        </a>
+        @auth
+          @php
+            $user = Auth::user();
+            $dashboardRoute = 'dashboard'; // Default fallback
+
+            // Determine dashboard route based on role_id
+            switch ($user->role_id) {
+              case 1:
+                $dashboardRoute = 'operator.home';
+                break;
+              case 2:
+                $dashboardRoute = 'admin.home';
+                break;
+              case 3:
+                $dashboardRoute = 'superadmin.dashboard';
+                break;
+            }
+          @endphp
+          <a
+            href="{{ route($dashboardRoute) }}"
+            class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
+            Dashboard
+          </a>
+        @else
+          <a
+            href="{{ route('register') }}"
+            class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
+            Register
+          </a>
+          <a
+            href="{{ route('login') }}"
+            class="border-2 border-white text-white font-semibold px-6 py-2 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-sm">
+            Login
+          </a>
+        @endauth
       </nav>
     </div>
 
@@ -79,12 +104,34 @@
         <a href="#contact" class="hover:text-primary-gold transition-colors">Contact</a>
         <a href="#faq" class="hover:text-primary-gold transition-colors">FAQ</a>
         <div class="flex flex-col gap-4 pt-4 border-t border-white/10">
-          <a href="register.html" class="bg-primary-gold text-primary-navy font-semibold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors text-center">
-            Register
-          </a>
-          <a href="login.html" class="border-2 border-white text-white font-semibold px-6 py-3 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-center">
-            Login
-          </a>
+          @auth
+            @php
+              $user = Auth::user();
+              $dashboardRoute = 'dashboard'; // Default fallback
+
+              switch ($user->role_id) {
+                case 1:
+                  $dashboardRoute = 'operator.home';
+                  break;
+                case 2:
+                  $dashboardRoute = 'admin.home';
+                  break;
+                case 3:
+                  $dashboardRoute = 'superadmin.dashboard';
+                  break;
+              }
+            @endphp
+            <a href="{{ route($dashboardRoute) }}" class="bg-primary-gold text-primary-navy font-semibold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors text-center">
+              Dashboard
+            </a>
+          @else
+            <a href="{{ route('register') }}" class="bg-primary-gold text-primary-navy font-semibold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors text-center">
+              Register
+            </a>
+            <a href="{{ route('login') }}" class="border-2 border-white text-white font-semibold px-6 py-3 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-center">
+              Login
+            </a>
+          @endauth
         </div>
       </nav>
     </div>
