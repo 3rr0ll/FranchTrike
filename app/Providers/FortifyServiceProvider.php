@@ -58,11 +58,7 @@ class FortifyServiceProvider extends ServiceProvider
             return new class implements VerifyEmailResponse {
                 public function toResponse($request)
                 {
-                    // Set role_id to 1 when email is verified
-                    if ($request->user() && $request->user()->role_id != 1) {
-                        $request->user()->role_id = 1;
-                        $request->user()->save();
-                    }
+                    // Role is already assigned during registration, no need to set it again
                     return redirect()->intended('/operator/create');
                 }
             };
@@ -71,7 +67,8 @@ class FortifyServiceProvider extends ServiceProvider
         // Listen for the Verified event as a backup (in case other flows verify email)
         \Illuminate\Support\Facades\Event::listen(Verified::class, function ($event) {
             $user = $event->user;
-            if ($user && $user->role_id != 1) {
+            // Role is already assigned during registration, but ensure it's set as backup
+            if ($user && !$user->role_id) {
                 $user->role_id = 1;
                 $user->save();
             }
