@@ -13,8 +13,16 @@ class RoleMiddleware
     {
         $user = Auth::user();
 
-        if (!$user || !$user->role || !in_array($user->role->name, $roles)) {
-            abort(403, 'Unauthorized');
+        if (!$user) {
+            abort(403, 'Unauthorized - User not authenticated');
+        }
+
+        if (!$user->role) {
+            abort(403, 'Unauthorized - User has no role assigned');
+        }
+
+        if (!in_array($user->role->name, $roles)) {
+            abort(403, 'Unauthorized - User role does not have access to this resource');
         }
 
         return $next($request);
