@@ -237,6 +237,19 @@
                         <span class="ms-3">Payments</span>
                     </a>
                 </li>
+               <li>
+                @php $isActive = request()->routeIs('admin.faq.*'); @endphp
+                <a href="{{ route('admin.faq.index') }}"
+                    class="flex items-center p-2 rounded-lg group 
+                    {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span class="ms-3">FAQ</span>
+                </a>
+               </li>
             </ul>
             <ul class="space-y-2 font-medium mt-4">
                 <li>
