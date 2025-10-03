@@ -53,6 +53,7 @@ class FranchiseApplicationController extends Controller
             'approved' => FranchiseApplication::where('status', 'approved')->count(),
             'rejected' => FranchiseApplication::where('status', 'rejected')->count(),
             'renewed' => FranchiseApplication::where('status', 'renewed')->count(),
+            'expired' => FranchiseApplication::where('status', 'expired')->count(),
         ];
 
         return view('admin.franchise.index', compact('applications', 'statusCounts'));
