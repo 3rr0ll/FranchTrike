@@ -167,8 +167,8 @@
         </div>
         <div class="overflow-x-auto">
             <table id="motorChangeHistoryTable" class="w-full text-sm text-left text-black">
-                <thead class="text-xs bg-gray-50 text-black">
-                    <tr>
+                <thead class="bg-gray-50">
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                         <th>Franchise No</th>
                         <th>Current Motor Details</th>
                         <th>New Motor Details</th>

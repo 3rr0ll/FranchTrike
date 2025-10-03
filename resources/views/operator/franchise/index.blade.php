@@ -32,9 +32,7 @@
 
         {{-- Active Franchise Cards --}}
         @php
-        // Get the 2 most recent active (approved and not expired) franchises
         $activeFranchises = $applications->where('status', 'approved')->sortByDesc('submitted_at')->take(2);
-        // Get the rest (renewed/expired/other) for the table
         $renewedFranchises = $applications->filter(function($app) {
         return $app->status !== 'approved';
         });
@@ -93,14 +91,14 @@
             <h4 class="text-md font-semibold mb-3 text-primary-navy">Renewed/Other Franchise Applications</h4>
             <div class="overflow-x-auto">
                 <table id="renewedFranchiseTable" class="w-full table-auto row-border text-sm">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="p-2 text-left">Application #</th>
-                            <th class="p-2 text-left">Application Type</th>
-                            <th class="p-2 text-left">Status</th>
-                            <th class="p-2 text-left">Franchise No</th>
-                            <th class="p-2 text-left">Submitted</th>
-                            <th class="p-2 text-left">Actions</th>
+                    <thead class="bg-gray-50">
+                        <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                            <th>Application #</th>
+                            <th>Application Type</th>
+                            <th>Status</th>
+                            <th>Franchise No</th>
+                            <th>Submitted</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,17 +123,11 @@
                             <td class="p-2">{{ $app->franchise_no ?? '-' }}</td>
                             <td class="p-2">{{ $app->submitted_at ? $app->submitted_at->format('M d, Y') : '-' }}</td>
                             <td class="p-2">
-                                <x-button
-                                    size="sm"
-                                    type="button"
-                                    class="open-franchise-details-modal"
-                                    data-status="{{ $app->status ?? '' }}"
+                                <button size="sm" type="button" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900 open-franchise-details-modal" data-status="{{ $app->status ?? '' }}"
                                     data-application-type="{{ ucfirst($app->application_type ?? '') }}"
                                     data-franchise-no="{{ $app->franchise_no ?? '-' }}"
                                     data-submitted="{{ optional($app->submitted_at)->format('F d, Y') ?? '-' }}"
-                                    data-expiry="{{ $app->franchise_end_date ? $app->franchise_end_date->format('F d, Y') : '' }}"
-
-                                    data-operator="{{ $app->operator 
+                                    data-expiry="{{ $app->franchise_end_date ? $app->franchise_end_date->format('F d, Y') : '' }}" data-operator="{{ $app->operator 
                             ? trim(
                                 $app->operator->first_name . 
                                 ' ' . 
@@ -159,8 +151,11 @@
                                     data-chasis-no="{{ $app->motorDetail->chasisno ?? '' }}"
                                     data-plate-no="{{ $app->motorDetail->platenumber ?? '' }}"
                                     data-id="{{ $app->id }}">
-                                    View Franchise Details
-                                </x-button>
+                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
                             </td>
                         </tr>
                        
@@ -290,26 +285,19 @@
                 </div>
             </div>
             <div class="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4" id="franchise-modal-actions">
-                {{-- The action buttons will be injected here by JS --}}
             </div>
             {{-- Hidden form for renewal submission --}}
             <form id="renewalForm" method="POST" style="display: none;">
                 @csrf
             </form>
+            </div>
+
         </div>
-
     </div>
-    <!-- End Franchise Details Modal -->
+</div>
+@endsection
 
-    {{-- Request Motor Change and Renew Franchise JS functions are now below the modal --}}
-    @endsection
-
-    @push('scripts')
-    <!-- jQuery and DataTables JS -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@push('scripts')
     <script>
         $(document).ready(function() {
             var table = $('#renewedFranchiseTable').DataTable({
@@ -463,11 +451,10 @@
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Set the form action just in case
                     document.getElementById('renewalForm').setAttribute('action', `/operator/franchise/${franchiseId}/renew`);
                     document.getElementById('renewalForm').submit();
                 }
             });
         }
-    </script>
-    @endpush
+</script>
+@endpush

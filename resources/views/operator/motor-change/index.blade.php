@@ -36,8 +36,8 @@
         @else
         <div class="overflow-x-auto">
             <table id="motorChangeTable" class="display w-full rounded-lg">
-                <thead>
-                    <tr>
+                <thead class="bg-gray-50">
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                         <th>Date Requested</th>
                         <th>Franchise No</th>
                         <th>Old Motor Details</th>

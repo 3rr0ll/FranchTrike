@@ -14,8 +14,8 @@
 
     <div class="overflow-x-auto">
         <table id="paymentHistoryTable" class="display-full row-border">
-            <thead>
-                <tr>
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>Application #</th>
                     <th>Fee(s)</th>
                     <th>Amount</th>
@@ -65,7 +65,7 @@
         $('#paymentHistoryTable').DataTable({
             responsive: true,
             dom: 'Blfrtip',
-            order: [[5, 'desc']], // sort by "Paid At"
+            order: [[5, 'desc']], 
             pageLength: 10
         });
     });

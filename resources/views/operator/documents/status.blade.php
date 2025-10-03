@@ -11,10 +11,9 @@
 
 @section('content')
 <div class="w-full px-0 sm:px-0 lg:px-0 py-8 space-y-12">
-    <!-- Operator Documents Table -->
 
     <div class="bg-white p-4 rounded shadow">
-        <h2 class="text-xl font-bold text-gray-800">Operator Documents</h2>
+        <h2 class="text-xl font-bold text-gray-600 mb-3">Operator Documents</h2>
         @if($operatorDocuments->isEmpty())
         <div class="flex justify-end mb-4">
             <a href="{{ route('operator.documents.operator.create') }}">
@@ -26,12 +25,12 @@
         @endif
         <div class="overflow-x-auto">
             <table id="operator-documents-table" class="min-w-full bg-white row-border">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2 text-left">Document Type</th>
-                        <th class="px-4 py-2 text-left">Status</th>
-                        <th class="px-4 py-2 text-left">Actions</th>
-                        <th class="px-4 py-2 text-left">Rejection Reason</th>
+                <thead class="bg-gray-50">
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                        <th>Document Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        <th>Rejection Reason</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,9 +49,12 @@
                         </td>
                         <td class="px-4 py-2 space-x-2">
                             {{-- Use file_url for Cloudinary files --}}
-                            <x-button size="sm" onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
-                                View
-                            </x-button>
+                            <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm" onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
+                                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>    
+                            <button>
                             @if($doc->status === 'rejected')
                             <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="openResubmitModal('operator', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.operator.resubmit', $doc->id) }}')">
                                 Resubmit
@@ -74,7 +76,7 @@
 
     <!-- Driver Documents Table -->
     <div class="bg-white p-4 rounded shadow">
-        <h2 class="text-xl font-bold text-gray-800">Driver Documents</h2>
+        <h2 class="text-xl font-bold text-gray-600">Driver Documents</h2>
 
         <div class="flex justify-end mb-4">
             <a href="{{ route('operator.documents.driver.create') }}">
@@ -85,13 +87,13 @@
         </div>
         <div class="overflow-x-auto">
             <table id="driver-documents-table" class="min-w-full bg-white rounded row-border">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-2 text-left">Document Type</th>
-                        <th class="px-4 py-2 text-left">Driver</th>
-                        <th class="px-4 py-2 text-left">Status</th>
-                        <th class="px-4 py-2 text-left">Actions</th>
-                        <th class="px-4 py-2 text-left">Rejection Reason</th>
+                <thead class="bg-gray-50">
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                        <th>Document Type</th>
+                        <th>Driver</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        <th>Rejection Reason</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,9 +124,12 @@
                         </td>
                         <td class="px-4 py-2 space-x-2">
                             {{-- Use file_url directly for Cloudinary, or full_file_url as fallback --}}
-                            <x-button size="sm" onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
-                                View
-                            </x-button>
+                            <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm" onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
+                                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
                             @if($doc->status === 'rejected')
                             <x-button size="sm" class="bg-red-500 hover:bg-red-600" onclick="openResubmitModal('driver', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.driver.resubmit', $doc->id) }}')">
                                 Resubmit
