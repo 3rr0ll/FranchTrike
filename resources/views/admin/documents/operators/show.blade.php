@@ -55,11 +55,11 @@
     <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
         <table id="documentsTable" class="min-w-full display nowrap table-auto" style="width:100%">
             <thead>
-                <tr>
-                    <th class="text-left py-2 px-4">#</th>
-                    <th class="text-left py-2 px-4">Document Type</th>
-                    <th class="text-left py-2 px-4">Status</th>
-                    <th class="text-left py-2 px-4">Actions</th>
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <th>#</th>
+                    <th>Document Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>

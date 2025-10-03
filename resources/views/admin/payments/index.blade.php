@@ -81,8 +81,8 @@
     {{-- Payments Table --}}
     <div class="overflow-x-auto bg-white p-4 rounded-md">
         <table id="payments-table" class="w-full text-sm text-left row-border text-black">
-            <thead class="bg-gray-50 text-black">
-                <tr>
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>Application #</th>
                     <th>Operator</th>
                     <th>Fees</th>

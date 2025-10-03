@@ -73,7 +73,7 @@ function printReceipt() {
     document.body.innerHTML = wrapper.outerHTML;
     window.print();
     document.body.innerHTML = originalContents;
-    location.reload(); // reload to restore JS functionality
+    location.reload(); 
 }
 </script>
 @endsection

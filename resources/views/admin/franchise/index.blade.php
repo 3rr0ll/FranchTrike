@@ -94,8 +94,8 @@
 
 <div class="p-4 border-b border-gray-200 lg:mt-1.5">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <!-- Left: Add Franchise Button (hidden on mobile) + Master List -->
-        <div class="hidden md:flex items-center gap-2">
+        <!-- Left: Add Franchise Button + Master List -->
+        <div class="flex items-center gap-2">
             <a href="{{ route('admin.franchise.create') }}"
                 class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-sm text-white tracking-widest hover:bg-primary-navy/90 focus:bg-primary-navy/90 active:bg-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 disabled:opacity-50 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,30 +153,30 @@
 
 
 <!-- Applications Table -->
-<div class="p-6 bg-white rounded-lg shadow">
+<div class="p-5 bg-white rounded-lg shadow">
 
     <div class="overflow-x-auto">
         <table class="table-auto w-full text-left row-border" id="applications-table">
-            <thead>
+            <thead class="bg-gray-50">
                 <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
-                    <th class="px-8 py-4">Application #</th>
-                    <th class="px-8 py-4">Operator</th>
-                    <th class="px-8 py-4">Driver</th>
-                    <th class="px-8 py-4">Type</th>
-                    <th class="px-8 py-4">Status</th>
-                    <th class="px-8 py-4">Submitted</th>
-                    <th class="px-8 py-4">Reviewer</th>
-                    <th class="px-8 py-4">Actions</th>
+                    <th>Application #</th>
+                    <th>Operator</th>
+                    <th>Driver</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Reviewer</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($applications as $application)
-                <tr>
-                    <td class="px-8 py-5 font-medium">{{ $application->id }}</td>
-                    <td class="px-8 py-5">{{ $application->operator->full_name }}</td>
-                    <td class="px-8 py-5">{{ $application->driver?->full_name ?? 'N/A' }}</td>
-                    <td class="px-8 py-5">{{ ucfirst($application->application_type) }}</td>
-                    <td class="px-8 py-5">
+                <tr class="px-4 py-2">
+                    <td>{{ $application->id }}</td>
+                    <td>{{ $application->operator->full_name }}</td>
+                    <td>{{ $application->driver?->full_name ?? 'N/A' }}</td>
+                    <td>{{ ucfirst($application->application_type) }}</td>
+                    <td>
                         @php
                         $statusColors = [
                         'submitted' => 'bg-blue-100 text-blue-800',
@@ -199,8 +199,12 @@
                         {{ $application->reviewer ? $application->reviewer->name : 'N/A' }}
                     </td>
                     <td class="px-8 py-5">
-                        <a href="{{ route('admin.franchise.show', $application) }}"
-                            class="text-primary-navy hover:underline">View</a>
+                        <a href="{{ route('admin.franchise.show', $application) }}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </a>
                     </td>
                 </tr>
                 @endforeach
@@ -213,7 +217,6 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
         var table = $('#applications-table').DataTable({
             pageLength: 10,
             lengthMenu: [
@@ -222,9 +225,9 @@
             ],
             order: [
                 [6, 'desc']
-            ], // Submitted column
+            ],
             columnDefs: [{
-                targets: 6, // Actions column
+                targets: 6, 
                 orderable: false,
                 searchable: false
             }],
@@ -242,44 +245,23 @@
                     previous: "Previous"
                 }
             },
-            dom: '<"hidden"lfB>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
-            buttons: [{
-                    extend: 'csvHtml5',
-                    text: 'CSV',
-                    className: 'bg-blue-500 text-white px-3 py-1 rounded'
-                },
-                {
-                    extend: 'excelHtml5',
-                    text: 'Excel',
-                    className: 'bg-green-500 text-white px-3 py-1 rounded'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    text: 'PDF',
-                    className: 'bg-red-500 text-white px-3 py-1 rounded'
-                },
-            ],
+          
             initComplete: function() {
-                // Move export buttons to custom container and enhance layout
-                var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
-                $('#export-buttons').empty().append(btns);
+            $('.dataTables_length select').addClass(
+                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+            );
+            $('.dataTables_filter input').addClass(
+                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+            );
 
-                // Styling select + search
-                $('.dataTables_length select').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5'
-                );
-                $('.dataTables_filter input').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5'
-                );
-                $('#applications-table').closest('.overflow-x-auto').css('padding', '12px');
+            var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+            var $length = $('.dataTables_length').css('margin', '0');
+            var $search = $('.dataTables_filter').css('margin', '0');
+            $controls.append($length).append($search);
 
-                // Move search and length controls above table, styled
-                var $controls = $('<div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4 mb-4"></div>');
-                var $search = $('.dataTables_filter').addClass('mb-2 sm:mb-0');
-                var $length = $('.dataTables_length').addClass('mb-2 sm:mb-0');
-                $controls.append($length).append($search);
-                $controls.insertBefore($('#applications-table').closest('.overflow-x-auto'));
-            }
+            $controls.insertBefore($('#applications-table').closest('.overflow-x-auto'));
+        }
+
         });
 
         // --- Date Range Filter ---
@@ -288,7 +270,7 @@
 
             var start = $('#datepicker-range-start').val();
             var end = $('#datepicker-range-end').val();
-            var submitted = data[5]; // Submitted column
+            var submitted = data[5];
 
             if (!submitted || submitted === 'N/A') return false;
 
@@ -299,7 +281,6 @@
             return true;
         });
 
-        // Re-draw when date inputs change
         $('#datepicker-range-start, #datepicker-range-end').on('change', function() {
             table.draw();
         });
@@ -328,6 +309,5 @@
         });
     });
 </script>
-
 @endpush
 @endsection

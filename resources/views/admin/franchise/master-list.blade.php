@@ -55,19 +55,19 @@
     <div class="p-2 bg-white rounded-lg shadow" style="margin: 8px;">
         <div class="overflow-x-auto">
             <table class="table-auto w-full text-left row-border" id="master-list-table">
-                <thead>
-                    <tr>
-                        <th class="px-3 py-2">Franchise No</th>
-                        <th class="px-3 py-2">Sticker No</th>
-                        <th class="px-3 py-2">Operator's Name</th>
-                        <th class="px-3 py-2">Driver's Name</th>
-                        <th class="px-3 py-2">Route</th>
-                        <th class="px-3 py-2">Unit Type</th>
-                        <th class="px-3 py-2">Plate No.</th>
-                        <th class="px-3 py-2">Unit Make</th>
-                        <th class="px-3 py-2">Motor No.</th>
-                        <th class="px-3 py-2">Chassis No.</th>
-                        <th class="px-3 py-2">Date Submitted</th>
+                <thead class="bg-gray-50">
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                        <th>Franchise No</th>
+                        <th>Sticker No</th>
+                        <th>Operator's Name</th>
+                        <th>Driver's Name</th>
+                        <th>Route</th>
+                        <th>Unit Type</th>
+                        <th>Plate No.</th>
+                        <th>Unit Make</th>
+                        <th>Motor No.</th>
+                        <th>Chassis No.</th>
+                        <th>Date Submitted</th>
                     </tr>
                 </thead>
                 <tbody>

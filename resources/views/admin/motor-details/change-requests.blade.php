@@ -10,7 +10,6 @@
 
 @section('content')
 <div class="w-full mt-4">
-
     {{-- Statistics Cards --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div class="p-4 bg-white rounded-lg border border-gray-200">
@@ -84,13 +83,13 @@
     </div>
 
     <div class="bg-white shadow-sm rounded-lg p-4">
-        <div class="border-b font-semibold text-lg text-primary-navy mb-2">
+        <div class="font-semibold text-lg text-primary-navy mb-2">
             New Motor Change Request
         </div>
         <div class="overflow-x-auto">
             <table id="motorChangeTable" class="table-auto row-border w-full text-left">
-                <thead>
-                    <tr>
+                <thead class="bg-gray-50">
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                         <th>Franchise No</th>
                         <th>Current Motor Details</th>
                         <th>New Motor Details</th>

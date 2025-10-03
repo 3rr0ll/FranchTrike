@@ -75,8 +75,8 @@ Operators List
 
     <div class="bg-white rounded-lg shadow p-4" style="overflow:auto;">
         <table id="operators-table" class="table-auto row-border w-full text-left">
-            <thead>
-                <tr>
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>Name</th>
                     <th>Address</th>
                     <th>Birth Date</th>

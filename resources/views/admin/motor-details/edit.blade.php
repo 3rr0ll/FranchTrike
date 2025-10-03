@@ -12,16 +12,6 @@
 
 
 <div class="max-w-2xl mx-auto py-6 sm:px-6 lg:px-8">
-    <div class="items-center justify-between block sm:flex md:divide-x md:divide-gray-100 mb-4">
-        <div class="flex items-center mb-4 sm:mb-0">
-            <a href="{{ route('admin.motor-details.index') }}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-navy border border-transparent rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
-                Back to Motor Details
-            </a>
-        </div>
-    </div>
     <div class="bg-white overflow-hidden shadow rounded-lg">
         <div class="px-4 py-5 sm:p-6">
             <form action="{{ route('admin.motor-details.update', $motorDetail) }}" method="POST">

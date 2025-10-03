@@ -73,11 +73,11 @@
         <div class="overflow-x-auto">
             <table id="documentsTable" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Document Name</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                        <th>#</th>
+                        <th>Document Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">

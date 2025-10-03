@@ -9,8 +9,6 @@
 @endsection
 
 @section('content')
-
-
 <!-- Statistics Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
     <div class="p-4 bg-white rounded-lg border border-gray-200">
@@ -96,17 +94,17 @@
 <div class="bg-white shadow-sm rounded-lg p-4">
     <div class="overflow-x-auto">
         <table class="w-full text-sm text-left row-border text-black" id="motor-details-table">
-            <thead class="text-xs  bg-gray-50 text-black">
-                <tr>
-                    <th><strong>Application #</strong></th>
-                    <th><strong>Operator</strong></th>
-                    <th><strong>Driver</strong></th>
-                    <th><strong>Unit type</strong></th>
-                    <th><strong>Unit make</strong></th>
-                    <th><strong>Plate number</strong></th>
-                    <th><strong>Motor no</strong></th>
-                    <th><strong>Chasis no</strong></th>
-                    <th><strong>Actions</strong></th>
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <th>Application #</th>
+                    <th>Operator</th>
+                    <th>Driver</th>
+                    <th>Unit type</th>
+                    <th>Unit make</th>
+                    <th>Plate number</th>
+                    <th>Motor no</th>
+                    <th>Chasis no</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -147,7 +145,7 @@
 
 
                         <div class="flex space-x-2">
-                            <a href="javascript:void(0);" onclick="toggleMotorDetailsModal(true)" class="text-primary-navy hover:text-primary-gold">
+                            <a href="javascript:void(0);" onclick="toggleMotorDetailsModal(true)"  class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>

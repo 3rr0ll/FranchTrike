@@ -9,25 +9,23 @@
 @endsection
 
 @section('content')
+<div class="flex justify-end mb-4">
+    <x-button
+        onclick="openFaqModal('create')"
+        id="add-faq-btn">Add FAQ
+    </x-button>
+</div>
 <div class="p-6 bg-white rounded-xl shadow ">
-
-    <!-- Add FAQ Button -->
-    <div class="flex justify-end mb-4">
-        <button
-            class="bg-blue-600 text-white px-4 py-2 rounded"
-            onclick="openFaqModal('create')"
-            id="add-faq-btn">Add FAQ
-        </button>
-    </div>
+  
     <div class="overflow-x-auto">
 
         <table id="faqTable" class="w-full mt-4 row-border">
-            <thead>
-                <tr">
-                    <th class="px-4 py-2">Category</th>
-                    <th class="px-4 py-2">Question</th>
-                    <th class="px-4 py-2">Answer</th>
-                    <th class="px-4 py-2">Actions</th>
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <th>Category</th>
+                    <th>Question</th>
+                    <th>Answer</th>
+                    <th>Actions</th>
                     </tr>
             </thead>
             <tbody>
@@ -161,7 +159,6 @@
         if (e.key === "Escape") closeFaqModal();
     });
 
-    // SweetAlert2 for Delete Confirmation
     document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.delete-faq-btn').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
@@ -184,7 +181,6 @@
             });
         });
 
-        // SweetAlert2 for success/error messages from session
         @if(session('success'))
         Swal.fire({
             icon: 'success',
