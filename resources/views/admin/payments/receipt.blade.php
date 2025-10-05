@@ -14,6 +14,7 @@
         </div>
         <div class="text-right">
             <h3 class="text-lg font-semibold text-gray-900">Application #{{ $payments->first()->franchiseApplication->id ?? 'N/A' }}</h3>
+            <h3 class="text-md font-semibold text-gray-900">OR No: {{ $payments->first()->or_no ?? '-' }}</h3>
         </div>
     </div>
 

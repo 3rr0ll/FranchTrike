@@ -17,6 +17,7 @@
             <thead class="bg-gray-50">
                 <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>Application #</th>
+                    <th>OR Number</th>
                     <th>Fee(s)</th>
                     <th>Amount</th>
                     <th>Status</th>
@@ -28,6 +29,7 @@
                 @foreach($groupedPayments as $group)
                     <tr>
                         <td>{{ $group['application_id'] ?? '-' }}</td>
+                        <td>{{ $group['or_no'] ?? '-' }}</td>
                         <td>
                             <ul class="list-disc pl-4">
                                 @foreach($group['fees'] as $fee)

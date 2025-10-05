@@ -33,6 +33,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th>Application #</th>
+                            <th>OR Number</th>
                             <th>Operator</th>
                             <th>Fees</th>
                             <th>Total</th>
@@ -45,6 +46,7 @@
                         @forelse($groupedPayments as $group)
                         <tr>
                             <td>{{ $group['application_number'] }}</td>
+                            <td>{{ $group['or_no'] ?? '-' }}</td>
                             <td>{{ $group['operator_name'] }}</td>
                             <td>
                                 <ul class="list-disc ml-4">

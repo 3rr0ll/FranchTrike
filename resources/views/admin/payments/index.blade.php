@@ -84,6 +84,7 @@
             <thead class="bg-gray-50">
                 <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>Application #</th>
+                    <th>OR Number</th>
                     <th>Operator</th>
                     <th>Fees</th>
                     <th>Total Amount</th>
@@ -97,6 +98,7 @@
                 @forelse($groupedPayments as $group)
                 <tr>
                     <td>#{{ $group['franchise_application_id'] }}</td>
+                    <td>{{ $group['or_no'] ?? '-' }}</td>
                     <td>{{ $group['operator_name'] ?? 'N/A' }}</td>
                     <td>
                         <ul class="list-disc pl-4">
