@@ -162,7 +162,7 @@
     {{-- History Table for Approved and Rejected Requests --}}
     @if($historyRequests && $historyRequests->count() > 0)
     <div class="bg-white shadow-sm rounded-lg mt-8 p-4">
-        <div class="border-b font-semibold text-lg text-primary-navy mb-2">
+        <div class="font-semibold text-lg text-primary-navy mb-2">
             Motor Change Request History (Approved &amp; Rejected)
         </div>
         <div class="overflow-x-auto">
