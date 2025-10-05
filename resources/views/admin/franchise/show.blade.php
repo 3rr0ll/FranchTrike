@@ -50,7 +50,7 @@
             <!-- Application Information -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Operator Information -->
-                <div class="bg-gray-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6 border">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Operator Information</h3>
                     <dl class="space-y-3">
                         <div>
@@ -70,7 +70,7 @@
                 </div>
 
                 <!-- Driver Information -->
-                <div class="bg-gray-50 rounded-lg p-6">
+                <div class="bg-gray-50 rounded-lg p-6 border">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Driver Information</h3>
                     <dl class="space-y-3">
                         <div>
@@ -94,7 +94,7 @@
             </div>
 
             <!-- Application Details -->
-            <div class="mt-6 bg-gray-50 rounded-lg p-6">
+            <div class="mt-6 bg-gray-50 rounded-lg p-6 border">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Application Details</h3>
                 <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -130,10 +130,6 @@
                         <dt class="text-sm font-medium text-gray-500">Franchise End Date</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->franchise_end_date ? \Carbon\Carbon::parse($franchiseApplication->franchise_end_date)->format('M d, Y') : 'N/A' }}</dd>
                     </div>
-                    <div>
-                        <dt class="text-sm font-medium text-gray-500">Franchise Fee</dt>
-                        <dd class="mt-1 text-sm text-gray-900">₱{{ number_format($franchiseApplication->franchise_fee ?? 0, 2) }}</dd>
-                    </div>
                     @endif
                     @if($franchiseApplication->status == 'rejected')
                     <div class="md:col-span-2">
@@ -160,7 +156,7 @@
                             </div>
                         </div>
                         <div class="flex">
-                            <x-button onclick="previewMTOP({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
+                            <x-button onclick="openOrModal('mtop', {{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -182,7 +178,7 @@
                             </div>
                         </div>
                         <div class="flex">
-                            <x-button onclick="previewMayorsPermit({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
+                            <x-button onclick="openOrModal('mayors-permit', {{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -204,7 +200,7 @@
                             </div>
                         </div>
                         <div class="flex">
-                            <x-button onclick="previewApplication({{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
+                            <x-button onclick="openOrModal('application', {{ $franchiseApplication->motorDetail->id }})" class="flex-1 inline-flex items-center justify-center ">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -214,10 +210,32 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
             @endif
 
+            <!-- OR Number Modal -->
+            <div id="orModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+                <div class="relative top-1/3 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div class="mt-3 text-center">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Enter OR Number</h3>
+                        <input id="orInput" type="number" 
+                            placeholder="Enter OR Number"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy mb-4 p-2"/>
+
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="closeOrModal()"
+                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+                                Cancel
+                            </button>
+                            <button type="button" onclick="confirmOrNumber()"
+                                    class="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-primary-navy rounded-md hover:bg-primary-gold hover:text-primary-navy">
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Motor Details -->
             @if($franchiseApplication->motorDetail)
             <div class="mt-6">
@@ -417,21 +435,34 @@
         }
     });
 
-    // Certificate generation functions
-    function previewMTOP(motorDetailId) {
-        window.open(`http://localhost/Franchise/franchtrike/public/admin/certificates/mtop/${motorDetailId}/preview`, '_blank');
+    let currentCertType = null;
+    let currentMotorId = null;
+
+    function openOrModal(type, motorId) {
+        currentCertType = type;
+        currentMotorId = motorId;
+        document.getElementById('orModal').classList.remove('hidden');
     }
 
-
-    function previewMayorsPermit(motorDetailId) {
-        window.open(`http://localhost/Franchise/franchtrike/public/admin/certificates/mayors-permit/${motorDetailId}/preview`, '_blank');
+    function closeOrModal() {
+        document.getElementById('orModal').classList.add('hidden');
+        document.getElementById('orInput').value = '';
     }
 
+    function confirmOrNumber() {
+        const orNo = document.getElementById('orInput').value.trim();
+        if (!orNo) {
+            alert('Please enter an OR Number');
+            return;
+        }
 
-    function previewApplication(motorDetailId) {
-        window.open(`http://localhost/Franchise/franchtrike/public/admin/certificates/application/${motorDetailId}/preview`, '_blank');
+        closeOrModal();
+
+        const baseUrl = 'http://localhost/Franchise/franchtrike/public/admin/certificates';
+        let url = `${baseUrl}/${currentCertType}/${currentMotorId}/preview?or_no=${orNo}`;
+
+        window.open(url, '_blank');
     }
-
 
 </script>
 @endsection
