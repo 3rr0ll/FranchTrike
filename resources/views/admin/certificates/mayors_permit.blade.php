@@ -32,8 +32,6 @@
     $ownerBarangay = $operator->barangay ?? '';
     $unitType = $motorDetail->unit_type ?? '';
     $franchiseNo = $franchiseApplication->franchise_no ?? '';
-    $orNo = $franchiseApplication->or_no ?? '';
-    $grantedAmount = $granted->amount ?? '';
     $ctcNo = $franchiseApplication->ctc_no ?? '';
     $ctcIssuedOn = $franchiseApplication->ctc_date_issued ? date('F d, Y', strtotime($franchiseApplication->ctc_date_issued)) : '';
     $ctcIssuedAt = $franchiseApplication->ctc_place_issued ?? '';
@@ -105,8 +103,8 @@
                 <!-- Footer Info -->
                 <div style="font-size: 14px;">
                     <p><strong>Franchise No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $franchiseNo }}</span></p>
-                    <p><strong>OR No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $orNo }}</span></p>
-                    <p><strong>Amount:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $grantedAmount }}</span></p>
+                    <p><strong>OR No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $or_no ?? 'N/A' }}</span></p>
+                    <p><strong>Amount:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $amount }}</span></p>
                     <p><strong>CTC No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $ctcNo }}</span></p>
                     <p><strong>Date Issued:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $ctcIssuedOn }}</span></p>
                     <p><strong>Place Issued:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $ctcIssuedAt }}</span></p>

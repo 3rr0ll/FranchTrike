@@ -122,7 +122,7 @@
 
             <div style="font-size: 15px; margin-bottom: 2px;">
                 <span style="display: inline-block; width: 80px;">OR No.:</span>
-                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000;">{{ $or_no }}</span>
+                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000;">{{ $or_no ?? 'N/A' }}</span>
             </div>
             <div style="font-size: 15px; margin-bottom: 2px;">
                 <span style="display: inline-block; width: 80px;">Amount:</span>

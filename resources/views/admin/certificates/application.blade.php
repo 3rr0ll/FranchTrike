@@ -113,12 +113,10 @@
         $inspectorSignature = $inspection->signature ?? '';
         $inspectorPosition = $inspection->position ?? '';
         $inspectionDate = $inspection->date ?? '';
-        $orNo = $franchiseApplication->or_no ?? '';
         $grantedBy = $franchiseApplication->granted_by ?? '';
         $grantedUnits = $granted->units ?? '';
-        $grantedUntil = $granted->until ?? '';
+        $grantedUntil = \Carbon\Carbon::now()->addYear()->format('F Y');
         $grantedDate = $granted->date ?? '';
-        $grantedAmount = $granted->amount ?? '';
         $applicantName = $ownerName;
         $applicantSignature = $franchiseApplication->applicant_signature ?? '';
         $ctcNo = $franchiseApplication->ctc_no ?? '';
@@ -483,19 +481,21 @@
 
              
                 <div
-                    style="border: 3px solid #4472C4; background-color: #E7F3FF; padding: 15px; text-align: center; margin: 20px 0;">
-                    <div style="font-size: 24px; font-weight: bold; color: #4472C4; letter-spacing: 3px;">GRANTED</div>
-                    <div style="margin-top: 10px; font-weight: bold;">
-                        FOR {{ $grantedUnits ?: '_____' }} UNITS UP TO {{ $grantedUntil ?: '_____' }}
+                    style="border: 3px solid #4472C4; background-color: #E7F3FF; padding: 2px; text-align: center; margin: 20px 0;">
+                    <div style="font-size: 120px; font-weight: bold; color: #4472C4; letter-spacing: 3px; line-height: 0.8;">GRANTED</div>
+                    <div style="margin-top: 10px; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+                        <label>FOR: _____</label>
+                        <label>FOR UNITS UP TO</label>
+                        <span style="border-bottom: 1px solid #000; display: inline-block; ">{{ $grantedUntil ?: '_____' }}</span>
                     </div>
                 </div>
-
+                
                 <div style="margin-top: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                         <div style="flex: 1; min-width: 0;">
                             <div style="display: flex; align-items: center; margin-bottom: 8px;">
                                 <label style="font-weight: bold;">OR No.:</label>
-                                <span style="border-bottom: 1px solid #000; flex: 1; margin-left: 10px; display: inline-block;">{{ $orNo }}</span>
+                                <span style="border-bottom: 1px solid #000; flex: 1; margin-left: 10px; display: inline-block;">{{ $or_no ?? 'N/A' }}</span>
                             </div>
                             <div style="display: flex; align-items: center; margi   n-bottom: 8px;">
                                 <label style="font-weight: bold;">Date:</label>
@@ -503,7 +503,7 @@
                             </div>
                             <div style="display: flex; align-items: center;">
                                 <label style="font-weight: bold;">Amount:</label>
-                                <span style="border-bottom: 1px solid #000; width: 100px; display: inline-block; margin-left: 10px;">{{ $grantedAmount }}</span>
+                                <span style="border-bottom: 1px solid #000; width: 100px; display: inline-block; margin-left: 10px;">{{ $amount }}</span>
                             </div>
                         </div>
                         
