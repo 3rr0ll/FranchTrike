@@ -40,6 +40,7 @@ class PaymentController extends Controller
                 'group_id' => $groupId++,
                 'first_payment_id' => $first->id,
                 'franchise_application_id' => $first->franchise_application_id,
+                'or_no' => $first->or_no,
                 'operator_name' => isset($first->franchiseApplication->operator)
                     ? trim(
                         $first->franchiseApplication->operator->first_name . ' ' .
@@ -75,6 +76,7 @@ class PaymentController extends Controller
 
         $application = FranchiseApplication::findOrFail($request->franchise_application_id);
         $fees = Fee::whereIn('id', $request->fees)->get();
+        $lastOrNo = Payment::max('or_no') ?? 1000;
 
         // Get the currently authenticated user's id
         $userId = Auth::id();
@@ -85,14 +87,16 @@ class PaymentController extends Controller
                 'fee_id' => $fee->id,
                 'amount_paid' => $fee->amount,
                 'paid_at' => now(),
-                'reviewed_by' => $userId, // Store the id of the user who created the payment
+                'reviewed_by' => $userId, 
+                'or_no' => $lastOrNo + 1,
             ]);
 
             ActivityLogger::log(
                 'payment',
                 'created',
                 'Payment of ₱' . $payment->amount_paid . '.',
-                ['payment_id' => $payment->id, 'reviewed_by' => $userId]
+                ['payment_id' => $payment->id, 'reviewed_by' => $userId,'or_no' => $payment->or_no]
+                
             );
         }
 
@@ -108,7 +112,7 @@ class PaymentController extends Controller
         // Group by the same application and the same paid_at timestamp
         $payments = Payment::with('fee', 'franchiseApplication.operator', 'reviewer')
             ->where('franchise_application_id', $payment->franchise_application_id)
-            ->where('paid_at', $payment->paid_at) // ensures it pulls all fees from this batch
+            ->where('paid_at', $payment->paid_at) 
             ->get();
 
         // Calculate total

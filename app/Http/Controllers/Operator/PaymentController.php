@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Operator;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -13,7 +14,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $operator = auth()->user()->operator;
+        $operator = Auth::user()->operator;
 
         $payments = Payment::with(['fee', 'franchiseApplication'])
             ->whereHas('franchiseApplication', function ($q) use ($operator) {
@@ -38,6 +39,7 @@ class PaymentController extends Controller
                 'first_payment_id' => $first->id,
                 'franchise_application_id' => $first->franchise_application_id,
                 'application_id' => $first->franchise_application_id ?? 'N/A',
+                'or_no' => $first->or_no ?? null, 
                 'fees' => $group->map(function ($payment) {
                     return [
                         'description' => $payment->fee->description ?? 'N/A',
@@ -58,7 +60,7 @@ class PaymentController extends Controller
      */
     public function receipt(Payment $payment)
     {
-        $operator = auth()->user()->operator;
+        $operator = Auth::user()->operator;
     
         // Ensure the payment belongs to this operator
         if ($payment->franchiseApplication->operator_id !== $operator->operator_id) {

@@ -48,7 +48,7 @@ class PaymentController extends Controller
         ]);
 
         Fee::create($validated);
-        $createdFee = \App\Models\Fee::where($validated)->latest()->first();
+        $createdFee = Fee::where($validated)->latest()->first();
 
         \App\Helpers\ActivityLogger::log(
             'fee',
@@ -145,6 +145,7 @@ class PaymentController extends Controller
             'first_payment_id' => $first->id,
             'franchise_application_id' => $first->franchise_application_id,
             'application_number' => $first->franchise_application_id ?? 'N/A',
+            'or_no' => $first->or_no ?? null,
             'operator_name' => $first->franchiseApplication && $first->franchiseApplication->operator
                 ? trim(
                     $first->franchiseApplication->operator->first_name . ' ' .
