@@ -134,33 +134,40 @@ class CertificateController extends Controller
 
         $franchiseApplication = $motorDetail->franchiseApplication;
         $operator = $franchiseApplication->operator ?? null;
-        $route = $franchiseApplication->route ?? null;
+        $route = $franchiseApplication->route;
 
-        // Prepare data for the back of the application form
+        $orNo = $request->input('or_no');
+
+        $payments = Payment::with('fee')
+            ->where('or_no', $orNo)
+            ->get();
+
+        $fees = $payments->map(function ($payment) {
+            return [
+                'item' => $payment->fee->description ?? 'Unknown Fee',
+                'amount' => number_format($payment->amount_paid, 2)
+            ];
+        });
+
         $data = [
+            'motorDetail' => $motorDetail,
             'franchise' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
             'sticker' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? '',
-            'route' => $route?->route ?? '',
+            'route' => $route,
             'name' => $operator
                 ? trim(($operator->first_name ?? '') . ' ' . ($operator->middle_initial ?? '') . ' ' . ($operator->last_name ?? ''))
                 : '',
             'motorNo' => $motorDetail->motor_no ?? '',
             'chasisNo' => $motorDetail->chassis_no ?? '',
             'plateNumber' => $motorDetail->plate_number ?? '',
-            'fees' => $franchiseApplication->fees ?? [],
-            // Claim stub section
-            'claimFranchise' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
-            'claimSticker' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? '',
-            'claimRoute' => $route?->route ?? '',
-            'claimName' => $operator
-                ? trim(($operator->first_name ?? '') . ' ' . ($operator->middle_initial ?? '') . ' ' . ($operator->last_name ?? ''))
-                : '',
+            'fees' => $fees,
             'verifiedBy' => $motorDetail->verified_by ?? '',
+            'orNo' => $orNo,
         ];
 
         return view('admin.certificates.application-back', $data);
     }
-
+    
     public function logPrint(Request $request, $motorDetailId)
     {
         $motorDetail = MotorDetail::with('franchiseApplication.operator')->findOrFail($motorDetailId);
