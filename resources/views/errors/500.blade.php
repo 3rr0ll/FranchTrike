@@ -6,7 +6,6 @@
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Reset and base */
         * {
             margin: 0;
             padding: 0;
@@ -21,10 +20,12 @@
             min-height: 100vh;
             padding: 20px;
             color: #1a237e;
+            background: url('{{ asset('images/login_bg.jpg') }}') no-repeat center center fixed;
+            background-size: cover;
         }
 
         .error-container {
-            background: #fff;
+            background: rgba(255,255,255,0.92);
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(26, 35, 126, 0.1);
             padding: 40px 32px;
@@ -103,8 +104,8 @@
         }
     </style>
 </head>
-<body style="background: url('{{ asset('images/login_bg.jpg') }}') no-repeat center center fixed; background-size: cover;">
-    <div class="error-container" style="background: rgba(255,255,255,0.92); border-radius: 16px;">
+<body>
+    <div class="error-container">
         <div style="display: flex; justify-content: center; margin-bottom: 24px;">
             <img src="{{ asset('images/logo.png') }}" alt="Logo" style="height: 70px; width: auto;">
         </div>
