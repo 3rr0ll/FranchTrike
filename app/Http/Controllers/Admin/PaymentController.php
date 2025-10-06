@@ -78,25 +78,27 @@ class PaymentController extends Controller
         $fees = Fee::whereIn('id', $request->fees)->get();
         $lastOrNo = Payment::max('or_no') ?? 1000;
 
-        // Get the currently authenticated user's id
         $userId = Auth::id();
+
+        $paidAt = now();
+
+        $newOrNo = $lastOrNo + 1;
 
         foreach ($fees as $fee) {
             $payment = Payment::create([
                 'franchise_application_id' => $application->id,
                 'fee_id' => $fee->id,
                 'amount_paid' => $fee->amount,
-                'paid_at' => now(),
+                'paid_at' => $paidAt, // Use the same timestamp for all
                 'reviewed_by' => $userId, 
-                'or_no' => $lastOrNo + 1,
+                'or_no' => $newOrNo, // Use the same OR number for all
             ]);
 
             ActivityLogger::log(
                 'payment',
                 'created',
                 'Payment of ₱' . $payment->amount_paid . '.',
-                ['payment_id' => $payment->id, 'reviewed_by' => $userId,'or_no' => $payment->or_no]
-                
+                ['payment_id' => $payment->id, 'reviewed_by' => $userId, 'or_no' => $payment->or_no]
             );
         }
 
