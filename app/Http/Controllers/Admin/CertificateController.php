@@ -123,6 +123,44 @@ class CertificateController extends Controller
         return view('admin.certificates.application', $data);
     }
 
+    public function previewApplicationBack($motorDetailId, Request $request)
+    {
+        $motorDetail = MotorDetail::with([
+            'franchiseApplication.operator',
+            'franchiseApplication.driver',
+            'franchiseApplication.route',
+            'unitMake'
+        ])->findOrFail($motorDetailId);
+
+        $franchiseApplication = $motorDetail->franchiseApplication;
+        $operator = $franchiseApplication->operator ?? null;
+        $route = $franchiseApplication->route ?? null;
+
+        // Prepare data for the back of the application form
+        $data = [
+            'franchise' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
+            'sticker' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? '',
+            'route' => $route?->route ?? '',
+            'name' => $operator
+                ? trim(($operator->first_name ?? '') . ' ' . ($operator->middle_initial ?? '') . ' ' . ($operator->last_name ?? ''))
+                : '',
+            'motorNo' => $motorDetail->motor_no ?? '',
+            'chasisNo' => $motorDetail->chassis_no ?? '',
+            'plateNumber' => $motorDetail->plate_number ?? '',
+            'fees' => $franchiseApplication->fees ?? [],
+            // Claim stub section
+            'claimFranchise' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
+            'claimSticker' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? '',
+            'claimRoute' => $route?->route ?? '',
+            'claimName' => $operator
+                ? trim(($operator->first_name ?? '') . ' ' . ($operator->middle_initial ?? '') . ' ' . ($operator->last_name ?? ''))
+                : '',
+            'verifiedBy' => $motorDetail->verified_by ?? '',
+        ];
+
+        return view('admin.certificates.application-back', $data);
+    }
+
     public function logPrint(Request $request, $motorDetailId)
     {
         $motorDetail = MotorDetail::with('franchiseApplication.operator')->findOrFail($motorDetailId);
