@@ -254,38 +254,87 @@
 
 </div>
 
-{{-- DataTables and SweetAlert Script --}}
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        $('#motorChangeTable').DataTable({
-            responsive: true,
+    $(document).ready(function () {
+        var table = $('#motorChangeTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
             order: [
                 [4, 'desc']
             ],
-            pageLength: 10
+            language: {
+                search: "Search requests:",
+                lengthMenu: "Show _MENU_ requests per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ requests",
+                infoEmpty: "Showing 0 to 0 of 0 requests",
+                infoFiltered: "(filtered from _MAX_ total requests)",
+                zeroRecords: "No requests found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            initComplete: function() {
+                var $length = $('#motorChangeTable_wrapper .dataTables_length').css('margin', '0');
+                var $search = $('#motorChangeTable_wrapper .dataTables_filter').css('margin', '0');
+                $length.find('select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $search.find('input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                $controls.append($length).append($search);
+                $controls.insertBefore($('#motorChangeTable').closest('.overflow-auto, .overflow-x-auto'));
+            }
         });
 
-        @if($historyRequests && $historyRequests -> count() > 0)
-        $('#motorChangeHistoryTable').DataTable({
-            responsive: true,
+        @if($historyRequests && $historyRequests->count() > 0)
+        var historyTable = $('#motorChangeHistoryTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
             order: [
                 [4, 'desc']
             ],
-            pageLength: 10,
             language: {
                 search: "Search history:",
-                lengthMenu: "Show _MENU_ entries",
+                lengthMenu: "Show _MENU_ history entries per page",
                 info: "Showing _START_ to _END_ of _TOTAL_ history entries",
+                infoEmpty: "Showing 0 to 0 of 0 history entries",
+                infoFiltered: "(filtered from _MAX_ total history entries)",
+                zeroRecords: "No history entries found",
                 paginate: {
-                    previous: "Prev",
-                    next: "Next"
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
                 }
+            },
+            initComplete: function() {
+                var $length = $('#motorChangeHistoryTable_wrapper .dataTables_length').css('margin', '0');
+                var $search = $('#motorChangeHistoryTable_wrapper .dataTables_filter').css('margin', '0');
+                $length.find('select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $search.find('input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                $controls.append($length).append($search);
+                $controls.insertBefore($('#motorChangeHistoryTable').closest('.overflow-auto, .overflow-x-auto'));
             }
         });
         @endif
 
-        // Flash messages via SweetAlert
         @if(session('success'))
         Swal.fire({
             title: 'Success',
@@ -303,7 +352,6 @@
         });
         @endif
 
-        // Intercept approve/reject with confirmation dialogs
         document.querySelectorAll('.js-approval-form').forEach(function(form) {
             form.addEventListener('submit', function(e) {
                 e.preventDefault();

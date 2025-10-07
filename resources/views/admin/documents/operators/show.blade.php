@@ -248,12 +248,43 @@
             form.submit();
         }
 
-        $(document).ready(function() {
-            $('#documentsTable').DataTable({
-                responsive: true,
-                "order": [],
-                "language": {
-                    "emptyTable": "No documents have been submitted by this operator yet."
+        $(document).ready(function () {
+            var table = $('#documentsTable').DataTable({
+                pageLength: 10,
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
+                ],
+                order: [],
+                columnDefs: [],
+                language: {
+                    search: "Search documents:",
+                    lengthMenu: "Show _MENU_ documents per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ documents",
+                    infoEmpty: "Showing 0 to 0 of 0 documents",
+                    infoFiltered: "(filtered from _MAX_ total documents)",
+                    zeroRecords: "No documents have been submitted by this operator yet.",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                initComplete: function () {
+                    $('.dataTables_length select').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                    );
+                    $('.dataTables_filter input').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                    );
+
+                    var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                    var $length = $('.dataTables_length').css('margin', '0');
+                    var $search = $('.dataTables_filter').css('margin', '0');
+                    $controls.append($length).append($search);
+
+                    $controls.insertBefore($('#documentsTable').closest('.overflow-x-auto'));
                 }
             });
         });

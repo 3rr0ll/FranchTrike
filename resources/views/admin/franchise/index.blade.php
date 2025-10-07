@@ -153,7 +153,7 @@
 
 
 <!-- Applications Table -->
-<div class="p-5 bg-white rounded-lg shadow">
+<div class="p-4 bg-white rounded-lg shadow">
 
     <div class="overflow-x-auto">
         <table class="table-auto w-full text-left row-border" id="applications-table">

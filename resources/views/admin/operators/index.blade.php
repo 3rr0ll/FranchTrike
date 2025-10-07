@@ -73,8 +73,9 @@ Operators List
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow p-4" style="overflow:auto;">
-        <table id="operators-table" class="table-auto row-border w-full text-left">
+    <div class="p-4 bg-white rounded-lg shadow">
+        <div class="overflow-auto">
+            <table id="operators-table" class="table-auto row-border w-full text-left">
             <thead class="bg-gray-50">
                 <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>Name</th>
@@ -105,17 +106,56 @@ Operators List
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
     $(document).ready(function() {
-        $('#operators-table').DataTable({
+        var table = $('#operators-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [
+                [0, 'asc']
+            ],
             columnDefs: [{
+                targets: 5,
                 orderable: false,
-                targets: 5
-            }]
+                searchable: false
+            }],
+            language: {
+                search: "Search operators:",
+                lengthMenu: "Show _MENU_ operators per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ operators",
+                infoEmpty: "Showing 0 to 0 of 0 operators",
+                infoFiltered: "(filtered from _MAX_ total operators)",
+                zeroRecords: "No operators found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#operators-table').closest('.overflow-auto, .overflow-x-auto'));
+            }
         });
     });
 </script>

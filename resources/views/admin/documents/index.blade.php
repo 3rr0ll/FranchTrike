@@ -55,11 +55,11 @@
         </div>
     </div>
 
-    <div class="p-6 bg-white rounded-lg shadow">
+    <div class="p-4 bg-white rounded-lg shadow">
         <div class="overflow-x-auto">
             <table id="documents-table" class="min-w-full divide-y divide-gray-200 row-border">
                 <thead class="bg-gray-50">
-                    <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <tr class="tracking-wider text-gray-500  text-left text-md font-medium">
                         <th>User</th>
                         <th>Type</th>
                         <th>Document</th>
@@ -231,13 +231,47 @@
 
         $(document).ready(function () {
             var table = $('#documents-table').DataTable({
-                "order": [[5, 'desc']], // sort by Uploaded column, latest first
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 5 // disable sort only for Action column
+                pageLength: 10,
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
+                ],
+                order: [
+                    [5, 'desc']
+                ],
+                columnDefs: [{
+                    targets: 5,
+                    orderable: false,
+                    searchable: false
                 }],
-                "language": {
-                    "emptyTable": "No documents have been submitted yet."
+                language: {
+                    search: "Search documents:",
+                    lengthMenu: "Show _MENU_ documents per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ documents",
+                    infoEmpty: "Showing 0 to 0 of 0 documents",
+                    infoFiltered: "(filtered from _MAX_ total documents)",
+                    zeroRecords: "No documents have been submitted yet.",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                initComplete: function() {
+                    $('.dataTables_length select').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                    );
+                    $('.dataTables_filter input').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                    );
+
+                    var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                    var $length = $('.dataTables_length').css('margin', '0');
+                    var $search = $('.dataTables_filter').css('margin', '0');
+                    $controls.append($length).append($search);
+
+                    $controls.insertBefore($('#documents-table').closest('.overflow-x-auto'));
                 }
             });
 

@@ -9,7 +9,7 @@
 @endsection
 
 @section('content')
-<div class="p-6 ">
+<div class="p-4">
 
 
     @if(session('success'))
@@ -19,7 +19,7 @@
     @endif
 
     {{-- Payment Form --}}
-    <div class="mb-8 p-6 bg-gray-50 rounded-lg shadow">
+    <div class="mb-8 p-4 bg-gray-50 rounded-lg shadow">
         <h3 class="text-lg font-semibold mb-4 text-gray-800">Accept Payment</h3>
         <form id="payment-form" method="POST" action="{{ route('admin.payments.store') }}">
             @csrf
@@ -78,8 +78,8 @@
         </div>
     </div>
 
-    {{-- Payments Table --}}
-    <div class="overflow-x-auto bg-white p-4 rounded-md">
+    <div class="p-4 bg-white rounded-lg shadow">
+        <div class="overflow-auto">
         <table id="payments-table" class="w-full text-sm text-left row-border text-black">
             <thead class="bg-gray-50">
                 <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
@@ -149,6 +149,7 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 </div>
 
@@ -193,11 +194,37 @@
             return false;
         });
 
-        // Initialize DataTable
         var table = $('#payments-table').DataTable({
-            // Show entries per page dropdown by including 'l' in the dom option
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [
+                [6, 'desc']
+            ],
+            columnDefs: [{
+                targets: 6, 
+                orderable: false,
+                searchable: false
+            }],
+            language: {
+                search: "Search payments:",
+                lengthMenu: "Show _MENU_ payments per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ payments",
+                infoEmpty: "Showing 0 to 0 of 0 payments",
+                infoFiltered: "(filtered from _MAX_ total payments)",
+                zeroRecords: "No payments found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
             dom: 'Blfrtip',
-            buttons: [{
+            buttons: [
+                {
                     extend: 'csvHtml5',
                     text: 'CSV',
                     className: 'bg-blue-500 text-white px-3 py-1 rounded'
@@ -213,8 +240,21 @@
                     className: 'bg-red-500 text-white px-3 py-1 rounded'
                 },
             ],
-            order: [],
             initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#payments-table').closest('.overflow-auto, .overflow-x-auto'));
+
                 // Move export buttons to a custom div container
                 var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
                 // Create or select a div to hold the buttons

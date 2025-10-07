@@ -15,7 +15,7 @@
         id="add-faq-btn">Add FAQ
     </x-button>
 </div>
-<div class="p-6 bg-white rounded-xl shadow ">
+<div class="p-4 bg-white rounded-xl shadow ">
   
     <div class="overflow-x-auto">
 
@@ -95,22 +95,50 @@
 
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
-        $('#faqTable').DataTable({
-            responsive: true,
+        var table = $('#faqTable').DataTable({
             pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
             order: [
                 [0, 'asc']
-            ], // sort by category
+            ],
+            columnDefs: [{
+                targets: -1, // Actions column (last column)
+                orderable: false,
+                searchable: false
+            }],
+            language: {
+                search: "Search FAQs:",
+                lengthMenu: "Show _MENU_ FAQs per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ FAQs",
+                infoEmpty: "Showing 0 to 0 of 0 FAQs",
+                infoFiltered: "(filtered from _MAX_ total FAQs)",
+                zeroRecords: "No FAQs found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#faqTable').closest('.overflow-x-auto'));
+            }
         });
-
-        // Style search input
-        $('#faqTable_filter input').addClass(
-            'border rounded-lg p-2 focus:ring focus:ring-blue-500 focus:border-blue-500'
-        );
-
-        // Add margin below the search bar
-        $('#faqTable_filter').addClass('mb-3');
     });
 
     function openFaqModal(mode, btn = null) {

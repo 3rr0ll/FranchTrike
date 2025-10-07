@@ -52,7 +52,7 @@
             Print Preview
         </button>
     </div>
-    <div class="p-2 bg-white rounded-lg shadow" style="margin: 8px;">
+    <div class="p-4 bg-white rounded-lg shadow" style="margin: 8px;">
         <div class="overflow-x-auto">
             <table class="table-auto w-full text-left row-border" id="master-list-table">
                 <thead class="bg-gray-50">
@@ -100,13 +100,26 @@
                     pageLength: 25,
                     lengthMenu: [[25, 50, 100, -1], [25, 50, 100, 'All']],
                     order: [[10, 'desc']],
-                    dom: '<"hidden"lfB>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
+                    dom: 'lBfrtip', 
                     buttons: [
                         { extend: 'csvHtml5', text: 'CSV', className: 'bg-blue-500 text-white px-3 py-1 rounded' },
                         { extend: 'excelHtml5', text: 'Excel', className: 'bg-green-500 text-white px-3 py-1 rounded' },
                         { extend: 'pdfHtml5', text: 'PDF', className: 'bg-red-500 text-white px-3 py-1 rounded' },
                     ],
                     initComplete: function () {
+                        $('.dataTables_length select').addClass(
+                            'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                        );
+                        $('.dataTables_filter input').addClass(
+                            'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                        );
+                        var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                        var $length = $('.dataTables_length').css('margin', '0');
+                        var $search = $('.dataTables_filter').css('margin', '0');
+                        $controls.append($length).append($search);
+                        $controls.insertBefore($('#master-list-table').closest('.overflow-x-auto'));
+
+                        // Move export buttons to custom container if needed
                         var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
                         $('#export-buttons').empty().append(btns);
                     }
@@ -121,7 +134,6 @@
                     var submitted = data[10]; // Date Submitted column (Y-m-d)
 
                     if (!submitted || submitted === 'N/A') return false;
-
 
                     var submittedDate = new Date(submitted);
                     if (isNaN(submittedDate.getTime())) return false;
