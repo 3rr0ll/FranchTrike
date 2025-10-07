@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="w-full mx-auto mt-8 mx-4">
-    <div class="bg-white shadow-lg p-4 rounded-2xl">
+    <div class="bg-white shadow-lg p-4 rounded-lg">
 
         {{-- Filter by Franchise --}}
         @if($franchiseApplications->count() > 1)
@@ -94,18 +94,51 @@
 
 @push('scripts')
 <script>
-    $(document).ready(function() {
-        // Initialize DataTable
+    $(document).ready(function () {
         var table = $('#motorChangeTable').DataTable({
-            responsive: true,
-            dom: 'Blfrtip',
-            order: [
-                [0, 'desc']
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
             ],
-            pageLength: 10
-        });
+            order: [
+                [5, 'desc']
+            ],
+            columnDefs: [{
+                targets: 5, 
+                orderable: false,
+                searchable: false
+            }],
+            language: {
+                search: "Search applications:",
+                lengthMenu: "Show _MENU_ applications per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                infoEmpty: "Showing 0 to 0 of 0 applications",
+                infoFiltered: "(filtered from _MAX_ total applications)",
+                zeroRecords: "No applications found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
 
-        $('#motorChangeTable_filter').addClass('mb-4');
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#motorChangeTable').closest('.overflow-x-auto'));
+            }
+        });
     });
 </script>
 @endpush

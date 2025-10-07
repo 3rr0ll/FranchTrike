@@ -301,17 +301,49 @@
     <script>
         $(document).ready(function() {
             var table = $('#renewedFranchiseTable').DataTable({
-                "order": [
-                    [0, "desc"]
+                pageLength: 10,
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
                 ],
-                "pageLength": 10,
-                "columnDefs": [{
-                    "orderable": false,
-                    "targets": 5
-                }]
-            });
+                order: [
+                    [0, 'desc']
+                ],
+                columnDefs: [{
+                    targets: 5,
+                    orderable: false,
+                    searchable: false
+                }],
+                language: {
+                    search: "Search applications:",
+                    lengthMenu: "Show _MENU_ applications per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                    infoEmpty: "Showing 0 to 0 of 0 applications",
+                    infoFiltered: "(filtered from _MAX_ total applications)",
+                    zeroRecords: "No applications found",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                initComplete: function() {
+                    $('.dataTables_length select').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                    );
+                    $('.dataTables_filter input').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                    );
 
-            $('#renewedFranchiseTable_filter').addClass('mb-4');
+                    var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                    var $length = $('.dataTables_length').css('margin', '0');
+                    var $search = $('.dataTables_filter').css('margin', '0');
+                    $controls.append($length).append($search);
+
+                    $controls.insertBefore($('#renewedFranchiseTable').closest('.overflow-x-auto'));
+                }
+            });
         });
 
         // Flash messages
