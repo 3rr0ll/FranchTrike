@@ -109,7 +109,7 @@ class DashboardController extends Controller
 
             // Expiration reminder
             if ($latestApp->status === 'approved' && $latestApp->franchise_end_date) {
-                $daysLeft = Carbon::now()->diffInDays($latestApp->franchise_end_date, false);
+                $daysLeft = intval(Carbon::now()->diffInDays($latestApp->franchise_end_date, false));
 
                 if ($daysLeft <= 90 && $daysLeft > 0) {
                     $alerts[] = [
