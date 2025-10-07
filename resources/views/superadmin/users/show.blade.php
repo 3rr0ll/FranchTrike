@@ -10,7 +10,7 @@
 
 @section('content')
 <div>
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+    <div class="w-full mx-auto sm:px-6 lg:px-8">
         <!-- Back Button -->
         <div class="mb-6">
             <a href="{{ route('superadmin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-primary-navy border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-400">
@@ -155,13 +155,13 @@
                 
                 @if($logs->count() > 0)
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
+                        <table id="login-activity-table" class="min-w-full divide-y divide-gray-200 display">
                             <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                                    <th>Date and Time</th>
+                                    <th>Status</th>
+                                    <th>IP Address</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -198,7 +198,7 @@
                                                     {{ $log->details }}
                                                 </div>
                                             @else
-                                                -
+                                                <span class="text-gray-400">N/A</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -206,17 +206,60 @@
                             </tbody>
                         </table>
                     </div>
-                @else
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No recent activity</h3>
-                        <p class="mt-1 text-sm text-gray-500">This user hasn't logged in yet.</p>
-                    </div>
                 @endif
             </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        var table = $('#login-activity-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [
+                [0, 'desc']
+            ],
+            columnDefs: [{
+                targets: 3, 
+                orderable: false,
+                searchable: false
+            }],
+            language: {
+                search: "Search logins:",
+                lengthMenu: "Show _MENU_ logins per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ logins",
+                infoEmpty: "Showing 0 to 0 of 0 logins",
+                infoFiltered: "(filtered from _MAX_ total logins)",
+                zeroRecords: "No logins found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#login-activity-table').closest('.overflow-x-auto'));
+            }
+        });
+    });
+</script>
+@endpush

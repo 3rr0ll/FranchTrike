@@ -8,7 +8,7 @@
 </h2>
 @endsection
 @section('content')
-<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+<div class=" w-full mx-auto py-6 sm:px-6 lg:px-8">
     <!-- Page Header -->
     <div class="flex justify-between items-center mb-6">
         <div class="flex space-x-4">
@@ -94,12 +94,12 @@
             <div class="overflow-x-auto">
                 <table id="fees-table" class="min-w-full divide-y divide-gray-200 display nowrap" style="width:100%">
                     <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payments</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Payments</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -146,18 +146,49 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#fees-table').DataTable({
-            responsive: true,
-            "order": [],
-            "language": {
-                "search": "Search:",
-                "lengthMenu": "Show _MENU_ entries",
-                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
-                "paginate": {
-                    "previous": "Prev",
-                    "next": "Next"
+    $(function () {
+        var table = $('#fees-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [
+                [3, 'desc']
+            ],
+            columnDefs: [{
+                targets: 3, // "Payments" column (4th column, 0-based index)
+                orderable: false,
+                searchable: false
+            }],
+            language: {
+                search: "Search applications:",
+                lengthMenu: "Show _MENU_ applications per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                infoEmpty: "Showing 0 to 0 of 0 applications",
+                infoFiltered: "(filtered from _MAX_ total applications)",
+                zeroRecords: "No applications found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
                 }
+            },
+            initComplete: function () {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#fees-table').closest('.overflow-x-auto'));
             }
         });
     });

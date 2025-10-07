@@ -38,28 +38,29 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table id="logsTable" class="min-w-full border border-gray-200">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="px-4 py-2 border">User</th>
-                    <th class="px-4 py-2 border">Category</th>
-                    <th class="px-4 py-2 border">Description</th>
-                    <th class="px-4 py-2 border">Data</th>
-                    <th class="px-4 py-2 border">Date</th>
+        <table id="logsTable" class="min-w-full row-border">
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <th class="px-4 py-2">User</th>
+                    <th class="px-4 py-2">Category</th>
+                    <th class="px-4 py-2">Description</th>
+                    <th class="px-4 py-2">Data</th>
+                    <th class="px-4 py-2">Date</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($logs as $log)
                 <tr>
-                    <td class="px-4 py-2 border">{{ $log->user->name ?? 'System' }}</td>
-                    <td class="px-4 py-2 border">{{ ucfirst($log->category) }}</td>
-                    <td class="px-4 py-2 border">{{ $log->description }}</td>
-                    <td class="px-4 py-2 border">
-                        <pre class="text-xs bg-gray-50 p-2 rounded">
+                    <td class="px-4 py-2" style="min-width: 150px;">
+                        {{ $log->user->name ?? 'System' }}</td>
+                    <td class="px-4 py-2">{{ ucfirst($log->category) }}</td>
+                    <td class="px-4 py-2">{{ $log->description }}</td>
+                    <td class="px-4 py-2">
+                        <pre class="text-xs bg-gray-50 p-2 rounded" style="max-width: 250px; overflow-x: auto; white-space: pre-wrap;">
                         {{ json_encode($log->data, JSON_PRETTY_PRINT) }}
                         </pre>
                     </td>
-                    <td class="px-4 py-2 border">{{ $log->created_at->format('M d, Y h:i A') }}</td>
+                    <td class="px-4 py-2">{{ $log->created_at->format('M d, Y h:i A') }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -74,16 +75,49 @@
 
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
+        // Initialize DataTable with custom design
         var table = $('#logsTable').DataTable({
-            responsive: true,
             pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
             order: [
                 [4, 'desc']
             ],
+            columnDefs: [{
+                targets: 4, // Date column
+                orderable: true,
+                searchable: true
+            }],
             language: {
-                search: "",
-                searchPlaceholder: "Search logs..."
+                search: "Search logs:",
+                lengthMenu: "Show _MENU_ logs per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ logs",
+                infoEmpty: "Showing 0 to 0 of 0 logs",
+                infoFiltered: "(filtered from _MAX_ total logs)",
+                zeroRecords: "No logs found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#logsTable').closest('.overflow-x-auto'));
             }
         });
 

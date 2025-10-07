@@ -93,27 +93,26 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
-    </div>
-    <div class=" mt-4 flex justify-end">
-        <a href="{{ route('superadmin.users.create') }}" >
-            <x-button>
-                <svg class="h-5 w-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                Add User
-            </x-button>
-        </a>
     </div>
 
-    <div class="py-6">
-        <div class="w-full bg-white shadow p-6 rounded-lg">
+   
+            <div class=" mb-4 mt-4 flex justify-end">
+                <a href="{{ route('superadmin.users.create') }}" >
+                    <x-button>
+                        <svg class="h-5 w-5 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add User
+                    </x-button>
+                </a>
+            </div>
+
+            <div class="w-full bg-white shadow p-6 rounded-lg">
             <div class="overflow-auto">
-                <table id="users-table" class="table-auto w-full text-left">
-                    <thead>
-                        <tr>
+                <table id="users-table" class="table-auto w-full text-left row-border">
+                    <thead class="bg-gray-50">
+                        <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
@@ -203,12 +202,12 @@
                                         </svg>
                                     </button>
                                 </form>
-                             
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
@@ -234,17 +233,54 @@
             </div>
         </div>
     </div>
-    @endsection
-
+</div>
+@endsection
     @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#users-table').DataTable({
-                "order": [
-                    [0, "asc"]
+            var table = $('#users-table').DataTable({
+                pageLength: 10,
+                lengthMenu: [
+                    [10, 25, 50, 100],
+                    [10, 25, 50, 100]
                 ],
-                "pageLength": 10,
-                "responsive": true
+                order: [
+                    [4, 'desc']
+                ],
+                columnDefs: [{
+                    targets: 5, 
+                    orderable: false,
+                    searchable: false
+                }],
+                language: {
+                    search: "Search applications:",
+                    lengthMenu: "Show _MENU_ applications per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                    infoEmpty: "Showing 0 to 0 of 0 applications",
+                    infoFiltered: "(filtered from _MAX_ total applications)",
+                    zeroRecords: "No applications found",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                },
+                initComplete: function() {
+                    $('.dataTables_length select').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                    );
+                    $('.dataTables_filter input').addClass(
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                    );
+
+                    var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                    var $length = $('.dataTables_length').css('margin', '0');
+                    var $search = $('.dataTables_filter').css('margin', '0');
+                    $controls.append($length).append($search);
+
+                    $controls.insertBefore($('#users-table').closest('.overflow-auto'));
+                }
             });
         });
     </script>

@@ -4,7 +4,7 @@
 
 
 @section('content')
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
         <!-- Page Header -->
         <div class="mb-8">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -127,14 +127,14 @@
 
                 @if($logs->count() > 0)
                     <div class="overflow-x-auto">
-                        <table id="login-logs-table" class="min-w-full divide-y divide-gray-200">
+                        <table id="login-logs-table" class="min-w-full divide-y divide-gray-200 row-border">
                             <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Agent</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                                    <th>Date and Time</th>
+                                    <th>Status</th>
+                                    <th>IP Address</th>
+                                    <th>User Agent</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
@@ -200,13 +200,49 @@
         @push('scripts')
             <script>
                 $(document).ready(function() {
-                    $('#login-logs-table').DataTable({
-                        "order": [[0, "desc"]],
-                        "pageLength": 10,
-                        "lengthMenu": [5, 10, 25, 50, 100],
-                        "columnDefs": [
-                            { "orderable": false, "targets": [1,3,4] }
-                        ]
+                    var table = $('#login-logs-table').DataTable({
+                        pageLength: 10,
+                        lengthMenu: [
+                            [10, 25, 50, 100],
+                            [10, 25, 50, 100]
+                        ],
+                        order: [
+                            [0, 'desc']
+                        ],
+                        columnDefs: [{
+                            targets: 4,
+                            orderable: false,
+                            searchable: false
+                        }],
+                        language: {
+                            search: "Search applications:",
+                            lengthMenu: "Show _MENU_ applications per page",
+                            info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                            infoEmpty: "Showing 0 to 0 of 0 applications",
+                            infoFiltered: "(filtered from _MAX_ total applications)",
+                            zeroRecords: "No applications found",
+                            paginate: {
+                                first: "First",
+                                last: "Last",
+                                next: "Next",
+                                previous: "Previous"
+                            }
+                        },
+                        initComplete: function() {
+                            $('.dataTables_length select').addClass(
+                                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                            );
+                            $('.dataTables_filter input').addClass(
+                                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                            );
+
+                            var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                            var $length = $('.dataTables_length').css('margin', '0');
+                            var $search = $('.dataTables_filter').css('margin', '0');
+                            $controls.append($length).append($search);
+
+                            $controls.insertBefore($('#login-logs-table').closest('.overflow-x-auto'));
+                        }
                     });
                 });
             </script>

@@ -139,20 +139,19 @@
 
 
 <!-- Applications Table -->
-<div class="p-6 bg-white rounded-lg shadow">
-
+<div class="p-4 bg-white rounded-lg shadow">
     <div class="overflow-x-auto">
         <table class="table-auto w-full text-left row-border" id="applications-table">
-            <thead>
-                <tr>
-                    <th class="px-8 py-4">Application #</th>
-                    <th class="px-8 py-4">Operator</th>
-                    <th class="px-8 py-4">Driver</th>
-                    <th class="px-8 py-4">Type</th>
-                    <th class="px-8 py-4">Status</th>
-                    <th class="px-8 py-4">Submitted</th>
-                    <th class="px-8 py-4">Reviewer</th>
-                    <th class="px-8 py-4">Actions</th>
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <th>Application #</th>
+                    <th>Operator</th>
+                    <th>Driver</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Submitted</th>
+                    <th>Reviewer</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -251,14 +250,13 @@
 
                 // Styling select + search
                 $('.dataTables_length select').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5'
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
                 );
                 $('.dataTables_filter input').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-navy focus:border-primary-navy block p-2.5'
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
                 );
                 $('#applications-table').closest('.overflow-x-auto').css('padding', '12px');
 
-                // Move search and length controls above table, styled
                 var $controls = $('<div class="w-full flex flex-col sm:flex-row justify-between items-center gap-4 mb-4"></div>');
                 var $search = $('.dataTables_filter').addClass('mb-2 sm:mb-0');
                 var $length = $('.dataTables_length').addClass('mb-2 sm:mb-0');

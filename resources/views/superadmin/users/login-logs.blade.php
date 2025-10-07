@@ -147,13 +147,13 @@
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Agent</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                                    <th>Date & Time</th>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                    <th>IP Address</th>
+                                    <th>User Agent</th>
+                                    <th>Details</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
