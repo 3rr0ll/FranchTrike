@@ -50,8 +50,6 @@ class DocumentController extends Controller
     }
     
 
-
-
     public function viewOperatorDocuments(Operator $operator)
     {
         $documents = OperatorDocument::where('operator_id', $operator->operator_id)
