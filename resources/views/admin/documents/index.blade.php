@@ -9,6 +9,57 @@
 @endsection
 
 @section('content')
+
+    {{-- Statistics Cards --}}
+    @php
+        $statusCounts = [
+            'approved' => $documents->where('status', 'approved')->count(),
+            'pending' => $documents->where('status', 'pending')->count(),
+            'rejected' => $documents->where('status', 'rejected')->count(),
+        ];
+    @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="p-4 bg-white rounded-lg border border-gray-200">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-green-100 text-green-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Approved</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ $statusCounts['approved'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-white rounded-lg border border-gray-200">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-yellow-100 text-yellow-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Pending</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ $statusCounts['pending'] }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 bg-white rounded-lg border border-gray-200">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-red-100 text-red-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-600">Rejected</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ $statusCounts['rejected'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="p-4 border-b border-gray-200 ">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <!-- Filters -->
