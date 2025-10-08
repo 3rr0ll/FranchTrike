@@ -43,7 +43,7 @@
       </div>
 
       <!-- Menu Button (for small screens) -->
-      <button id="nav-toggle" class="text-white hover:text-primary-gold focus:outline-none transition-colors">
+      <button id="nav-toggle" class="text-white hover:text-primary-gold focus:outline-none transition-colors md:hidden">
         <i class="bi bi-list text-2xl"></i>
       </button>
 
