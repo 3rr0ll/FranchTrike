@@ -43,11 +43,9 @@
       </div>
 
       <!-- Menu Button (for small screens) -->
-      <div class="md:hidden flex items-center gap-4">
-        <button id="menu-btn" class="text-white hover:text-primary-gold focus:outline-none transition-colors">
-          <i class="bi bi-list text-2xl"></i>
-        </button>
-      </div>
+      <button id="nav-toggle" class="text-white hover:text-primary-gold focus:outline-none transition-colors">
+        <i class="bi bi-list text-2xl"></i>
+      </button>
 
       <!-- Navigation for Desktop and Tablet -->
       <nav class="hidden md:flex gap-8 text-sm font-medium">
@@ -97,7 +95,7 @@
     </div>
 
     <!-- Mobile Navigation -->
-    <div id="mobile-nav" class="md:hidden hidden bg-primary-navy text-white p-6 border-t border-white/10">
+    <div id="mobile-menu" class="md:hidden hidden bg-primary-navy text-white p-6 border-t border-white/10">
       <nav class="flex flex-col gap-6 text-sm font-medium">
         <a href="#features" class="hover:text-primary-gold transition-colors">Features</a>
         <a href="#about" class="hover:text-primary-gold transition-colors">About</a>
@@ -561,4 +559,15 @@
     chatbotMessages.appendChild(backBtn);
     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
   }
+
+  const navToggle = document.getElementById('nav-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  navToggle.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  document.querySelectorAll('#mobile-menu a').forEach(link => {
+    link.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+  });
 </script>
