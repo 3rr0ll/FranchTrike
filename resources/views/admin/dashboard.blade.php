@@ -210,7 +210,28 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Total Applications
+    const chartOptions = {
+        plugins: {
+            legend: {
+                display: false 
+            }
+        },
+        scales: {
+            x: {
+                grid: {
+                    display: false,
+                    drawBorder: false
+                }
+            },
+            y: {
+                grid: {
+                    display: false,
+                    drawBorder: false
+                }
+            }
+        }
+    };
+
     new Chart(document.getElementById('applicationsChart'), {
         type: 'line',
         data: {
@@ -223,7 +244,8 @@
                 tension: 0.3,
                 fill: true
             }]
-        }
+        },
+        options: chartOptions
     });
 
     // Pending Review
@@ -234,12 +256,13 @@
             datasets: [{
                 label: 'Pending Review',
                 data: @json($pendingData),
-                borderColor: 'rgb(202, 138, 4)', // yellow-600
+                borderColor: 'rgb(202, 138, 4)',
                 backgroundColor: 'rgba(202, 138, 4, 0.2)',
                 tension: 0.3,
                 fill: true
             }]
-        }
+        },
+        options: chartOptions
     });
 
     // Operators
@@ -250,12 +273,13 @@
             datasets: [{
                 label: 'Operators',
                 data: @json($operatorsData),
-                borderColor: 'rgb(22, 163, 74)', // green-600
+                borderColor: 'rgb(22, 163, 74)',
                 backgroundColor: 'rgba(22, 163, 74, 0.2)',
                 tension: 0.3,
                 fill: true
             }]
-        }
+        },
+        options: chartOptions
     });
 
     // Drivers
@@ -266,14 +290,16 @@
             datasets: [{
                 label: 'Drivers',
                 data: @json($driversData),
-                borderColor: 'rgb(147, 51, 234)', // purple-600
+                borderColor: 'rgb(147, 51, 234)',
                 backgroundColor: 'rgba(147, 51, 234, 0.2)',
                 tension: 0.3,
                 fill: true
             }]
-        }
+        },
+        options: chartOptions
     });
 </script>
+
 
 <script>
     const ctx = document.getElementById('statusChart').getContext('2d');
