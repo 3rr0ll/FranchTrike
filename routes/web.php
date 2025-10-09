@@ -368,18 +368,12 @@ Route::middleware([
 
 
             // Payments routes
-            // List all payments
-            Route::get('/payments', [PaymentController::class, 'index'])
-                ->name('payments.index');
-
-            // Mark a payment as paid
-            Route::post('/payments/{payment}/mark-paid', [PaymentController::class, 'markPaid'])
-                ->name('payments.markPaid');
-
-            // Show a specific payment receipt
-            Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt'])
-                ->name('payments.receipt');
+            Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+            Route::post('/payments/{payment}/mark-paid', [PaymentController::class, 'markPaid'])->name('payments.markPaid');
+            Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt']) ->name('payments.receipt');
             Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
+            Route::get('/payments/monthly-report', [PaymentController::class, 'monthlyReport'])->name('payments.monthlyReport');
+
 
 
             Route::get('/faq', [\App\Http\Controllers\Admin\FaqController::class, 'index'])->name('faq.index');

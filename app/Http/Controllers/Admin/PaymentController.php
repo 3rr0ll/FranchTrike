@@ -125,4 +125,60 @@ class PaymentController extends Controller
 
         return view('admin.payments.receipt', compact('payments', 'totalAmount', 'reviewedBy'));
     }
+
+    public function monthlyReport(Request $request)
+    {
+        // Get optional year filter (default to current year)
+        $year = $request->input('year', now()->year);
+    
+        // Fetch all payments for that year, eager loading related data
+        $payments = Payment::with(['franchiseApplication.route'])
+            ->whereYear('paid_at', $year)
+            ->get();
+    
+        // Group payments by route name
+        $paymentsByRoute = $payments->groupBy(function ($payment) {
+            return $payment->franchiseApplication->route->name ?? 'Unknown';
+        });
+    
+        $reportData = [];
+    
+        foreach ($paymentsByRoute as $routeName => $routePayments) {
+            $monthlyTotals = array_fill_keys([
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ], 0);
+    
+            foreach ($routePayments as $payment) {
+                if ($payment->paid_at) {
+                    $month = $payment->paid_at->format('M'); 
+                    $monthlyTotals[$month] += $payment->amount_paid;
+                }
+            }
+    
+            $reportData[$routeName] = $monthlyTotals;
+        }
+    
+        // Compute overall totals
+        $overall = array_fill_keys([
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ], 0);
+    
+        foreach ($reportData as $months) {
+            foreach ($months as $month => $amount) {
+                $overall[$month] += $amount;
+            }
+        }
+    
+        $grandTotal = array_sum($overall);
+    
+        return view('admin.payments.monthly-report', [
+            'monthlyData' => $reportData,
+            'overall' => $overall,
+            'grandTotal' => $grandTotal,
+            'year' => $year
+        ]);
+    }
+    
 }

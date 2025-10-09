@@ -76,6 +76,15 @@
         </div>
         <div id="export-buttons" class="flex flex-wrap gap-2 items-center">
         </div>
+
+        <div class="flex justify-end">
+            <a href="{{ route('admin.payments.monthlyReport') }}" >
+              <x-button>
+                View Monthly Report
+              </x-button>
+            </a>
+        </div>
+        
     </div>
 
     <div class="p-4 bg-white rounded-lg shadow">
@@ -115,8 +124,11 @@
                         <span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-800">Pending</span>
                         @endif
                     </td>
-                    <td>{{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('M d, Y') : '-' }}</td>
-                    <td>
+                    <td data-order="{{ $group['paid_at'] ?? '' }}" 
+                    data-date="{{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('Y-m-d') : '' }}">
+                    {{ $group['paid_at'] ? \Carbon\Carbon::parse($group['paid_at'])->format('M d, Y h:i A') : '-' }}
+                </td>
+                                    <td>
                         @if($group['reviewer'])
                         {{ $group['reviewer']->name }}
                         @else
@@ -175,24 +187,27 @@
 
         // Date filter for DataTables
         $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-            let min = $('#datepicker-range-start').val();
-            let max = $('#datepicker-range-end').val();
-            let date = data[6]; // Paid At column index
+        let min = $('#datepicker-range-start').val();
+        let max = $('#datepicker-range-end').val();
 
-            if (!date) return true;
+        // Get the hidden date from the 7th column (<td data-date="...">)
+        let dateCell = $(settings.aoData[dataIndex].nTr).find('td:eq(6)');
+        let rawDate = dateCell.data('date');
 
-            let paymentDate = new Date(date);
+        if (!rawDate) return true;
 
-            if (
-                (min === "" && max === "") ||
-                (min === "" && paymentDate <= new Date(max)) ||
-                (new Date(min) <= paymentDate && max === "") ||
-                (new Date(min) <= paymentDate && paymentDate <= new Date(max))
-            ) {
-                return true;
-            }
-            return false;
-        });
+        let paymentDate = new Date(rawDate);
+        let minDate = min ? new Date(min) : null;
+        let maxDate = max ? new Date(max) : null;
+
+        if ((minDate === null && maxDate === null) ||
+            (minDate === null && paymentDate <= maxDate) ||
+            (paymentDate >= minDate && maxDate === null) ||
+            (paymentDate >= minDate && paymentDate <= maxDate)) {
+            return true;
+        }
+        return false;
+    });
 
         var table = $('#payments-table').DataTable({
             pageLength: 10,
@@ -255,9 +270,7 @@
 
                 $controls.insertBefore($('#payments-table').closest('.overflow-auto, .overflow-x-auto'));
 
-                // Move export buttons to a custom div container
                 var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
-                // Create or select a div to hold the buttons
                 let $exportDiv = $('#export-buttons');
                 if ($exportDiv.length === 0) {
                     $exportDiv = $('<div id="export-buttons" class="flex flex-wrap gap-2 mb-4"></div>');
