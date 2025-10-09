@@ -83,6 +83,11 @@
             margin-bottom: 15px;
         }
 
+        .no-print {
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
         @media print {
             body {
                 background: white;
@@ -93,16 +98,31 @@
                 box-shadow: none;
                 max-width: 100%;
             }
+            .no-print {
+                display: none !important;
+            }
         }
     </style>
 </head>
 
-<body>
+<body> 
+    
     @php
         $motorNo = $motorDetail->motorno ?? '';
         $chasisNo = $motorDetail->chasisno ?? '';
         $plateNumber = $motorDetail->platenumber ?? '';
     @endphp
+
+    <div class="no-print" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px 0; padding: 20px; border-radius: 8px;">
+        <h1 style="margin-bottom: 20px; color: #333; text-align: center;">Back Application Form Preview</h1>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button id="printBtn"
+                style="background-color: #1a237e; color: #fff; border: none; padding: 10px 24px; border-radius: 5px; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 2px 6px rgba(26,35,126,0.08); transition: background 0.2s;">
+                Print
+            </button>
+        </div>
+    </div>
+        
     <div class="container">
         <div class="header">
             <h3>Republic of the Philippines</h3>
@@ -226,6 +246,23 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('printBtn').addEventListener('click', function () {
+            fetch("{{ route('admin.certificates.print.log', $motorDetail->id) }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    certificate_type: "Application Back"
+                })
+            }).then(res => {
+                window.print();
+            });
+        });
+    </script>
 </body>
 
 </html>
