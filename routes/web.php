@@ -387,6 +387,14 @@ Route::middleware([
             Route::get('/faq/{faq}/edit', [\App\Http\Controllers\Admin\FaqController::class, 'edit'])->name('faq.edit');
             Route::put('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'update'])->name('faq.update');
             Route::delete('/faq/{faq}', [\App\Http\Controllers\Admin\FaqController::class, 'destroy'])->name('faq.destroy');
+
+            Route::get('/signatories', [\App\Http\Controllers\Admin\SignatoryController::class, 'index'])->name('signatories.index');
+            Route::get('/signatories/{signatory}/edit', [\App\Http\Controllers\Admin\SignatoryController::class, 'edit'])->name('signatories.edit');
+            Route::put('/signatories/{signatory}', [\App\Http\Controllers\Admin\SignatoryController::class, 'update'])->name('signatories.update');
+            Route::delete('/signatories/{signatory}', [\App\Http\Controllers\Admin\SignatoryController::class, 'destroy'])->name('signatories.destroy');
+            Route::get('/signatories/create', [\App\Http\Controllers\Admin\SignatoryController::class, 'create'])->name('signatories.create');
+            Route::post('/signatories', [\App\Http\Controllers\Admin\SignatoryController::class, 'store'])->name('signatories.store');
+
         });
 
     Route::middleware([RoleMiddleware::class . ':superadmin'])

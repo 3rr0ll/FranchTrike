@@ -248,6 +248,21 @@
                     <span class="ms-3">FAQ</span>
                 </a>
                </li>
+               <li>
+                @php $isActive = request()->routeIs('admin.signatories.*'); @endphp
+                <a href="{{ route('admin.signatories.index') }}"
+                    class="flex items-center p-2 rounded-lg group 
+                    {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.5 9.75V6.75A2.25 2.25 0 0 0 14.25 4.5H5.25A2.25 2.25 0 0 0 3 6.75v10.5A2.25 2.25 0 0 0 5.25 19.5h9A2.25 2.25 0 0 0 16.5 17.25v-3" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M18.75 15l-3-3m0 0l3-3m-3 3H9" />
+                    </svg>
+                    <span class="ms-3">Signatories</span>
+                </a>
+            </li>
             </ul>
             <ul class="space-y-2 font-medium mt-4">
                 <li>
