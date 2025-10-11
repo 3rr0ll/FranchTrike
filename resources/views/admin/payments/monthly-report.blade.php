@@ -9,7 +9,7 @@
     <!-- Print Button -->
     <button onclick="window.print()"
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow print:hidden">
-        🖨️ Print Report
+        Print Report
     </button>
 </div>
 @endsection
