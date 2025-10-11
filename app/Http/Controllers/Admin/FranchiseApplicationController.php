@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
 use App\Mail\FranchiseStatusUpdated;
 use App\Services\NotificationService;
 use App\Models\FranchiseApplicationLog;
+use App\Models\UnitMake;
+
 
 class FranchiseApplicationController extends Controller
 {
@@ -321,6 +323,7 @@ class FranchiseApplicationController extends Controller
             'driver_license_no' => 'required|string|max:50',
             'driver_license_validity' => 'required|date|after:today',
             'driver_license_nature' => 'required|string',
+
             // Franchise application details
             'application_type' => 'required|in:new,renewal',
             'route_id' => 'required|exists:routes,id',
@@ -341,7 +344,12 @@ class FranchiseApplicationController extends Controller
             'driver_documents' => 'required|array',
             'driver_documents.*' => 'exists:document_types,document_id',
 
-            
+            // Motor Details - referencing Operator side
+            'unit_type' => 'required|string',
+            'unit_make_id' => 'required|exists:unit_makes,id',
+            'motorno' => 'required|string',
+            'chasisno' => 'required|string',
+            'platenumber' => 'required|string',
         ];
 
         // Add conditional validation for renewal applications
@@ -352,7 +360,6 @@ class FranchiseApplicationController extends Controller
         }
 
         $request->validate($validationRules);
-
 
         DB::beginTransaction();
 
@@ -427,7 +434,35 @@ class FranchiseApplicationController extends Controller
 
             $franchiseApplication = FranchiseApplication::create($franchiseApplicationData);
 
-            // Create operator documents (as checkboxes - marked as approved since physiclly submitted)
+            // Create Motor Details (admin-side, mirrored operator-side logic)
+            \App\Models\MotorDetail::create([
+                'franchise_application_id' => $franchiseApplication->id,
+                'unit_type' => $request->unit_type,
+                'unit_make_id' => $request->unit_make_id,
+                'motorno' => $request->motorno,
+                'chasisno' => $request->chasisno,
+                'platenumber' => $request->platenumber,
+            ]);
+
+            // Log motor detail addition
+            \App\Helpers\ActivityLogger::log(
+                'motor_detail',
+                'added',
+                'Admin added motor details to franchise application via admin-side.',
+                [
+                    'franchise_application_id' => $franchiseApplication->id,
+                    'operator' => $operator->first_name . ' ' . $operator->last_name,
+                    'unit_type' => $request->unit_type,
+                    'unit_make_id' => $request->unit_make_id,
+                    'motorno' => $request->motorno,
+                    'chasisno' => $request->chasisno,
+                    'platenumber' => $request->platenumber,
+                    'added by' => Auth::user()->name,
+                    'user_id' => Auth::check() ? Auth::id() : null,
+                ]
+            );
+
+            // Create operator documents (as checkboxes - marked as approved since physically submitted)
             foreach ($request->operator_documents as $documentTypeId) {
                 $documentType = DocumentType::find($documentTypeId);
                 $operator->operatorDocuments()->create([
@@ -442,7 +477,7 @@ class FranchiseApplicationController extends Controller
                 ]);
             }
 
-            // Create driver documents (as checkboxes - marked as approved since physically submitted)
+            // Create driver documents (as checkboxes, marked as approved since physically submitted)
             foreach ($request->driver_documents as $documentTypeId) {
                 $documentType = DocumentType::find($documentTypeId);
                 $driver->driverDocuments()->create([
@@ -472,7 +507,6 @@ class FranchiseApplicationController extends Controller
                 ]
             );
 
-            
             DB::commit();
 
             return redirect()->route('admin.franchise.index')
