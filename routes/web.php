@@ -306,7 +306,12 @@ Route::middleware([
             Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
             Route::get('/operators', [AdminOperatorController::class, 'index'])->name('operators.index');
+            Route::get('/operators/{operator}/edit', [AdminOperatorController::class, 'edit'])->name('operators.edit');
+            Route::put('/operators/{operator}', [AdminOperatorController::class, 'update'])->name('operators.update');
+
             Route::get('/drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
+            Route::get('/drivers/{driver}/edit', [AdminDriverController::class, 'edit'])->name('drivers.edit');
+            Route::put('/drivers/{driver}', [AdminDriverController::class, 'update'])->name('drivers.update');
 
             // Franchise Applications Routes
             Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
