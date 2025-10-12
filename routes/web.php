@@ -315,15 +315,15 @@ Route::middleware([
 
             // Franchise Applications Routes
             Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
+            Route::get('/franchise/{franchiseApplication}/edit', [AdminFranchiseController::class, 'edit'])->name('franchise.edit');
+            Route::put('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'update'])->name('franchise.update');
             Route::get('/franchise/master-list', [AdminFranchiseController::class, 'masterList'])->name('franchise.master-list');
             Route::post('/franchise/master-list/print-log', [AdminFranchiseController::class, 'masterListPrintLog'])->name('franchise.master-list.print-log');
             Route::get('/franchise/create', [AdminFranchiseController::class, 'create'])->name('franchise.create');
             Route::post('/franchise', [AdminFranchiseController::class, 'store'])->name('franchise.store');
             Route::get('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'show'])->name('franchise.show');
             Route::put('/franchise/{franchiseApplication}/status', [AdminFranchiseController::class, 'updateStatus'])->name('franchise.update-status');
-            Route::post('/franchise/bulk-update', [AdminFranchiseController::class, 'bulkUpdateStatus'])->name('franchise.bulk-update');
             Route::get('/franchise/statistics', [AdminFranchiseController::class, 'statistics'])->name('franchise.statistics');
-            Route::get('/franchise/export', [AdminFranchiseController::class, 'export'])->name('franchise.export');
 
             // Motor Details Routes
             Route::get('/motor-details', [MotorDetailsController::class, 'index'])->name('motor-details.index');
