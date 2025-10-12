@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <title>Motorized Tricycle Franchising Application Form</title>
     <style>
         html, body {
@@ -509,7 +510,7 @@
                         
                         <div style="flex: 1;  text-align: right; font-size: 5px;">
                             <span style="font-weight: bold;">GRANTED BY:</span>
-                            <div style="text-decoration: underline; "> ENGR. KHRISTINE Z. TAPALLA, EnP</div>
+                            <div style="text-decoration: underline; ">{{ $mpdc?->name }}</div>
                             <div>MPDC/ZA</div>
                         </div>
                     </div>
@@ -555,8 +556,8 @@
                     style="border-bottom: 1px solid #000; width: 120px; text-align: center; background: transparent; display: inline-block;">{{ $ctcIssuedAt }}</span>
 
             </div>
-            <div style="text-align: right; margin-top: 20px;">
-                <div style="font-weight: bold;">ATTY. MARK LESTER G. MANALO</div>
+            <div style="text-align: right;  margin-top: 20px;">
+                <div style="font-weight: bold; margin-right: 20px;">{{ $municipal_administrator?->name }}</div>
                 <div
                     style="font-size: 11px; border-top: 1px solid #000; width: 200px; margin-left: auto; text-align: center; padding-bottom: 2px;">
                     Municipal Administrator</div>

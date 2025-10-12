@@ -37,6 +37,7 @@ class CertificateController extends Controller
             'driver' => $driver,
             'route' => $route,
             'franchise_no' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? 'N/A',
+            'municipal_mayor' => \App\Models\Signatory::where('position_title', 'Municipal Mayor')->first(),
             'sticker_no' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? 'N/A',
             'case_no' => $motorDetail->case_number ?? 'N/A',
             'or_no' => $payment?->or_no ?? $motorDetail->or_number ?? 'N/A',
@@ -72,6 +73,8 @@ class CertificateController extends Controller
         $data = [
             'motorDetail' => $motorDetail,
             'franchiseApplication' => $franchiseApplication,
+            // Fetch the Municipal Mayor signatory data to pass to the view
+            'municipal_mayor' => \App\Models\Signatory::where('position_title', 'Municipal Mayor')->first(),
             'operator' => $operator,
             'driver' => $driver,
             'route' => $route,
@@ -110,6 +113,8 @@ class CertificateController extends Controller
             'franchiseApplication' => $franchiseApplication,
             'operator' => $operator,
             'driver' => $driver,
+            'municipal_administrator' => \App\Models\Signatory::where('position_title', 'Municipal Administrator')->first(),
+            'mpdc' => \App\Models\Signatory::where('position_title', 'MPDC')->first(),
             'route' => $route,
             'franchise_no' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? 'N/A',
             'sticker_no' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? 'N/A',
@@ -153,6 +158,7 @@ class CertificateController extends Controller
             'motorDetail' => $motorDetail,
             'franchise' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
             'sticker' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? '',
+            'admin' => \App\Models\Signatory::where('position_title', 'Admin')->first(),
             'route' => $route,
             'name' => $operator
                 ? trim(($operator->first_name ?? '') . ' ' . ($operator->middle_initial ?? '') . ' ' . ($operator->last_name ?? ''))

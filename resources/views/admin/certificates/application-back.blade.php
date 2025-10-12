@@ -201,7 +201,7 @@
             </div>
             <div style="text-align: left;">
                 <div style="font-weight: bold; text-decoration: underline; font-size: 15px; margin-left: 30px;">
-                    MARIA REALIZ G. SALAZAR
+                    {{ $admin?->name ?? '' }}
                 </div>
                 <div style="font-size: 12px; margin-top: 2px; text-align:center; display: flex; justify-content: flex-start;">
                     Signature over Printed Name Authorized Permit<br>
@@ -239,8 +239,9 @@
                 </div>
                 <div style="flex: 1; text-align: right;">
                     <div style="font-size: 15px; font-weight: bold; margin-bottom: 18px;">ON PROCESS/FOR SIGNATURE</div>
-                    <div style="font-weight: bold; text-decoration: underline; font-size: 15px; margin-bottom: 0;">MARIA
-                        REALIZ G. SALAZAR</div>
+                    <div style="font-weight: bold; text-decoration: underline; font-size: 15px; margin-bottom: 0;">
+                        {{ $admin?->name ?? '' }}
+                    </div>
                     <div style="font-size: 12px; margin-top: 2px; text-align: center;">Verified by</div>
                 </div>
             </div>

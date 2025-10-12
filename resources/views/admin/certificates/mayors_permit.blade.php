@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <title>Mayor's Permit</title>
     <style>
         @media print {
@@ -94,7 +95,9 @@
 
             <!-- Mayor Signature -->
             <div style="text-align: right; margin-top: 60px; margin-right: 40px;">
-                <p style="margin: 0; font-weight: bold;">HON. CELSA B. RIVERA</p>
+                <p style="margin: 0; font-weight: bold;">
+                    {{ $municipal_mayor?->name }}
+                </p>
                 <p style="margin: 0;">Municipal Mayor</p>
             </div>
 

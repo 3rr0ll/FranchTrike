@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <title>MTOP Certificate</title>
     <style>
         @media print {
@@ -50,7 +51,7 @@
         </div>
         
         <!-- Watermark -->
-        <div style="position: absolute; left: 50%; top:50%; transform: translate(-50%, -50%); opacity: 0.9; z-index: 0; pointer-events: none;">
+        <div style="position: absolute; left: 50%; top:45%; transform: translate(-50%, -50%); opacity: 0.9; z-index: 0; pointer-events: none;">
             <img src="{{ asset('images/watermark.jpg') }}" alt="Watermark" style="width: 350px; height: auto;">
         </div>
         
@@ -58,20 +59,20 @@
         <div style="position: relative; z-index: 1; font-size: 16px; margin-top: 10px;">
             <div style="margin-bottom: 10px; text-align: center;">
                 PERMIT IS HEREBY GRANTED TO
-                <span style="display: inline-block; min-width: 200px; border-bottom: 1px solid #000; text-align: center;">
+                <span style="display: inline-block; min-width: 200px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">
                     {{ $operator->first_name ?? '' }} {{ $operator->last_name ?? 'N/A' }}
                 </span>
                 of Barangay
-                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center;">
+                <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">
                     {{ $operator->barangay ?? 'N/A' }}
                 </span>
                 <br>
                 to operate a 
-                <span style="display: inline-block; min-width: 60px; border-bottom: 1px solid #000; text-align: center;">
+                <span style="display: inline-block; min-width: 60px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">
                     {{ ucfirst($motorDetail->unit_type) }}
                 </span>
                 service for hire on the route:
-                <span style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center;">
+                <span style="display: inline-block; min-width: 180px; border-bottom: 1px solid #000; text-align: center; font-weight: bold;">
                     {{ $route->name ?? 'N/A' }}
                 </span>
                 of Padre Garcia, Batangas using one tricycle described as follows:
@@ -80,16 +81,16 @@
             <!-- Tricycle Details Table -->
             <table style="width: 100%; margin-bottom: 10px; font-size: 16px;">
                 <tr>
-                    <th style="text-align: left; width: 25%;">MADE</th>
-                    <th style="text-align: left; width: 25%;">MOTOR NO.</th>
-                    <th style="text-align: left; width: 25%;">CHASSIS NO.</th>
-                    <th style="text-align: left; width: 25%;">PLATE NUMBER</th>
+                    <th style="text-align: center; width: 25%;">MADE</th>
+                    <th style="text-align: center; width: 25%;">MOTOR NO.</th>
+                    <th style="text-align: center; width: 25%;">CHASSIS NO.</th>
+                    <th style="text-align: center; width: 25%;">PLATE NUMBER</th>
                 </tr>
                 <tr>
-                    <td style="text-align: left; width: 25%; padding: 5px 0;">{{ $motorDetail->unitMake->name ?? 'N/A' }}</td>
-                    <td style="text-align: left; width: 25%; padding: 5px 0;">{{ $motorDetail->motorno ?? 'N/A' }}</td>
-                    <td style="text-align: left; width: 25%; padding: 5px 0;">{{ $motorDetail->chasisno ?? 'N/A' }}</td>
-                    <td style="text-align: left; width: 25%; padding: 5px 0;">{{ $motorDetail->platenumber ?? 'N/A' }}</td>
+                    <td style="text-align: center; width: 25%; padding: 5px 0; font-weight: bold;">{{ $motorDetail->unitMake->name ?? 'N/A' }}</td>
+                    <td style="text-align: center; width: 25%; padding: 5px 0; font-weight: bold;">{{ $motorDetail->motorno ?? 'N/A' }}</td>
+                    <td style="text-align: center; width: 25%; padding: 5px 0; font-weight: bold;">{{ $motorDetail->chasisno ?? 'N/A' }}</td>
+                    <td style="text-align: center; width: 25%; padding: 5px 0; font-weight: bold;">{{ $motorDetail->platenumber ?? 'N/A' }}</td>
                 </tr>
             </table>
 
@@ -106,17 +107,17 @@
                     in Padre Garcia, Batangas.
                 </div>
                 <div style="text-align: center; font-size: 15px;">
-                    <span style="font-weight: bold;">HON. CELSA B. RIVERA</span><br>
+                    <span style="font-weight: bold;">{{ $municipal_mayor?->name }}</span><br>
                     <span style="font-size: 13px;">Municipal Mayor</span>
                 </div>
             </div>
 
             <div style="margin-top: 30px; margin-bottom: 10px;">
-                <div style="display: flex; align-items: center;">
-                    <span style="font-size: 18px; font-weight: bold;">Case No:</span>
-                    <span style="display: inline-block; min-width: 180px; border-bottom: 2px solid #000; margin-left: 8px; margin-right: 40px;">{{ $case_no }}</span>
-                    <span style="font-size: 18px; font-weight: bold;">Sticker No:</span>
-                    <span style="display: inline-block; min-width: 180px; border-bottom: 2px solid #000; margin-left: 8px;">{{ $sticker_no }}</span>
+                <div style="font-size: 28px; font-family: Arial, Helvetica, sans-serif;">
+                    <span>Case No: {{ $sticker_no }}&nbsp;&nbsp; Sticker No: {{ $sticker_no }}</span>
+                </div>
+                <div style="margin-top: 4px;">
+                    <hr style="border: 0; border-top: 4px solid #000; width: 60%; margin: 0;">
                 </div>
             </div>
 
@@ -126,6 +127,7 @@
             </div>
             <div style="font-size: 15px; margin-bottom: 2px;">
                 <span style="display: inline-block; width: 80px;">Amount:</span>
+                <span style="font-weight: bold;">&#8369;</span>
                 <span style="display: inline-block; min-width: 120px; border-bottom: 1px solid #000;">{{ $amount }}</span>
             </div>
             <div style="font-size: 15px; margin-bottom: 2px;">
