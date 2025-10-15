@@ -61,12 +61,26 @@ class FranchiseApplicationController extends Controller
         return view('admin.franchise.index', compact('applications', 'statusCounts'));
     }
 
-    public function show(FranchiseApplication $franchiseApplication)
+    public function show($encryptedId)
     {
-        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route','logs.updatedBy']);
-
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+    
+        $franchiseApplication = \App\Models\FranchiseApplication::with([
+            'operator', 
+            'driver', 
+            'reviewer', 
+            'motorDetail.unitMake', 
+            'route',
+            'logs.updatedBy'
+        ])->findOrFail($id);
+    
         return view('admin.franchise.show', compact('franchiseApplication'));
     }
+    
 
     public function updateStatus(Request $request, FranchiseApplication $franchiseApplication)
     {
@@ -520,11 +534,15 @@ class FranchiseApplicationController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified Franchise Application.
-     */
-    public function edit($id)
+
+    public function edit($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
         $franchiseApplication = FranchiseApplication::with([
             'operator.user',
             'driver',

@@ -315,17 +315,17 @@ Route::middleware([
 
             // Franchise Applications Routes
             Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
-            Route::get('/franchise/{franchiseApplication}/edit', [AdminFranchiseController::class, 'edit'])->name('franchise.edit');
+            Route::get('/franchise/{encryptedId}/edit', [AdminFranchiseController::class, 'edit'])->name('franchise.edit');
             Route::put('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'update'])->name('franchise.update');
             Route::get('/franchise/master-list', [AdminFranchiseController::class, 'masterList'])->name('franchise.master-list');
             Route::post('/franchise/master-list/print-log', [AdminFranchiseController::class, 'masterListPrintLog'])->name('franchise.master-list.print-log');
             Route::get('/franchise/create', [AdminFranchiseController::class, 'create'])->name('franchise.create');
             Route::post('/franchise', [AdminFranchiseController::class, 'store'])->name('franchise.store');
-            Route::get('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'show'])->name('franchise.show');
+            Route::get('/franchise/{encryptedId}', [AdminFranchiseController::class, 'show'])->name('franchise.show');
             Route::put('/franchise/{franchiseApplication}/status', [AdminFranchiseController::class, 'updateStatus'])->name('franchise.update-status');
             Route::get('/franchise/statistics', [AdminFranchiseController::class, 'statistics'])->name('franchise.statistics');
 
-            // Motor Details Routes
+            // Motor Details Routes 
             Route::get('/motor-details', [MotorDetailsController::class, 'index'])->name('motor-details.index');
             Route::get('/motor-details/{motorDetail}', [MotorDetailsController::class, 'show'])->name('motor-details.show');
             Route::get('/motor-details/{motorDetail}/edit', [MotorDetailsController::class, 'edit'])->name('motor-details.edit');

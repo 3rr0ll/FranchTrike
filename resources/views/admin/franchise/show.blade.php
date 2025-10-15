@@ -43,8 +43,17 @@
                         <button onclick="openStatusModal()" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-primary-navy hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy">
                             Update Status
                         </button>
+                        <a href="{{ route('admin.franchise.edit', encrypt($franchiseApplication->id)) }}" 
+                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-navy ml-2"
+                            title="Edit this application">
+                            <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Edit
+                        </a>
                     </div>
                 </div>
+                      
             </div>
 
             <!-- Application Information -->
@@ -486,3 +495,5 @@
 
 </script>
 @endsection
+
+

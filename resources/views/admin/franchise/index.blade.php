@@ -56,7 +56,7 @@
             <div class="p-2 rounded-full bg-purple-100 text-purple-600">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
                     <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
-                  </svg>                  
+                </svg>
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-600">Renewed</p>
@@ -145,7 +145,7 @@
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
             </div>
 
-           
+
         </div>
     </div>
 </div>
@@ -199,13 +199,16 @@
                         {{ $application->reviewer ? $application->reviewer->name : 'N/A' }}
                     </td>
                     <td class="px-8 py-5">
-                        <a href="{{ route('admin.franchise.show', $application) }}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900">
-                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        <a href="{{ route('admin.franchise.show', encrypt($application->id)) }}"
+                            class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5 c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                             </svg>
                         </a>
-                        <a href="{{ route('admin.franchise.edit', $application) }}" class="inline-flex items-center text-sm text-yellow-600 hover:text-yellow-900 ml-2" title="Edit">
+
+                        <a href="{{ route('admin.franchise.edit', encrypt($application->id)) }}" class="inline-flex items-center text-sm text-yellow-600 hover:text-yellow-900 ml-2" title="Edit">
                             <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
@@ -232,7 +235,7 @@
                 [6, 'desc']
             ],
             columnDefs: [{
-                targets: 6, 
+                targets: 6,
                 orderable: false,
                 searchable: false
             }],
@@ -250,22 +253,22 @@
                     previous: "Previous"
                 }
             },
-          
+
             initComplete: function() {
-            $('.dataTables_length select').addClass(
-                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
-            );
-            $('.dataTables_filter input').addClass(
-                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
-            );
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
 
-            var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
-            var $length = $('.dataTables_length').css('margin', '0');
-            var $search = $('.dataTables_filter').css('margin', '0');
-            $controls.append($length).append($search);
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
 
-            $controls.insertBefore($('#applications-table').closest('.overflow-x-auto'));
-        }
+                $controls.insertBefore($('#applications-table').closest('.overflow-x-auto'));
+            }
 
         });
 
