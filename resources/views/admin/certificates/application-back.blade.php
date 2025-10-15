@@ -239,8 +239,8 @@
                 </div>
                 <div style="flex: 1; text-align: right;">
                     <div style="font-size: 15px; font-weight: bold; margin-bottom: 18px;">ON PROCESS/FOR SIGNATURE</div>
-                    <div style="font-weight: bold; text-decoration: underline; font-size: 15px; margin-bottom: 0;">
-                        {{ $admin?->name ?? '' }}
+                    <div style="font-weight: bold; text-decoration: underline; font-size: 15px; margin-bottom: 0; text-align: center;">
+                        {{ $admin_name ?? '' }}
                     </div>
                     <div style="font-size: 12px; margin-top: 2px; text-align: center;">Verified by</div>
                 </div>

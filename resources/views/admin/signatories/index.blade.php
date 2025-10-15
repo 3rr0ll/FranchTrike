@@ -12,9 +12,6 @@
         </button>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 text-green-700 bg-green-100 rounded px-4 py-2">{{ session('success') }}</div>
-    @endif
 
     <div class="p-4 bg-white rounded-lg shadow">
         <div class="overflow-auto">
