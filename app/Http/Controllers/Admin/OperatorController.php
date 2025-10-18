@@ -62,6 +62,13 @@ class OperatorController extends Controller
         $operator->civil_status = $request->input('civil_status');
         $operator->contact_no = $request->input('contact_no');
 
+        // Use isDirty to check if any attributes have changed
+        if (!$operator->isDirty()) {
+            return redirect()
+                ->route('admin.operators.index', encrypt($operator->id))
+                ->with('info', 'No changes detected. Nothing was updated.');
+        }
+
         $operator->save();
 
         \App\Helpers\ActivityLogger::log(

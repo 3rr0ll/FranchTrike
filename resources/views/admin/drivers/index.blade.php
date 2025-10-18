@@ -157,6 +157,14 @@ Drivers List
             confirmButtonColor: '#3085d6'
         });
     @endif
+    @if(session('info'))
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            text: "{{ session('info') }}",
+            confirmButtonColor: '#3085d6'
+        });
+    @endif
 </script>
 @endpush
 @endsection

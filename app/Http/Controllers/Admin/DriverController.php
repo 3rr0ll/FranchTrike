@@ -54,6 +54,8 @@ class DriverController extends Controller
 
         $driver = Driver::findOrFail($id);
 
+        $originalData = $driver->getAttributes();
+
         $driver->last_name = $request->input('last_name');
         $driver->first_name = $request->input('first_name');
         $driver->middle_initial = $request->input('middle_initial');
@@ -69,6 +71,11 @@ class DriverController extends Controller
         $driver->license_validity = $request->input('license_validity');
         $driver->license_nature = $request->input('license_nature');
 
+        // Check for changes before saving
+        if (!$driver->isDirty()) {
+            return redirect()->route('admin.drivers.index', $encryptedId)->with('info', 'No changes were made to the driver.');
+        }
+
         $driver->save();
 
         \App\Helpers\ActivityLogger::log(
@@ -81,7 +88,7 @@ class DriverController extends Controller
                 'attributes' => $driver->getAttributes(),
             ]
         );
-        // Optionally log update or redirect with success message
+
         return redirect()->route('admin.drivers.index', encrypt($driver->id))->with('success', 'Driver updated successfully.');
     }
 }

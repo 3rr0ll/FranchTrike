@@ -492,7 +492,14 @@
 
         window.open(url, '_blank');
     }
-
+    @if(session('info'))
+        Swal.fire({
+            icon: 'info',
+            title: 'Info',
+            text: "{{ session('info') }}",
+            confirmButtonColor: '#3085d6'
+        });
+    @endif
 </script>
 @endsection
 

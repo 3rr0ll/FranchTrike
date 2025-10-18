@@ -539,6 +539,13 @@ class FranchiseApplicationController extends Controller
             'franchise_end_date' => 'nullable|date',
             'rejection_reason' => 'nullable|string|max:500',
         ]);
+
+        $originalData = $franchiseApplication->getAttributes();
+
+           // Check for changes before saving
+           if (!$franchiseApplication->isDirty()) {
+            return redirect()->route('admin.franchise.show', $encryptedId)->with('info', 'No changes were made to the driver.');
+        }
     
         DB::transaction(function () use ($franchiseApplication, $validated) {
             $franchiseApplication->update([
@@ -566,6 +573,8 @@ class FranchiseApplicationController extends Controller
                 'address' => $validated['driver_address'],
             ]);
         });
+
+
     
         return redirect()
             ->route('admin.franchise.show', encrypt($franchiseApplication->id))
