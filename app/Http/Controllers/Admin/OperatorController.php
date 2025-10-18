@@ -15,15 +15,25 @@ class OperatorController extends Controller
         return view('admin.operators.index', compact('operators'));
     }
 
-    public function edit($id)
+    public function edit($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
         $operator = Operator::findOrFail($id);
-        return view('admin.operators.edit', compact('operator'));
+        return view('admin.operators.edit', compact('operator', 'encryptedId'));
     }
 
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
         $request->validate([
             'last_name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -65,6 +75,8 @@ class OperatorController extends Controller
             ]
         );
 
-        return redirect()->route('admin.operators.index')->with('success', 'Operator updated successfully.');
+        return redirect()
+            ->route('admin.operators.index', encrypt($operator->id))
+            ->with('success', 'Operator updated successfully.');
     }
 }

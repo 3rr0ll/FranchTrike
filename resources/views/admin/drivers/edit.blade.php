@@ -22,7 +22,7 @@
     @endif
 
     <div class="bg-white shadow-lg rounded-lg px-6 py-8">
-        <form action="{{ route('admin.drivers.update', $driver->driver_id ?? $driver->id) }}" method="POST" class="space-y-6">
+        <form action="{{ route('admin.drivers.update', $encryptedId) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -142,9 +142,18 @@
                 <!-- Civil Status -->
                 <div>
                     <label for="civil_status" class="block text-sm font-medium text-primary-navy mb-1">Civil Status</label>
-                    <input value="{{ old('civil_status', $driver->civil_status) }}" type="text"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('civil_status') border-red-500 @enderror"
-                    id="civil_status" name="civil_status" required>
+                    <select 
+                        id="civil_status" 
+                        name="civil_status"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('civil_status') border-red-500 @enderror" 
+                        required
+                    >
+                        <option value="">Select civil status</option>
+                        <option value="single" {{ old('civil_status', $driver->civil_status) == 'single' ? 'selected' : '' }}>Single</option>
+                        <option value="married" {{ old('civil_status', $driver->civil_status) == 'married' ? 'selected' : '' }}>Married</option>
+                        <option value="widowed" {{ old('civil_status', $driver->civil_status) == 'widowed' ? 'selected' : '' }}>Widowed</option>
+                        <option value="divorced" {{ old('civil_status', $driver->civil_status) == 'divorced' ? 'selected' : '' }}>Divorced</option>
+                    </select>
                     @error('civil_status')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror

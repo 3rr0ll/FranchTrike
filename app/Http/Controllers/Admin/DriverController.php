@@ -16,14 +16,25 @@ class DriverController extends Controller
     }
 
 
-    public function edit($id)
+    public function edit($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
         $driver = Driver::findOrFail($id);
-        return view('admin.drivers.edit', compact('driver'));
+        return view('admin.drivers.edit', compact('driver','encryptedId'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
         $request->validate([
             'last_name' => 'required|string|max:255',
             'first_name' => 'required|string|max:255',
@@ -71,6 +82,6 @@ class DriverController extends Controller
             ]
         );
         // Optionally log update or redirect with success message
-        return redirect()->route('admin.drivers.index')->with('success', 'Driver updated successfully.');
+        return redirect()->route('admin.drivers.index', encrypt($driver->id))->with('success', 'Driver updated successfully.');
     }
 }

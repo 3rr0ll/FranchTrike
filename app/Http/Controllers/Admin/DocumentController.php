@@ -9,10 +9,10 @@ use App\Models\Driver;
 use App\Models\OperatorDocument;
 use App\Models\DriverDocument;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class DocumentController extends Controller
 {
-
     public function index()
     {
         $driverDocs = DriverDocument::with(['driver', 'documentType'])
@@ -28,7 +28,7 @@ class DocumentController extends Controller
                     'url' => $doc->file_url ?: $doc->full_file_url,
                 ];
             });
-    
+
         $operatorDocs = OperatorDocument::with(['operator', 'documentType'])
             ->get()
             ->map(function ($doc) {
@@ -42,21 +42,27 @@ class DocumentController extends Controller
                     'url' => $doc->file_url ?: $doc->full_file_url,
                 ];
             });
-    
+
         // Merge into one collection
         $documents = $driverDocs->merge($operatorDocs);
-    
+
         return view('admin.documents.index', compact('documents'));
     }
-    
 
-    public function viewOperatorDocuments(Operator $operator)
+    public function viewOperatorDocuments($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $operator = Operator::where('operator_id', $id)->firstOrFail();
+
         $documents = OperatorDocument::where('operator_id', $operator->operator_id)
             ->with('documentType')
             ->get()
             ->map(function ($document) {
-                // Add helper properties for easier view handling
                 $document->display_url = $document->file_url ?: $document->full_file_url;
                 return $document;
             });
@@ -64,13 +70,20 @@ class DocumentController extends Controller
         return view('admin.documents.operators.show', compact('operator', 'documents'));
     }
 
-    public function viewDriverDocuments(Driver $driver)
+    public function viewDriverDocuments($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $driver = Driver::where('driver_id', $id)->firstOrFail();
+
         $documents = DriverDocument::where('driver_id', $driver->driver_id)
             ->with('documentType')
             ->get()
             ->map(function ($document) {
-                // Add helper properties for easier view handling
                 $document->display_url = $document->file_url ?: $document->full_file_url;
                 return $document;
             });
@@ -85,7 +98,7 @@ class DocumentController extends Controller
     {
         $document->load(['documentType', 'operator']);
         $displayUrl = $document->file_url ?: $document->full_file_url;
-        
+
         return view('admin.documents.operators.view', compact('document', 'displayUrl'));
     }
 
@@ -96,7 +109,7 @@ class DocumentController extends Controller
     {
         $document->load(['documentType', 'driver']);
         $displayUrl = $document->file_url ?: $document->full_file_url;
-        
+
         return view('admin.documents.drivers.view', compact('document', 'displayUrl'));
     }
 
@@ -106,7 +119,7 @@ class DocumentController extends Controller
     public function getOperatorDocumentForModal(OperatorDocument $document)
     {
         $displayUrl = $document->file_url ?: $document->full_file_url;
-        
+
         return response()->json([
             'success' => true,
             'document' => [
@@ -129,7 +142,7 @@ class DocumentController extends Controller
     public function getDriverDocumentForModal(DriverDocument $document)
     {
         $displayUrl = $document->file_url ?: $document->full_file_url;
-        
+
         return response()->json([
             'success' => true,
             'document' => [
@@ -150,8 +163,16 @@ class DocumentController extends Controller
     /**
      * Update operator document verification status
      */
-    public function verifyOperatorDocument(Request $request, OperatorDocument $document)
+    public function verifyOperatorDocument(Request $request, $encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $document = OperatorDocument::findOrFail($id);
+
         $request->validate([
             'status' => 'required|in:approved,rejected',
             'rejection_reason' => 'nullable|string|max:255',
@@ -188,8 +209,16 @@ class DocumentController extends Controller
         return redirect()->back()->with('status', 'Document has been ' . $request->status . ' successfully.');
     }
 
-    public function verifyDriverDocument(Request $request, DriverDocument $document)
+    public function verifyDriverDocument(Request $request, $encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $document = DriverDocument::findOrFail($id);
+
         $request->validate([
             'status' => 'required|in:approved,rejected',
             'rejection_reason' => 'nullable|string|max:255',
@@ -232,7 +261,7 @@ class DocumentController extends Controller
     public function downloadOperatorDocument(OperatorDocument $document)
     {
         $displayUrl = $document->file_url ?: $document->full_file_url;
-        
+
         if (!$displayUrl) {
             abort(404, 'Document not found');
         }
@@ -246,7 +275,7 @@ class DocumentController extends Controller
     public function downloadDriverDocument(DriverDocument $document)
     {
         $displayUrl = $document->file_url ?: $document->full_file_url;
-        
+
         if (!$displayUrl) {
             abort(404, 'Document not found');
         }

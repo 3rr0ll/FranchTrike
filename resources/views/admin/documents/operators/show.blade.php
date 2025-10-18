@@ -82,7 +82,7 @@
                         <x-button
                             color="blue"
                             class="flex items-center justify-center"
-                            onclick="openDocumentModal('{{ $document->file_url ?: $document->full_file_url }}', '{{ $document->documentType->name }}', '{{ $document->id }}')">
+                            onclick="openDocumentModal('{{ $document->file_url ?: $document->full_file_url }}', '{{ $document->documentType->name }}', '{{ encrypt($document->id) }}', '{{ $document->status }}')">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -124,11 +124,11 @@
                             <textarea name="rejection_reason" id="rejectionReason" rows="2" placeholder="Enter reason for rejection..."
                                 class="w-full border rounded p-2 text-sm text-gray-800"></textarea>
                         </div>
-                        <div class="flex gap-2 mt-2 justify-end">
-                            <x-button type="button" onclick="submitVerification('approved')">
+                        <div class="flex gap-2 mt-2 justify-end" id="modalFooterBtns">
+                            <x-button type="button" onclick="submitVerification('approved')" id="approveBtn">
                                 Approve
                             </x-button>
-                            <x-button type="button" color="red" onclick="showRejectReason()">
+                            <x-button type="button" color="red" onclick="showRejectReason()" id="rejectBtn">
                                 Reject
                             </x-button>
                             <x-button type="button" class="hidden" id="submitButton" onclick="submitVerification('rejected')">
@@ -145,41 +145,63 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentDocumentId = null;
+        let currentDocumentStatus = null;
 
-        function openDocumentModal(fileUrl, documentName, documentId) {
+        function openDocumentModal(fileUrl, documentName, documentId, docStatus) {
             document.getElementById('modalTitle').textContent = documentName;
             currentDocumentId = documentId;
+            currentDocumentStatus = docStatus;
 
             const container = document.getElementById('documentViewerContainer');
             
             // Check if it's a PDF or image based on file extension or URL
-        const isPdf = fileUrl.toLowerCase().includes('.pdf') || fileUrl.toLowerCase().includes('image/upload') === false;
-        const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl) || fileUrl.includes('image/upload');
+            const isPdf = fileUrl.toLowerCase().includes('.pdf') || fileUrl.toLowerCase().includes('image/upload') === false;
+            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl) || fileUrl.includes('image/upload');
 
-        if (isImage && !isPdf) {
-            // Display as image
-            container.innerHTML = `
-                <img src="${fileUrl}" 
-                     alt="${documentName}" 
-                     class="w-full h-full object-contain rounded-md border border-gray-300" 
-                     style="min-height:600px;" />
-            `;
-        } else {
-            // Display as iframe (works for PDFs)
-            container.innerHTML = `
-                <iframe src="${fileUrl}" 
-                        class="w-full h-full rounded-md border border-gray-300" 
-                        style="min-height:600px;" 
-                        frameborder="0">
-                    <p>Your browser does not support iframes. 
-                       <a href="${fileUrl}" target="_blank">Click here to view the document</a>
-                    </p>
-                </iframe>
-            `;
-        }
+            if (isImage && !isPdf) {
+                // Display as image
+                container.innerHTML = `
+                    <img src="${fileUrl}" 
+                        alt="${documentName}" 
+                        class="w-full h-full object-contain rounded-md border border-gray-300" 
+                        style="min-height:600px;" />
+                `;
+            } else {
+                // Display as iframe (works for PDFs)
+                container.innerHTML = `
+                    <iframe src="${fileUrl}" 
+                            class="w-full h-full rounded-md border border-gray-300" 
+                            style="min-height:600px;" 
+                            frameborder="0">
+                        <p>Your browser does not support iframes. 
+                        <a href="${fileUrl}" target="_blank">Click here to view the document</a>
+                        </p>
+                    </iframe>
+                `;
+            }
 
-        document.getElementById('documentModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+            // Hide/show verification footer controls based on document status
+            let approveBtn = document.getElementById('approveBtn');
+            let rejectBtn = document.getElementById('rejectBtn');
+            let submitBtn = document.getElementById('submitButton');
+            let reasonBox = document.getElementById('rejectionReasonBox');
+
+            if (currentDocumentStatus === 'approved' || currentDocumentStatus === 'rejected') {
+                approveBtn.classList.add('hidden');
+                rejectBtn.classList.add('hidden');
+                submitBtn.classList.add('hidden');
+                reasonBox.classList.add('hidden');
+            } else {
+                approveBtn.classList.remove('hidden');
+                rejectBtn.classList.remove('hidden');
+                reasonBox.classList.add('hidden');
+                submitBtn.classList.add('hidden');
+                document.getElementById('rejectionReason').value = '';
+                document.getElementById('documentStatus').value = '';
+            }
+
+            document.getElementById('documentModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeDocumentModal() {
@@ -192,37 +214,13 @@
             document.body.style.overflow = 'auto';
         }
 
-        function submitVerification(status) {
-            console.log('Submitting with status:', status);
-            document.getElementById('documentStatus').value = status;
-
-            const form = document.getElementById('verifyForm');
-
-            if (currentDocumentId) {
-                const baseUrl = '{{ url("/") }}';
-                form.action = `${baseUrl}/admin/documents/operator/${currentDocumentId}/verify`;
-                console.log('Form action set to:', form.action);
-            }
-
-            if (status === 'approved') {
-                form.submit();
-            }
-        }
-
         function showRejectReason() {
             document.getElementById('rejectionReasonBox').classList.remove('hidden');
             document.getElementById('submitButton').classList.remove('hidden');
             document.getElementById('documentStatus').value = 'rejected';
-
-            const form = document.getElementById('verifyForm');
-
-            if (currentDocumentId) {
-                form.action = `/admin/documents/operator/${currentDocumentId}/verify`;
-            }
         }
 
         function submitVerification(status) {
-            console.log('Submitting with status:', status);
             document.getElementById('documentStatus').value = status;
 
             const form = document.getElementById('verifyForm');
@@ -230,9 +228,9 @@
             if (currentDocumentId) {
                 const baseUrl = '{{ url("/") }}';
                 form.action = `${baseUrl}/admin/documents/operator/${currentDocumentId}/verify`;
-                console.log('Form action set to:', form.action);
             }
 
+            // Only for rejection, check reason
             if (status === 'rejected') {
                 const reason = document.getElementById('rejectionReason').value.trim();
                 if (!reason) {
@@ -245,7 +243,46 @@
                 }
             }
 
-            form.submit();
+            // Do AJAX POST with form data
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': form.querySelector('input[name="_token"]').value,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: data.message,
+                        confirmButtonColor: '#3085d6',
+                    }).then(() => {
+                        closeDocumentModal();
+                        // Optionally update document row status
+                        // Simple reload for now
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Verification failed.',
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while submitting. Please try again.',
+                });
+            });
         }
 
         $(document).ready(function () {
@@ -278,12 +315,10 @@
                     $('.dataTables_filter input').addClass(
                         'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
                     );
-
                     var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
                     var $length = $('.dataTables_length').css('margin', '0');
                     var $search = $('.dataTables_filter').css('margin', '0');
                     $controls.append($length).append($search);
-
                     $controls.insertBefore($('#documentsTable').closest('.overflow-x-auto'));
                 }
             });
@@ -300,4 +335,4 @@
     </script>
     @endif
     @endpush
-    @endsection
+@endsection

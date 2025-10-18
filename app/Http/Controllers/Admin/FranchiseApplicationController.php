@@ -19,6 +19,8 @@ use App\Mail\FranchiseStatusUpdated;
 use App\Services\NotificationService;
 use App\Models\FranchiseApplicationLog;
 use App\Models\UnitMake;
+use Illuminate\Contracts\Encryption\DecryptException;
+
 
 
 class FranchiseApplicationController extends Controller
@@ -65,11 +67,11 @@ class FranchiseApplicationController extends Controller
     {
         try {
             $id = decrypt($encryptedId);
-        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        } catch (DecryptException $e) {
             abort(404, 'Invalid or tampered link.');
         }
     
-        $franchiseApplication = \App\Models\FranchiseApplication::with([
+        $franchiseApplication = FranchiseApplication::with([
             'operator', 
             'driver', 
             'reviewer', 
@@ -197,66 +199,7 @@ class FranchiseApplicationController extends Controller
         return response()->json($stats);
     }
 
-    public function export(Request $request)
-    {
-        $query = FranchiseApplication::with(['operator', 'driver']);
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $applications = $query->get();
-
-        $filename = 'franchise_applications_' . date('Y-m-d_H-i-s') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-        ];
-
-        $callback = function () use ($applications) {
-            $file = fopen('php://output', 'w');
-
-            // CSV headers
-            fputcsv($file, [
-                'ID',
-                'Application Number',
-                'Operator Name',
-                'Driver Name',
-                'Application Type',
-                'Status',
-                'Franchise No',
-                'Sticker No',
-                'CTC No',
-                'Submitted At',
-                'Reviewed At',
-                'Reviewer',
-                'Rejection Reason'
-            ]);
-
-            foreach ($applications as $application) {
-                fputcsv($file, [
-                    $application->id,
-                    $application->operator_name,
-                    $application->driver->name ?? 'N/A',
-                    $application->application_type,
-                    $application->status,
-                    $application->franchise_no ?? 'N/A',
-                    $application->sticker_no ?? 'N/A',
-                    $application->ctc_no ?? 'N/A',
-                    $application->submitted_at ? $application->submitted_at->format('Y-m-d H:i:s') : 'N/A',
-                    $application->reviewed_at ? $application->reviewed_at->format('Y-m-d H:i:s') : 'N/A',
-                    $application->reviewer->name ?? 'N/A',
-                    $application->rejection_reason ?? 'N/A',
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
-    }
-
+   
     public function masterList(Request $request)
     {
         $applications = FranchiseApplication::with([
@@ -539,7 +482,7 @@ class FranchiseApplicationController extends Controller
     {
         try {
             $id = decrypt($encryptedId);
-        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+        } catch (DecryptException $e) {
             abort(404, 'Invalid or tampered link.');
         }
 
@@ -559,211 +502,73 @@ class FranchiseApplicationController extends Controller
             'franchiseApplication',
             'routes',
             'unitMakes',
-            'documentTypes'
+            'documentTypes',
+            'encryptedId'
         ));
     }
 
     /**
      * Update the specified Franchise Application in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $encryptedId)
     {
-        $franchiseApplication = FranchiseApplication::with(['operator.user', 'driver', 'motorDetail'])->findOrFail($id);
-
-        $validationRules = [
-            // Operator details
-            'operator_last_name' => 'required|string|max:255',
-            'operator_first_name' => 'required|string|max:255',
-            'operator_middle_initial' => 'nullable|string|max:1',
-            'operator_barangay' => 'required|string|max:255',
-            'operator_municipality' => 'required|string|max:255',
-            'operator_province' => 'required|string|max:255',
-            'operator_birth_date' => 'required|date',
-            'operator_age' => 'required|integer|min:18',
-            'operator_sex' => 'required|string|in:male,female',
-            'operator_civil_status' => 'required|string',
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+    
+        $franchiseApplication = FranchiseApplication::with(['operator', 'driver', 'motorDetail'])
+            ->findOrFail($id);
+    
+        $validated = $request->validate([
+            'operator_name' => 'required|string|max:255',
             'operator_contact_no' => 'required|string|max:20',
-            'operator_email' => 'required|email|max:255',
-
-            // Driver details
-            'driver_last_name' => 'required|string|max:255',
-            'driver_first_name' => 'required|string|max:255',
-            'driver_middle_initial' => 'nullable|string|max:1',
-            'driver_barangay' => 'required|string|max:255',
-            'driver_municipality' => 'required|string|max:255',
-            'driver_province' => 'required|string|max:255',
-            'driver_birth_date' => 'required|date',
-            'driver_age' => 'required|integer|min:18',
-            'driver_sex' => 'required|string|in:male,female',
-            'driver_civil_status' => 'required|string',
-            'driver_contact_no' => 'required|string|max:20',
+            'operator_address' => 'required|string|max:255',
+            'driver_name' => 'required|string|max:255',
             'driver_license_no' => 'required|string|max:50',
-            'driver_license_validity' => 'required|date|after:today',
-            'driver_license_nature' => 'required|string',
-
-            // Franchise application details
+            'driver_contact_no' => 'required|string|max:20',
+            'driver_address' => 'required|string|max:255',
             'application_type' => 'required|in:new,renewal',
             'route_id' => 'required|exists:routes,id',
             'ctc_no' => 'required|string|max:50',
-            'ctc_date_issued' => 'required|date',
-            'ctc_place_issued' => 'required|string|max:255',
-            'franchise_fee' => 'nullable|numeric|min:0',
-
-            // Previous franchise details (for renewal)
-            'previous_franchise_no' => 'nullable|string|max:50',
-            'previous_sticker_no' => 'nullable|string|max:50',
-            'previous_application_id' => 'nullable|integer',
-            'previous_franchise_end_date' => 'nullable|date',
-
-            // Document checkboxes
-            'operator_documents' => 'required|array',
-            'operator_documents.*' => 'exists:document_types,document_id',
-            'driver_documents' => 'required|array',
-            'driver_documents.*' => 'exists:document_types,document_id',
-
-            // Motor Details
-            'unit_type' => 'required|string',
-            'unit_make_id' => 'required|exists:unit_makes,id',
-            'motorno' => 'required|string',
-            'chasisno' => 'required|string',
-            'platenumber' => 'required|string',
-        ];
-
-        if ($request->application_type === 'renewal') {
-            $validationRules['previous_franchise_no'] = 'required|string|max:50';
-            $validationRules['previous_sticker_no'] = 'required|string|max:50';
-            $validationRules['previous_franchise_end_date'] = 'required|date';
-        }
-
-        $validated = $request->validate($validationRules);
-
-        DB::beginTransaction();
-        try {
-            // Update Operator
-            $operator = $franchiseApplication->operator;
-            $operator->update([
-                'last_name' => $request->operator_last_name,
-                'first_name' => $request->operator_first_name,
-                'middle_initial' => $request->operator_middle_initial,
-                'barangay' => $request->operator_barangay,
-                'municipality' => $request->operator_municipality,
-                'province' => $request->operator_province,
-                'birth_date' => $request->operator_birth_date,
-                'age' => $request->operator_age,
-                'sex' => $request->operator_sex,
-                'civil_status' => $request->operator_civil_status,
-                'contact_no' => $request->operator_contact_no,
-            ]);
-
-            // Update Operator User (email and name)
-            $operator->user->update([
-                'name' => $request->operator_first_name . ' ' . $request->operator_last_name,
-                'email' => $request->operator_email,
-            ]);
-
-            // Update Driver
-            $driver = $franchiseApplication->driver;
-            $driver->update([
-                'last_name' => $request->driver_last_name,
-                'first_name' => $request->driver_first_name,
-                'middle_initial' => $request->driver_middle_initial,
-                'barangay' => $request->driver_barangay,
-                'municipality' => $request->driver_municipality,
-                'province' => $request->driver_province,
-                'birth_date' => $request->driver_birth_date,
-                'age' => $request->driver_age,
-                'sex' => $request->driver_sex,
-                'civil_status' => $request->driver_civil_status,
-                'contact_no' => $request->driver_contact_no,
-                'license_no' => $request->driver_license_no,
-                'license_validity' => $request->driver_license_validity,
-                'license_nature' => $request->driver_license_nature,
-            ]);
-
-            // Update franchise application
+            'operator_name_document' => 'required|string|max:255',
+            'franchise_no' => 'nullable|string|max:50',
+            'sticker_no' => 'nullable|string|max:50',
+            'franchise_start_date' => 'nullable|date',
+            'franchise_end_date' => 'nullable|date',
+            'rejection_reason' => 'nullable|string|max:500',
+        ]);
+    
+        DB::transaction(function () use ($franchiseApplication, $validated) {
             $franchiseApplication->update([
-                'application_type' => $request->application_type,
-                'route_id' => $request->route_id,
-                'ctc_no' => $request->ctc_no,
-                'ctc_date_issued' => $request->ctc_date_issued,
-                'ctc_place_issued' => $request->ctc_place_issued,
-                'franchise_fee' => $request->franchise_fee,
-                'previous_franchise_no' => $request->previous_franchise_no,
-                'previous_sticker_no' => $request->previous_sticker_no,
-                'previous_application_id' => $request->previous_application_id,
-                'previous_franchise_end_date' => $request->previous_franchise_end_date,
+                'application_type' => $validated['application_type'],
+                'route_id' => $validated['route_id'],
+                'ctc_no' => $validated['ctc_no'],
+                'operator_name' => $validated['operator_name_document'],
+                'franchise_no' => $validated['franchise_no'] ?? $franchiseApplication->franchise_no,
+                'sticker_no' => $validated['sticker_no'] ?? $franchiseApplication->sticker_no,
+                'franchise_start_date' => $validated['franchise_start_date'] ?? $franchiseApplication->franchise_start_date,
+                'franchise_end_date' => $validated['franchise_end_date'] ?? $franchiseApplication->franchise_end_date,
+                'rejection_reason' => $validated['rejection_reason'] ?? null,
             ]);
-
-            // Update Motor Details
-            $motorDetail = $franchiseApplication->motorDetail;
-            if ($motorDetail) {
-                $motorDetail->update([
-                    'unit_type' => $request->unit_type,
-                    'unit_make_id' => $request->unit_make_id,
-                    'motorno' => $request->motorno,
-                    'chasisno' => $request->chasisno,
-                    'platenumber' => $request->platenumber,
-                ]);
-            }
-
-            // Sync operator documents (physically submitted - just recreate entries)
-            $operator->operatorDocuments()->delete();
-            if (is_array($request->operator_documents)) {
-                foreach ($request->operator_documents as $documentTypeId) {
-                    $documentType = DocumentType::find($documentTypeId);
-                    $operator->operatorDocuments()->create([
-                        'document_type_id' => $documentTypeId,
-                        'document_name' => $documentType ? $documentType->name . ' - Physically Submitted' : 'Document - Physically Submitted',
-                        'file_path' => 'admin-uploaded/' . Str::uuid() . '.pdf',
-                        'file_type' => 'application/pdf',
-                        'file_size' => 0,
-                        'status' => 'approved',
-                        'verified_at' => now(),
-                        'verified_by' => Auth::id(),
-                    ]);
-                }
-            }
-
-            // Sync driver documents (physically submitted - just recreate entries)
-            $driver->driverDocuments()->delete();
-            if (is_array($request->driver_documents)) {
-                foreach ($request->driver_documents as $documentTypeId) {
-                    $documentType = DocumentType::find($documentTypeId);
-                    $driver->driverDocuments()->create([
-                        'document_type_id' => $documentTypeId,
-                        'document_name' => $documentType ? $documentType->name . ' - Physically Submitted' : 'Document - Physically Submitted',
-                        'file_path' => 'admin-uploaded/' . Str::uuid() . '.pdf',
-                        'file_type' => 'application/pdf',
-                        'file_size' => 0,
-                        'status' => 'approved',
-                        'verified_at' => now(),
-                        'verified_by' => Auth::id(),
-                    ]);
-                }
-            }
-
-            \App\Helpers\ActivityLogger::log(
-                'franchise application',
-                'updated',
-                'Franchise application updated by admin.',
-                [
-                    'franchise application id' => $franchiseApplication->id,
-                    'operator id' => $operator->operator_id,
-                    'driver id' => $driver->driver_id,
-                    'updated by' =>Auth::user()->name ?? 'System',
-                ]
-            );
-
-            DB::commit();
-
-            return redirect()->route('admin.franchise.index')
-                ->with('success', 'Franchise application updated successfully.');
-        } catch (\Exception $e) {
-            DB::rollback();
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Failed to update franchise application: ' . $e->getMessage());
-        }
+    
+            $franchiseApplication->operator->update([
+                'full_name' => $validated['operator_name'],
+                'contact_no' => $validated['operator_contact_no'],
+                'address' => $validated['operator_address'],
+            ]);
+    
+            $franchiseApplication->driver->update([
+                'full_name' => $validated['driver_name'],
+                'license_no' => $validated['driver_license_no'],
+                'contact_no' => $validated['driver_contact_no'],
+                'address' => $validated['driver_address'],
+            ]);
+        });
+    
+        return redirect()
+            ->route('admin.franchise.show', encrypt($franchiseApplication->id))
+            ->with('success', 'Franchise application updated successfully.');
     }
 }

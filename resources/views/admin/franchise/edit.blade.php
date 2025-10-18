@@ -11,9 +11,10 @@
 @section('content')
 <div class="w-full mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white overflow-hidden shadow rounded-lg">
+
         <div class="px-4 py-5 sm:p-6">
 
-            <form action="{{ route('admin.franchise.update', $franchiseApplication->id) }}" method="POST">
+            <form action="{{ route('admin.franchise.update', $encryptedId) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -159,7 +160,7 @@
                 @endif
 
                 <div class="flex items-center justify-end mt-8">
-                <a href="{{ route('admin.franchise.show', encrypt($franchiseApplication->id)) }}"
+                <a href="{{ route('admin.franchise.show', $encryptedId) }}"
                     class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-navy focus:ring-offset-2 transition ease-in-out duration-150 mr-2">
                         Cancel
                     </a>

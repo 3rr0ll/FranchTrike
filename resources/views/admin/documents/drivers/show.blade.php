@@ -101,7 +101,7 @@
                                 <td class="px-4 py-2 whitespace-nowrap">
                                     {{-- Updated to use Cloudinary URL --}}
                                     <x-button color="blue" class="flex items-center justify-center"
-                                        onclick="openDocumentModal('{{ $document->file_url ?: $document->full_file_url }}', '{{ $document->documentType->name }}', '{{ $document->id }}')">
+                                        onclick="openDocumentModal('{{ $document->file_url ?: $document->full_file_url }}', '{{ $document->documentType->name }}', '{{ encrypt($document->id) }}', '{{ $document->status }}')">
                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -113,7 +113,6 @@
                                     </x-button>
                                 </td>
                             </tr>
-
                         @endforeach
                     </tbody>
                 </table>
@@ -164,10 +163,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         let currentDocumentId = null;
+        let currentDocumentStatus = null;
 
-        function openDocumentModal(fileUrl, documentName, documentId) {
+        function openDocumentModal(fileUrl, documentName, documentId, documentStatus) {
             document.getElementById('modalTitle').textContent = documentName;
             currentDocumentId = documentId;
+            currentDocumentStatus = documentStatus;
 
             const container = document.getElementById('documentViewerContainer');
 
@@ -195,6 +196,14 @@
                         </p>
                     </iframe>
                 `;
+            }
+
+            // Set form action for verification if document is pending
+            const form = document.getElementById('verifyForm');
+            if (currentDocumentStatus === 'pending') {
+                form.style.display = '';
+            } else {
+                form.style.display = 'none';
             }
 
             document.getElementById('documentModal').classList.remove('hidden');
@@ -241,52 +250,52 @@
             form.submit();
         }
 
-        $(document).ready(function () {
-            var table = $('#documentsTable').DataTable({
-                pageLength: 10,
-                lengthMenu: [
-                    [10, 25, 50, 100],
-                    [10, 25, 50, 100]
-                ],
-                order: [
-                    [3, 'desc']
-                ],
-                columnDefs: [{
-                    targets: 3,
-                    orderable: false,
-                    searchable: false
-                }],
-                language: {
-                    search: "Search documents:",
-                    lengthMenu: "Show _MENU_ documents per page",
-                    info: "Showing _START_ to _END_ of _TOTAL_ documents",
-                    infoEmpty: "Showing 0 to 0 of 0 documents",
-                    infoFiltered: "(filtered from _MAX_ total documents)",
-                    zeroRecords: "No documents have been submitted by this driver yet.",
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
-                    }
-                },
-                initComplete: function() {
-                    $('.dataTables_length select').addClass(
-                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
-                    );
-                    $('.dataTables_filter input').addClass(
-                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
-                    );
-
-                    var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
-                    var $length = $('.dataTables_length').css('margin', '0');
-                    var $search = $('.dataTables_filter').css('margin', '0');
-                    $controls.append($length).append($search);
-
-                    $controls.insertBefore($('#documentsTable').closest('.overflow-x-auto'));
+    $(document).ready(function () {
+        var table = $('#documentsTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [
+                [3, 'desc']
+            ],
+            columnDefs: [{
+                targets: 3,
+                orderable: false,
+                searchable: false
+            }],
+            language: {
+                search: "Search documents:",
+                lengthMenu: "Show _MENU_ documents per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ documents",
+                infoEmpty: "Showing 0 to 0 of 0 documents",
+                infoFiltered: "(filtered from _MAX_ total documents)",
+                zeroRecords: "No documents have been submitted by this driver yet.",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
                 }
-            });
+            },
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+
+                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+                var $length = $('.dataTables_length').css('margin', '0');
+                var $search = $('.dataTables_filter').css('margin', '0');
+                $controls.append($length).append($search);
+
+                $controls.insertBefore($('#documentsTable').closest('.overflow-x-auto'));
+            }
         });
+    });
     </script>
 
     @if (session('status'))

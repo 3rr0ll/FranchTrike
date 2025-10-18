@@ -306,17 +306,17 @@ Route::middleware([
             Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
 
             Route::get('/operators', [AdminOperatorController::class, 'index'])->name('operators.index');
-            Route::get('/operators/{operator}/edit', [AdminOperatorController::class, 'edit'])->name('operators.edit');
-            Route::put('/operators/{operator}', [AdminOperatorController::class, 'update'])->name('operators.update');
+            Route::get('/operators/{encryptedId}/edit', [AdminOperatorController::class, 'edit'])->name('operators.edit');
+            Route::put('/operators/{encryptedId}', [AdminOperatorController::class, 'update'])->name('operators.update');
 
             Route::get('/drivers', [AdminDriverController::class, 'index'])->name('drivers.index');
-            Route::get('/drivers/{driver}/edit', [AdminDriverController::class, 'edit'])->name('drivers.edit');
-            Route::put('/drivers/{driver}', [AdminDriverController::class, 'update'])->name('drivers.update');
+            Route::get('/drivers/{encryptedId}/edit', [AdminDriverController::class, 'edit'])->name('drivers.edit');
+            Route::put('/drivers/{encryptedId}', [AdminDriverController::class, 'update'])->name('drivers.update');
 
             // Franchise Applications Routes
             Route::get('/franchise', [AdminFranchiseController::class, 'index'])->name('franchise.index');
             Route::get('/franchise/{encryptedId}/edit', [AdminFranchiseController::class, 'edit'])->name('franchise.edit');
-            Route::put('/franchise/{franchiseApplication}', [AdminFranchiseController::class, 'update'])->name('franchise.update');
+            Route::put('/franchise/{encryptedId}', [AdminFranchiseController::class, 'update'])->name('franchise.update');
             Route::get('/franchise/master-list', [AdminFranchiseController::class, 'masterList'])->name('franchise.master-list');
             Route::post('/franchise/master-list/print-log', [AdminFranchiseController::class, 'masterListPrintLog'])->name('franchise.master-list.print-log');
             Route::get('/franchise/create', [AdminFranchiseController::class, 'create'])->name('franchise.create');
@@ -336,12 +336,12 @@ Route::middleware([
             Route::get('/motor-details/export', [MotorDetailsController::class, 'export'])->name('motor-details.export');
 
             Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
-            Route::get('/documents/operator/{operator}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
-            Route::get('/documents/driver/{driver}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
+            Route::get('/documents/operator/{encryptedId}', [DocumentController::class, 'viewOperatorDocuments'])->name('documents.operator.show');
+            Route::get('/documents/driver/{encryptedId}', [DocumentController::class, 'viewDriverDocuments'])->name('documents.driver.show');
 
-            Route::post('/documents/operator/{document}/verify', [DocumentController::class, 'verifyOperatorDocument'])
+            Route::post('/documents/operator/{encryptedId}/verify', [DocumentController::class, 'verifyOperatorDocument'])
                 ->name('documents.operator.verify');
-            Route::post('/documents/driver/{document}/verify', [DocumentController::class, 'verifyDriverDocument'])
+            Route::post('/documents/driver/{encryptedId}/verify', [DocumentController::class, 'verifyDriverDocument'])
                 ->name('documents.driver.verify');
 
             // Motor Change Approval Routes
