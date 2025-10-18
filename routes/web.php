@@ -452,5 +452,10 @@ Route::middleware([
                 // Statistics
                 Route::get('/statistics', [\App\Http\Controllers\SuperAdmin\PaymentController::class, 'statistics'])->name('statistics');
             });
+
+
+            // Database Management Routes for Superadmin
+            Route::get('/database', [\App\Http\Controllers\SuperAdmin\DatabaseController::class, 'index'])->name('database.index');
+            Route::get('/database/show/{table}', [\App\Http\Controllers\SuperAdmin\DatabaseController::class, 'show'])->name('database.show');
         });
 });

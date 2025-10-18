@@ -168,6 +168,18 @@
                         <span class="ms-3">Activity Log</span>
                     </a>
                 </li>
+                <li>
+                    @php $isActive = request()->routeIs(patterns: 'superadmin.database.*') || request()->routeIs('superadmin.database.index') || request()->routeIs('superadmin.database.show'); @endphp
+
+                    <a href="{{ route('superadmin.database.index') }}"
+                        class="flex items-center p-2 rounded-lg group 
+                        {{ $isActive ? 'bg-white text-primary-navy' : 'text-white hover:bg-white hover:text-primary-navy' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3C7.03 3 3 4.79 3 7.02v9.96C3 19.2 7.03 21 12 21s9-1.8 9-4.02V7.02C21 4.79 16.97 3 12 3Zm0 1.5c4.14 0 7.5 1.46 7.5 2.52s-3.36 2.52-7.5 2.52-7.5-1.46-7.5-2.52S7.86 4.5 12 4.5Zm7.5 7.02c0 1.06-3.36 2.52-7.5 2.52s-7.5-1.46-7.5-2.52v-1.77c1.72 1.07 4.77 1.77 7.5 1.77s5.78-.7 7.5-1.77v1.77Zm0 3.48c0 1.07-3.36 2.52-7.5 2.52s-7.5-1.45-7.5-2.52v-1.77c1.72 1.08 4.77 1.77 7.5 1.77s5.78-.69 7.5-1.77v1.77Zm0 3.48c0 1.06-3.36 2.52-7.5 2.52s-7.5-1.46-7.5-2.52v-1.77c1.72 1.07 4.77 1.77 7.5 1.77s5.78-.7 7.5-1.77v1.77Z" />
+                        </svg>
+                        <span class="ms-3">Tables</span>
+                    </a>
+                </li>
             </ul>
             <ul class="space-y-2 font-medium mt-4">
                 <li>

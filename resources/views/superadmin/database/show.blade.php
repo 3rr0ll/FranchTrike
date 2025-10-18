@@ -1,0 +1,107 @@
+@extends('layouts.superadmin')
+@section('header')
+    <h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+        Database Table: {{ $table }}
+    </h2>
+@endsection
+
+@section('content')
+<div class="p-6 bg-white rounded-lg shadow-md">
+
+    <a href="{{ route('superadmin.database.index') }}" class="text-blue-600 hover:underline mb-3 inline-block">
+        <x-button>
+        Back to Tables
+    </x-button>
+    </a>
+    <div class="mb-4 flex justify-end">
+        <div id="export-buttons" class="flex flex-wrap gap-2 items-center">
+            <!-- Buttons will be injected here by DataTables -->
+        </div>
+    </div>
+    <div class="overflow-x-auto">
+        <table id="datatable-table" class="min-w-full border border-gray-300 text-sm">
+            <thead>
+                <tr class="bg-gray-100">
+                    @foreach($columns as $col)
+                        <th class="px-4 py-2 border">{{ $col }}</th>
+                    @endforeach
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($data as $row)
+                    <tr class="border-t">
+                        @foreach($columns as $col)
+                            <td class="px-4 py-2 border">{{ $row->$col ?? '' }}</td>
+                        @endforeach
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="{{ count($columns) }}" class="text-center py-4 text-gray-500">
+                            No records found.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        var table = $('#datatable-table').DataTable({
+            pageLength: 10,
+            lengthMenu: [
+                [10, 25, 50, 100],
+                [10, 25, 50, 100]
+            ],
+            order: [],
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ records per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ records",
+                zeroRecords: "No records found",
+                paginate: {
+                    first: "First",
+                    last: "Last",
+                    next: "Next",
+                    previous: "Previous"
+                }
+            },
+            dom: '<"hidden"lfB>rt<"flex flex-col sm:flex-row justify-between items-center mt-4"ip>',
+            buttons: [
+                {
+                    extend: 'csvHtml5',
+                    text: 'CSV',
+                    className: 'bg-blue-500 text-white px-3 py-1 rounded'
+                },
+                {
+                    extend: 'excelHtml5',
+                    text: 'Excel',
+                    className: 'bg-green-500 text-white px-3 py-1 rounded'
+                },
+                {
+                    extend: 'pdfHtml5',
+                    text: 'PDF',
+                    className: 'bg-red-500 text-white px-3 py-1 rounded'
+                },
+            ],
+            initComplete: function() {
+                $('.dataTables_length select').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+                );
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+                );
+                // Place DataTable controls above table (already handled by dom option)
+            }
+        });
+
+        // Move the export buttons to a custom place if you want (like in file_context_0)
+        if ($('#export-buttons').length) {
+            table.buttons().container().appendTo('#export-buttons');
+        }
+    });
+</script>
+@endpush
