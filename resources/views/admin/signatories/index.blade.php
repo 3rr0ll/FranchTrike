@@ -1,18 +1,15 @@
 @extends('layouts.admin')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+    Signatories Management
+</h2>
+@endsection
+
+
 @section('content')
 <div class="container mx-auto px-4 sm:px-8 py-8">
-    <div class="flex flex-col sm:flex-row items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">Signatories</h1>
-        <button
-            class="mt-4 sm:mt-0 px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
-            onclick="document.getElementById('addSignatoryModal').classList.remove('hidden')"
-        >
-            Add Signatory
-        </button>
-    </div>
-
-
+    
     <div class="p-4 bg-white rounded-lg shadow">
         <div class="overflow-auto">
             <table id="signatories-table" class="w-full text-sm text-left row-border text-black">
@@ -39,19 +36,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>                            
                             </button>
-                            <form action="{{ route('admin.signatories.destroy', $signatory) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button 
-                                    type="submit"
-                                    class="text-red-600 hover:text-red-900 p-1 rounded-full hover:bg-red-50 delete-signatory-btn"
-                                    data-name="{{ $signatory->name }}"
-                                >
-                                <svg class="h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                                </button>
-                            </form>
+                           
                         </td>
                     </tr>
                     @empty
@@ -64,47 +49,6 @@
         </div>
     </div>
 
-    <!-- Add Signatory Modal -->
-    <div id="addSignatoryModal" class="fixed z-30 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-            <h2 class="text-xl font-semibold mb-4">Add Signatory</h2>
-            <form id="addSignatoryForm" action="{{ route('admin.signatories.store') }}" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-1" for="position_title">Position Title</label>
-                    <input type="text" id="position_title" name="position_title" class="w-full border rounded px-3 py-2"
-                        value="{{ old('position_title') }}" required>
-                    @error('position_title')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-1" for="name">Name</label>
-                    <input type="text" id="name" name="name" class="w-full border rounded px-3 py-2"
-                        value="{{ old('name') }}" required>
-                    @error('name')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-                <div class="flex justify-end gap-2">
-                    <button
-                        type="button"
-                        class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400"
-                        onclick="document.getElementById('addSignatoryModal').classList.add('hidden')"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                        Add
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Edit Signatory Modal -->
     <div id="editSignatoryModal" class="fixed z-30 inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
@@ -112,10 +56,6 @@
             <form id="editSignatoryForm" method="POST">
                 @csrf
                 @method('PUT')
-                <div class="mb-4">
-                    <label class="block text-gray-700 mb-1" for="edit_position_title">Position Title</label>
-                    <input type="text" id="edit_position_title" name="position_title" class="w-full border rounded px-3 py-2" required>
-                </div>
                 <div class="mb-4">
                     <label class="block text-gray-700 mb-1" for="edit_name">Name</label>
                     <input type="text" id="edit_name" name="name" class="w-full border rounded px-3 py-2" required>
@@ -152,7 +92,6 @@ function openEditModal(id, position_title, name) {
 
 // Intercept Add (Create) Signatory submit for confirmation
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize DataTable (using similar design as in payments/index.blade.php)
     var table = $('#signatories-table').DataTable({
         pageLength: 10,
         lengthMenu: [
@@ -198,27 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // CREATE
-    const addForm = document.getElementById('addSignatoryForm');
-    if (addForm) {
-        addForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Add Signatory?',
-                text: "Are you sure you want to add this signatory?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, Add'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    addForm.submit();
-                }
-            });
-        });
-    }
-
+  
     const editForm = document.getElementById('editSignatoryForm');
     if (editForm) {
         editForm.addEventListener('submit', function(e) {

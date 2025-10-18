@@ -136,18 +136,18 @@
                         @endif
                     </td>
 
-                    <td>
+                    <td class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                         @if(!$group['paid_at'])
-                        <form method="POST" action="{{ route('admin.payments.markPaid', $group['first_payment_id']) }}" class="inline">
+                        <form method="POST" action="{{ route('admin.payments.markPaid', $group['first_payment_id']) }}" class="inline w-full sm:w-auto">
                             @csrf
                             <button type="submit"
-                                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs">
+                                class="w-full sm:w-auto px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs text-center transition-all">
                                 Mark as Paid
                             </button>
                         </form>
                         @endif
                         <a href="{{ route('admin.payments.receipt', $group['first_payment_id']) }}"
-                            class="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs text-gray-900">
+                            class="w-full sm:w-auto px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs text-gray-900 text-center transition-all">
                             View Receipt
                         </a>
                     </td>
