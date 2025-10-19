@@ -84,7 +84,7 @@
                         <dl class="grid grid-cols-1 gap-2 text-sm">
                             <div>
                                 <dt class="text-gray-500">Application Number:</dt>
-                                <dd class="text-gray-900 font-medium">{{ $motorDetail->franchiseApplication->application_number ?? 'N/A' }}</dd>
+                                <dd class="text-gray-900 font-medium">{{ $motorDetail->franchiseApplication->id ?? 'N/A' }}</dd>
                             </div>
                             <div>
                                 <dt class="text-gray-500">Operator:</dt>
