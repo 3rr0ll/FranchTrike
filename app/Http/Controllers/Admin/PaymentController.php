@@ -84,6 +84,8 @@ class PaymentController extends Controller
 
         $newOrNo = $lastOrNo + 1;
 
+        $createdPayments = [];
+
         foreach ($fees as $fee) {
             $payment = Payment::create([
                 'franchise_application_id' => $application->id,
@@ -94,6 +96,8 @@ class PaymentController extends Controller
                 'or_no' => $newOrNo, // Use the same OR number for all
             ]);
 
+            $createdPayments[] = $payment;
+
             ActivityLogger::log(
                 'payment',
                 'created',
@@ -102,15 +106,29 @@ class PaymentController extends Controller
             );
         }
 
+        // Apply encryption: encrypt the first payment id for the session (optional for future needs)
+        $encryptedFirstPaymentId = isset($createdPayments[0]) ? encrypt($createdPayments[0]->id) : null;
+
         return redirect()->route('admin.payments.index')
-            ->with('success', 'Payment recorded successfully.');
+            ->with('success', 'Payment recorded successfully.')
+            ->with('encrypted_payment_id', $encryptedFirstPaymentId);
     }
 
     /**
      * Show a receipt for a payment
      */
-    public function receipt(Payment $payment)
+    public function receipt($encryptedPaymentId)
     {
+        // Decrypt the payment ID
+        try {
+            $paymentId = decrypt($encryptedPaymentId);
+        } catch (\Exception $e) {
+            abort(404, 'Invalid payment reference.');
+        }
+
+        // Fetch payment using the decrypted ID
+        $payment = Payment::findOrFail($paymentId);
+
         // Group by the same application and the same paid_at timestamp
         $payments = Payment::with('fee', 'franchiseApplication.operator', 'reviewer')
             ->where('franchise_application_id', $payment->franchise_application_id)

@@ -146,7 +146,7 @@
                             </button>
                         </form>
                         @endif
-                        <a href="{{ route('admin.payments.receipt', $group['first_payment_id']) }}"
+                        <a href="{{ route('admin.payments.receipt', encrypt($group['first_payment_id'])) }}"
                             class="w-full sm:w-auto px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs text-gray-900 text-center transition-all">
                             View Receipt
                         </a>

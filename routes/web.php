@@ -374,8 +374,8 @@ Route::middleware([
 
             // Payments routes
             Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
-            Route::post('/payments/{payment}/mark-paid', [PaymentController::class, 'markPaid'])->name('payments.markPaid');
-            Route::get('/payments/{payment}/receipt', [PaymentController::class, 'receipt']) ->name('payments.receipt');
+            Route::post('/payments/{encryptedPaymentId}/mark-paid', [PaymentController::class, 'markPaid'])->name('payments.markPaid');
+            Route::get('/payments/{encryptedPaymentId}/receipt', [PaymentController::class, 'receipt'])->name('payments.receipt');
             Route::post('/payments', [PaymentController::class, 'store'])->name('payments.store');
             Route::get('/payments/monthly-report', [PaymentController::class, 'monthlyReport'])->name('payments.monthlyReport');
 
