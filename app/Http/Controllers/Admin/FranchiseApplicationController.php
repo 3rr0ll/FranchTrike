@@ -366,7 +366,7 @@ class FranchiseApplicationController extends Controller
             ]);
 
             // Generate application number
-            $applicationNumber = 'FA-' . date('Y') . '-' . str_pad(FranchiseApplication::count() + 1, 6, '0', STR_PAD_LEFT);
+            $applicationNumber = FranchiseApplication::count() + 1;
 
             // Create franchise application
             $franchiseApplicationData = [
