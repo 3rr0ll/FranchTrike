@@ -273,7 +273,7 @@
                 </a>
 
                 @if($motorDetail->franchiseApplication)
-                <a href="{{ route('admin.franchise.show', $motorDetail->franchiseApplication) }}" class="inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                <a href="{{ route('admin.franchise.show', encrypt($motorDetail->franchiseApplication->id)) }}" class="inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                     View Application
                 </a>
                 @endif
