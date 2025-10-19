@@ -67,15 +67,43 @@ function printReceipt() {
     let printContents = document.getElementById('receipt').innerHTML;
     let originalContents = document.body.innerHTML;
 
-    // Create a wrapper div with margin for printing
+    // Create a centered, smaller container for print
     let wrapper = document.createElement('div');
-    wrapper.style.margin = '40px';
+    wrapper.style.width = '380px';
+    wrapper.style.margin = '80px auto 50px auto'; // match admin receipt style
+    wrapper.style.boxSizing = 'border-box';
     wrapper.innerHTML = printContents;
 
-    document.body.innerHTML = wrapper.outerHTML;
+    // Center content both on screen and when printing
+    document.body.innerHTML = '';
+    document.body.appendChild(wrapper);
+
+    // Add print-specific styles for receipt look
+    let style = document.createElement('style');
+    style.innerHTML = `
+        @media print {
+            body {
+                background: #fff !important;
+            }
+            div#print-receipt-center {
+                margin: 40px auto 0 auto !important;
+                width: 380px !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            button, .print\\:hidden {
+                display: none !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Tag for CSS targeting
+    wrapper.id = "print-receipt-center";
+
     window.print();
     document.body.innerHTML = originalContents;
-    location.reload(); // reload to restore JS functionality
+    location.reload(); 
 }
 </script>
 @endsection

@@ -47,7 +47,7 @@
                         </td>
                         <td>{{ $group['paid_at'] ? $group['paid_at']->format('M d, Y') : '-' }}</td>
                         <td>
-                            <a href="{{ route('operator.payments.receipt', $group['first_payment_id']) }}"
+                            <a href="{{ route('operator.payments.receipt', encrypt($group['first_payment_id'])) }}"
                                class="px-3 py-1 bg-primary-navy  rounded text-s text-white">
                                 View Receipt
                             </a>

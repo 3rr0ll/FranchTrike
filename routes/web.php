@@ -274,7 +274,7 @@ Route::middleware([
                 Route::get('/history', [\App\Http\Controllers\Operator\PaymentController::class, 'history'])->name('history');
                 Route::get('/success', [\App\Http\Controllers\Operator\PaymentController::class, 'success'])->name('success');
                 Route::get('/cancel', [\App\Http\Controllers\Operator\PaymentController::class, 'cancel'])->name('cancel');
-                Route::get('/receipt/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'receipt'])->name('receipt');
+                Route::get('/receipt/{encryptedPaymentId}', [\App\Http\Controllers\Operator\PaymentController::class, 'receipt'])->name('receipt');
                 Route::post('/resume/{payment}', [\App\Http\Controllers\Operator\PaymentController::class, 'resume'])->name('resume');
 
                 // Pay All functionality (must come before /{fee} route)

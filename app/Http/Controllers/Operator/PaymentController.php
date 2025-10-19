@@ -54,28 +54,36 @@ class PaymentController extends Controller
         return view('operator.payments.index', compact('groupedPayments'));
     }
 
-
     /**
-     * Show a receipt for a specific payment group.
+     * Show a receipt for a specific payment group, using encrypted payment IDs.
      */
-    public function receipt(Payment $payment)
+    public function receipt($encryptedPaymentId)
     {
         $operator = Auth::user()->operator;
-    
+
+        // Decrypt the payment ID
+        try {
+            $paymentId = decrypt($encryptedPaymentId);
+        } catch (\Exception $e) {
+            abort(404, 'Invalid payment reference.');
+        }
+
+        // Fetch payment using the decrypted ID
+        $payment = Payment::findOrFail($paymentId);
+
         // Ensure the payment belongs to this operator
         if ($payment->franchiseApplication->operator_id !== $operator->operator_id) {
             abort(403, 'Unauthorized');
         }
-    
+
         // Pull all payments from the same batch (same application + same paid_at)
         $payments = Payment::with(['fee', 'franchiseApplication'])
             ->where('franchise_application_id', $payment->franchise_application_id)
             ->where('paid_at', $payment->paid_at)
             ->get();
-    
+
         $totalAmount = $payments->sum('amount_paid');
-    
+
         return view('operator.payments.receipt', compact('payments', 'totalAmount'));
     }
-    
 }
