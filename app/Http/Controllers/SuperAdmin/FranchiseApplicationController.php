@@ -51,9 +51,23 @@ class FranchiseApplicationController extends Controller
 
 
 
-    public function show(FranchiseApplication $franchiseApplication)
+    public function show($encryptedId)
     {
-        $franchiseApplication->load(['operator', 'driver', 'reviewer', 'motorDetail.unitMake', 'route','logs.updatedBy']);
+        // Decrypt the franchise application id
+        try {
+            $id = decrypt($encryptedId);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            abort(404, "Invalid application identifier.");
+        }
+
+        $franchiseApplication = FranchiseApplication::with([
+            'operator',
+            'driver',
+            'reviewer',
+            'motorDetail.unitMake',
+            'route',
+            'logs.updatedBy'
+        ])->findOrFail($id);
 
         return view('superadmin.franchise.show', compact('franchiseApplication'));
     }

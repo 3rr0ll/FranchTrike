@@ -414,8 +414,7 @@ Route::middleware([
             Route::get('/franchise', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'index'])->name('franchise.index');
             Route::get('/franchise/create', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'create'])->name('franchise.create');
             Route::post('/franchise', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'store'])->name('franchise.store');
-            Route::get('/franchise/{franchiseApplication}', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'show'])->name('franchise.show');
-            Route::put('/franchise/{franchiseApplication}/status', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'updateStatus'])->name('franchise.update-status');
+            Route::get('/franchise/{encryptedId}', [\App\Http\Controllers\SuperAdmin\FranchiseApplicationController::class, 'show'])->name('franchise.show');
 
             // User Management Routes
             Route::resource('users', \App\Http\Controllers\SuperAdmin\UserManagementController::class);
