@@ -156,11 +156,15 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
                             </a>
-                            <button onclick="deleteMotorDetail({{ $motorDetail->id }})" class="text-red-600 hover:text-red-900">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                </svg>
-                            </button>
+                            <form action="{{ route('admin.motor-details.destroy', $motorDetail) }}" method="POST" class="inline delete-motor-detail-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="text-red-600 hover:text-red-900 delete-motor-detail-btn">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
+                            </form>                            
                         </div>
                     </td>
                 </tr>
@@ -361,8 +365,6 @@
             var status = $('#filter-status').val();
             var unitMake = $('#filter-unit-make').val();
 
-            // Get the text content of the relevant columns, stripping HTML
-            // data[3] = Unit type (may have span), data[4] = Unit make, data[8] = Status (may have span)
             var unitTypeCol = $('<div>').html(data[3]).text().trim().toLowerCase();
             var unitMakeCol = $('<div>').html(data[4]).text().trim().toLowerCase();
             var statusCol = $('<div>').html(data[8]).text().trim().toLowerCase();
@@ -382,25 +384,28 @@
         });
     });
 
-    function deleteMotorDetail(id) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: 'This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.getElementById('delete-form');
-                form.action = `/admin/motor-details/${id}`;
-                form.submit();
-            }
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delete-motor-detail-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const form = btn.closest('form');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
-    }
-
+    });
+});
 
     function toggleMotorDetailsModal(show = true) {
         const modal = document.getElementById('motorDetailsModal');
