@@ -7,7 +7,7 @@
     <h2 class="font-bold text-3xl text-primary-navy">MONTHLY REPORT ON MTFRB</h2>
 
     <!-- Print Button -->
-    <button onclick="window.print()"
+    <button onclick="printReport()"
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow print:hidden">
         Print Report
     </button>
@@ -15,7 +15,7 @@
 @endsection
 
 @section('content')
-<div class="bg-white shadow rounded-lg p-6 overflow-auto">
+<div id="report-content" class="bg-white shadow rounded-lg p-6 overflow-auto">
 
     <form method="GET" class="mb-4 flex items-center gap-2 print:hidden">
         <label for="year" class="text-gray-700 font-medium">Select Year:</label>
@@ -50,7 +50,7 @@
                     </td>
                 </tr>
             @endforeach
-        
+            
             <tr class="bg-gray-100 font-bold border-b">
                 <td class="border px-2 py-1">Overall Total</td>
                 @foreach($overall as $amount)
@@ -96,10 +96,31 @@
             display: none !important;
         }
         @page {
-            size: landscape; 
+            size: landscape;
             margin: 1cm;
         }
     }
 </style>
 @endpush
+
+@push('scripts')
+<script>
+function printReport() {
+    var printContents = document.getElementById('report-content').innerHTML;
+    var originalContents = document.body.innerHTML;
+
+    // Create a wrapper for print styling as in provided receipt example, with left/right margin
+    var wrapper = document.createElement('div');
+
+    wrapper.style.padding = '20px';
+    wrapper.innerHTML = printContents;
+
+    document.body.innerHTML = wrapper.outerHTML;
+    window.print();
+    document.body.innerHTML = originalContents;
+    location.reload();
+}
+</script>
+@endpush
+
 @endsection
