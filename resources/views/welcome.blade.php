@@ -82,8 +82,9 @@
         @else
           <a
             href="{{ route('register') }}"
-            class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
-            Register
+            class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full transition-colors text-center ring-2 ring-transparent hover:bg-yellow-400 hover:text-black hover:ring-primary-gold hover:scale-105 duration-200 shadow-md hover:shadow-lg"
+            style="transition: box-shadow 0.2s, background 0.2s, color 0.2s, transform 0.2s;">
+                        Register
           </a>
           <a
             href="{{ route('login') }}"
@@ -123,7 +124,9 @@
               Dashboard
             </a>
           @else
-            <a href="{{ route('register') }}" class="bg-primary-gold text-primary-navy font-semibold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors text-center">
+            <a href="{{ route('register') }}"
+               class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full transition-colors text-center ring-4 ring-transparent hover:bg-yellow-400 hover:text-black hover:ring-primary-gold hover:scale-105 duration-200 shadow-md hover:shadow-lg"
+               style="transition: box-shadow 0.2s, background 0.2s, color 0.2s, transform 0.2s;">
               Register
             </a>
             <a href="{{ route('login') }}" class="border-2 border-white text-white font-semibold px-6 py-3 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-center">
@@ -142,7 +145,10 @@
     <div class="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-12">
       <div class="max-w-xl">
         <h2 class="text-5xl font-bold mb-6 leading-tight">Tricycle Franchising in Padre Garcia</h2>
-        <p class="text-lg mb-8 text-gray-700">Apply, renew, and track your franchise status—all in one place. FranchTrike makes the process faster and easier than ever before.</p>
+        <p class="text-lg mb-8 text-gray-700">Apply, renew, and track your franchise status all in one place. FranchTrike makes the process faster and easier than ever before.</p>
+        <a href="{{ route('register') }}" class="inline-block bg-primary-navy text-white font-semibold px-8 py-4 rounded-full shadow-lg hover:bg-primary-gold hover:text-primary-navy transition-colors text-lg">
+          Get Started
+        </a>
       </div>
       <div class="relative flex items-center justify-center min-w-[80px] min-h-[80px]">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-120 w-120 object-contain mx-auto">
@@ -333,23 +339,16 @@
         <div>
           <h5 class="font-semibold mb-4">Legal</h5>
           <ul class="space-y-2 text-sm text-gray-400">
-            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
-            <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms and Conditions<a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Data Pirvacy and Policy</a></li>
           </ul>
         </div>
 
         <div>
           <h5 class="font-semibold mb-4">Follow Us</h5>
           <div class="flex gap-4">
-            <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary-gold transition-colors">
+            <a href="https://www.facebook.com/PadreGarcia" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary-gold transition-colors">
               <i class="bi bi-facebook"></i>
-            </a>
-            <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary-gold transition-colors">
-              <i class="bi bi-twitter"></i>
-            </a>
-            <a href="#" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-primary-gold transition-colors">
-              <i class="bi bi-instagram"></i>
             </a>
           </div>
         </div>
@@ -414,7 +413,7 @@
     chatbotBox.classList.toggle('hidden');
     if (!chatbotBox.classList.contains('hidden')) {
       chatbotMessages.innerHTML = ""; 
-      showBotMessage("👋 Hi! Please choose a category:");
+      showBotMessage("Hi! Please choose a category:");
       loadCategories();
     }
   });
@@ -436,7 +435,7 @@
         console.log('Categories received:', categories); // Debug log
         
         if (!categories || categories.length === 0) {
-          showBotMessage("⚠️ No categories found. Please ask the admin to add FAQs.");
+          showBotMessage("No categories found. Please ask the admin to add FAQs.");
           return;
         }
         
@@ -454,7 +453,7 @@
             const buttons = chatbotMessages.querySelectorAll('button');
             buttons.forEach(b => b.remove());
             
-            showBotMessage(`📂 Category selected: <b>${cat}</b><br>Now pick a question:`);
+            showBotMessage(`Category selected: <b>${cat}</b><br>Now pick a question:`);
             loadQuestions(cat);
           };
           chatbotMessages.appendChild(btn);
@@ -464,7 +463,7 @@
       })
       .catch(error => {
         console.error('Error loading categories:', error); // Debug log
-        showBotMessage("❌ Failed to load categories. Please try again later.");
+        showBotMessage("Failed to load categories. Please try again later.");
       });
   }
 
@@ -481,7 +480,7 @@
         console.log('Questions received:', questions); // Debug log
         
         if (!questions || questions.length === 0) {
-          showBotMessage("⚠️ No questions available for this category.");
+          showBotMessage("No questions available for this category.");
           addBackToCategories();
           return;
         }
@@ -536,12 +535,12 @@
       })
       .then(data => {
         console.log('Answer received:', data); // Debug log
-        showBotMessage(data.answer ?? "❓ Sorry, no answer found for this question.");
+        showBotMessage(data.answer ?? "Sorry, no answer found for this question.");
         addBackToCategories();
       })
       .catch(error => {
         console.error('Error loading answer:', error); // Debug log
-        showBotMessage("❌ Failed to load answer. Please try again later.");
+        showBotMessage("Failed to load answer. Please try again later.");
         addBackToCategories();
       });
   }
@@ -553,7 +552,7 @@
     backBtn.innerText = "← Back to Categories";
     backBtn.onclick = () => {
       chatbotMessages.innerHTML = "";
-      showBotMessage("👋 Please choose a category:");
+      showBotMessage("Please choose a category:");
       loadCategories();
     };
     chatbotMessages.appendChild(backBtn);
