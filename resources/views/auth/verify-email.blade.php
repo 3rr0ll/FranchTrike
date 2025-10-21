@@ -22,9 +22,6 @@
                 <button id="resendBtn" type="submit"
                     class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow-md flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                     @if(session('error') || $secondsLeft> 0) disabled @endif>
-                    <svg id="resendIcon" class="w-5 h-5 text-white transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582M20 20v-5h-.581M5.21 15.89A8.963 8.963 0 013 12c0-4.97 4.03-9 9-9 2.21 0 4.23.81 5.79 2.11M18.79 8.11A8.963 8.963 0 0121 12c0 4.97-4.03 9-9 9-2.21 0-4.23-.81-5.79-2.11"></path>
-                    </svg>
                     Resend Verification Email
                     <span id="countdown" class="ml-2 text-sm text-gray-200"></span>
                 </button>
@@ -86,14 +83,14 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let secondsLeft = Number(@json($secondsLeft));
+    let secondsLeft = Math.floor(Number(@json($secondsLeft))); 
     const resendBtn = document.getElementById('resendBtn');
     const countdown = document.getElementById('countdown');
     const resendIcon = document.getElementById('resendIcon');
 
     function updateDisplay() {
         if (secondsLeft > 0) {
-            countdown.textContent = `(${secondsLeft}s)`;
+            countdown.textContent = `(${Math.floor(secondsLeft)}s)`;
             resendBtn.disabled = true;
             resendBtn.classList.add('opacity-60', 'cursor-not-allowed');
             if (resendIcon) resendIcon.classList.add('animate-spin');
