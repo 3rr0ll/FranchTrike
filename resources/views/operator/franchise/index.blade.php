@@ -10,7 +10,6 @@
 
 @section('content')
 
-
 <div class="w-full mt-6">
     <div class="bg-white shadow p-6 rounded-lg">
         @if (session('success'))
@@ -19,8 +18,17 @@
         </div>
         @endif
 
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-2">
+        @if ($errors->any())
+        <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-2">
             @if ($canApply)
             <a href="{{ route('operator.franchise.create') }}">
                 <x-button>Submit New Application</x-button>
@@ -356,9 +364,7 @@
         @if(session('success'))
         Swal.fire({
             title: 'Success!',
-            text: {
-                !!json_encode(session('success')) !!
-            },
+            text: {!! json_encode(session('success')) !!},
             icon: 'success',
             confirmButtonColor: '#1D2761',
             confirmButtonText: 'OK'
@@ -368,9 +374,17 @@
         @if(session('error'))
         Swal.fire({
             title: 'Error!',
-            text: {
-                !!json_encode(session('error')) !!
-            },
+            text: {!! json_encode(session('error')) !!},
+            icon: 'error',
+            confirmButtonColor: '#E63946',
+            confirmButtonText: 'OK'
+        });
+        @endif
+
+        @if($errors->any())
+        Swal.fire({
+            title: 'Error!',
+            html: `{!! implode('<br>', $errors->all()) !!}`,
             icon: 'error',
             confirmButtonColor: '#E63946',
             confirmButtonText: 'OK'
@@ -398,25 +412,39 @@
                 document.getElementById('franchise-chasis-no').textContent = button.getAttribute('data-chasis-no') || '-';
                 document.getElementById('franchise-plate-no').textContent = button.getAttribute('data-plate-no') || '-';
 
-                // Get status and id for action buttons
                 const status = (button.getAttribute('data-status') || '').toLowerCase();
-                const franchiseId = button.getAttribute('data-id');
-                const hasMotorDetail = button.getAttribute('data-unit-type') || button.getAttribute('data-unit-make') || button.getAttribute('data-motor-no') || button.getAttribute('data-chasis-no') || button.getAttribute('data-plate-no');
+                const encryptedId = button.getAttribute('data-id');
+                const hasMotorDetail =
+                    button.getAttribute('data-unit-type') ||
+                    button.getAttribute('data-unit-make') ||
+                    button.getAttribute('data-motor-no') ||
+                    button.getAttribute('data-chasis-no') ||
+                    button.getAttribute('data-plate-no');
 
-                // Build action buttons
                 let actionsHtml = '';
-                if (status === 'approved' && hasMotorDetail && franchiseId) {
-                    actionsHtml += `<button type="button" class="inline-block bg-primary-navy text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-primary-gold hover:text-primary-navy transition" onclick="requestMotorChange('${franchiseId}')">Request Motor Change</button>`;
+
+                if (status === 'approved' && hasMotorDetail) {
+                    actionsHtml += `
+                        <button type="button"
+                            class="inline-block bg-primary-navy text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-primary-gold hover:text-primary-navy transition"
+                            onclick="requestMotorChange('${encryptedId}')">
+                            Request Motor Change
+                        </button>`;
                 }
-                if (status === 'expired' && franchiseId) {
-                    actionsHtml += `<button type="button" class="inline-block bg-green-600 text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors" onclick="confirmRenewal('${franchiseId}')">Renew Franchise</button>`;
+
+                if (status === 'expired') {
+                    actionsHtml += `
+                        <button type="button"
+                            class="inline-block bg-green-600 text-lg font-semibold text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+                            onclick="confirmRenewal('${encryptedId}')">
+                            Renew Franchise
+                        </button>`;
                 }
+
                 document.getElementById('franchise-modal-actions').innerHTML = actionsHtml;
 
-                // Set renewal form action
-                if (franchiseId) {
-                    document.getElementById('renewalForm').setAttribute('action', `/operator/franchise/${franchiseId}/renew`);
-                }
+                document.getElementById('renewalForm')
+                    .setAttribute('action', `{{ url('operator/franchise') }}/${encryptedId}/renew`);
 
                 document.getElementById('franchiseDetailsModal').classList.remove('hidden');
             }
@@ -427,7 +455,7 @@
         }
 
         // Request Motor Change function
-        function requestMotorChange(franchiseId) {
+        function requestMotorChange(encryptedId) {
             Swal.fire({
                 title: 'Request Motor Change?',
                 html: `
@@ -478,24 +506,23 @@
 
         // Renew Franchise function
         function confirmRenewal(franchiseId) {
-        Swal.fire({
-            title: 'Renew Franchise?',
-            text: 'Are you sure you want to renew this franchise?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#1D2761',
-            cancelButtonColor: '#E63946',
-            confirmButtonText: 'Yes, Renew',
-            cancelButtonText: 'Cancel'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Use Laravel's url() helper for correct absolute path
-                document.getElementById('renewalForm')
-                    .setAttribute('action', `{{ url('operator/franchise') }}/${franchiseId}/renew`);
-                document.getElementById('renewalForm').submit();
-            }
-        });
-    }
+            Swal.fire({
+                title: 'Renew Franchise?',
+                text: 'Are you sure you want to renew this franchise?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#1D2761',
+                cancelButtonColor: '#E63946',
+                confirmButtonText: 'Yes, Renew',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('renewalForm')
+                        .setAttribute('action', `{{ url('operator/franchise') }}/${franchiseId}/renew`);
+                    document.getElementById('renewalForm').submit();
+                }
+            });
+        }
 
     </script>
 @endpush
