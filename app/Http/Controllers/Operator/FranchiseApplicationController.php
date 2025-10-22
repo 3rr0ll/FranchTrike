@@ -10,6 +10,7 @@ use App\Models\DriverDocument;
 use App\Models\Driver;
 use App\Models\UnitMake;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class FranchiseApplicationController extends Controller
 {
@@ -45,6 +46,11 @@ class FranchiseApplicationController extends Controller
 
         // Get drivers who already have franchise applications
         $driversWithApplications = $applications->pluck('driver_id')->toArray();
+
+        // Add encrypted_id to each application for views/links
+        foreach ($applications as $app) {
+            $app->encrypted_id = encrypt($app->id);
+        }
 
         return view('operator.franchise.index', compact('applications', 'canApply', 'drivers', 'driversWithApplications'));
     }
@@ -95,7 +101,6 @@ class FranchiseApplicationController extends Controller
         $operator = Auth::user()->operator;
         $userId = Auth::check() ? Auth::id() : null;
 
-
         // Create the franchise application
         $franchiseApplication = FranchiseApplication::create([
             'operator_id' => $operator->operator_id,
@@ -140,21 +145,34 @@ class FranchiseApplicationController extends Controller
             ]
         );
 
-        return redirect()->route('operator.franchise.motor-details', $franchiseApplication->id)->with('success', 'Franchise application submitted..');
+        $encryptedId = encrypt($franchiseApplication->id);
+
+        return redirect()->route('operator.franchise.motor-details', $encryptedId)->with('success', 'Franchise application submitted..');
     }
 
     // Motor details form
-    public function motorDetails($franchiseApplicationId)
+    public function motorDetails($encryptedId)
     {
-        $franchiseApplication = FranchiseApplication::findOrFail($franchiseApplicationId);
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+        $franchiseApplication = FranchiseApplication::findOrFail($id);
         $unitMakes = UnitMake::all();
 
-        return view('operator.franchise.motor-details', compact('franchiseApplication', 'unitMakes'));
+        return view('operator.franchise.motor-details', compact('franchiseApplication', 'unitMakes', 'encryptedId'));
     }
 
     // Store motor details
-    public function storeMotorDetails(Request $request, $franchiseApplicationId)
+    public function storeMotorDetails(Request $request, $encryptedId)
     {
+        try {
+            $franchiseApplicationId = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
         $request->validate([
             'unit_type' => 'required|string',
             'unit_make_id' => 'required|exists:unit_makes,id',
@@ -164,7 +182,6 @@ class FranchiseApplicationController extends Controller
         ]);
 
         $userId = Auth::check() ? Auth::id() : null;
-
 
         \App\Models\MotorDetail::create([
             'franchise_application_id' => $franchiseApplicationId,
@@ -193,12 +210,23 @@ class FranchiseApplicationController extends Controller
             ]
         );
 
+        // Use encrypt here for redirect
+        $redirectId = encrypt($franchiseApplicationId);
+
         return redirect()->route('operator.franchise.index')->with('success', 'Motor details added successfully.');
     }
 
     // Approve method: set status to approved, set start and end dates
-    public function approve(FranchiseApplication $application)
+    public function approve($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $application = FranchiseApplication::findOrFail($id);
+
         $application->update([
             'status' => 'approved',
             'franchise_start_date' => now(),
@@ -207,8 +235,16 @@ class FranchiseApplicationController extends Controller
         return back()->with('success', 'Application approved and dates set.');
     }
 
-    public function show(FranchiseApplication $franchiseApplication)
+    public function show($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $franchiseApplication = FranchiseApplication::findOrFail($id);
+
         // Check if the application should be marked as expired
         if (
             $franchiseApplication->status === 'approved' &&
@@ -220,14 +256,22 @@ class FranchiseApplicationController extends Controller
 
         $franchiseApplication->load(['operator', 'driver', 'route', 'motorDetail']);
         $unitMakes = UnitMake::all();
-        return view('operator.franchise.show', compact('franchiseApplication', 'unitMakes'));
+        return view('operator.franchise.show', compact('franchiseApplication', 'unitMakes', 'encryptedId'));
     }
 
     /**
      * Renew an expired franchise application by creating a new one, including motor details.
      */
-    public function renew(FranchiseApplication $franchiseApplication)
+    public function renew($encryptedId)
     {
+        try {
+            $id = decrypt($encryptedId);
+        } catch (DecryptException $e) {
+            abort(404, 'Invalid or tampered link.');
+        }
+
+        $franchiseApplication = FranchiseApplication::findOrFail($id);
+
         // Only allow renewal if status is 'expired'
         if ($franchiseApplication->status !== 'expired') {
             return back()->with('error', 'Only expired applications can be renewed.');
@@ -289,11 +333,12 @@ class FranchiseApplicationController extends Controller
                     'driver_id' => $renewalApplication->driver_id,
                     'submitted by' => Auth::user()->name,
                     'user_id' => $userId,
-
                 ]
             );
 
-            return redirect()->route('operator.franchise.show', $renewalApplication->id)
+            $encryptedRenewalId = encrypt($renewalApplication->id);
+
+            return redirect()->route('operator.renewal.create', $encryptedRenewalId)
                 ->with('success', 'Renewal application created successfully! The application has been submitted for review, including motor details.');
 
         } catch (\Exception $e) {

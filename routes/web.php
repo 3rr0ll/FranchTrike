@@ -204,12 +204,12 @@ Route::middleware([
                 Route::get('/', [FranchiseApplicationController::class, 'index'])->name('index');
                 Route::get('/create', [FranchiseApplicationController::class, 'create'])->name('create');
                 Route::post('/', [FranchiseApplicationController::class, 'store'])->name('store');
-                Route::get('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'motorDetails'])->name('motor-details');
-                Route::post('/{franchiseApplication}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
+                Route::get('/{encryptedId}/motor-details', [FranchiseApplicationController::class, 'motorDetails'])->name('motor-details');
+                Route::post('/{encryptedId}/motor-details', [FranchiseApplicationController::class, 'storeMotorDetails'])->name('store-motor-details');
                 Route::get('/{franchiseApplication}', [FranchiseApplicationController::class, 'show'])->name('show');
-                Route::post('/{franchiseApplication}/renew', [FranchiseApplicationController::class, 'renew'])->name('renew');
-                Route::get('motor-change/{franchise}', [MotorChangeController::class, 'create'])->name('motor-change.create');
-                Route::post('motor-change/{franchise}', [MotorChangeController::class, 'store'])->name('motor-change.store');
+                Route::post('/{encryptedId}/renew', [FranchiseApplicationController::class, 'renew'])->name('renew');
+                Route::get('motor-change/{encryptedId}', [MotorChangeController::class, 'create'])->name('motor-change.create');
+                Route::post('motor-change/{encryptedId}', [MotorChangeController::class, 'store'])->name('motor-change.store');
             });
 
             Route::get('/motor-change', [MotorChangeController::class, 'index'])
@@ -266,6 +266,16 @@ Route::middleware([
                     Route::post('/resubmit/{document}', [DocumentSubmissionController::class, 'processResubmitDriverDocument'])
                         ->name('process-resubmit');
                 });
+
+                
+            });
+
+            // Renewal Documents (combined operator + drivers for renewal period)
+            Route::prefix('renewal')->name('renewal.')->group(function () {
+                Route::get('/create', [DocumentSubmissionController::class, 'createRenewalDocuments'])
+                    ->name('create');
+                Route::post('/store', [DocumentSubmissionController::class, 'storeRenewalDocuments'])
+                    ->name('store');
             });
 
             // Payment Routes

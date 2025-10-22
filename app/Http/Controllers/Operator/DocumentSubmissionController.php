@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DocumentType;
 use App\Models\OperatorDocument;
 use App\Models\DriverDocument;
+use App\Models\FranchiseApplication; 
 use App\Models\Driver;
 use App\Models\Operator;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Cloudinary\Cloudinary;
+
 
 class DocumentSubmissionController extends Controller
 {
@@ -607,4 +609,212 @@ class DocumentSubmissionController extends Controller
         return redirect()->route('operator.documents.status')
             ->with('success', 'Driver document resubmitted successfully!');
     }
+
+
+    /**
+     * Show combined document submission view for both Driver and Operator (used only for renewal)
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function createRenewalDocuments(Request $request)
+    {
+        $operator = $this->getCurrentOperator();
+    
+        if (!$operator) {
+            return redirect()->back()->with('error', 'Please complete your operator profile first');
+        }
+    
+        // 🟢 Identify the franchise being renewed
+        $franchiseApplication = FranchiseApplication::where('operator_id', $operator->operator_id)
+            ->where('status', 'renewed')
+            ->latest('updated_at')
+            ->first();
+    
+        if (!$franchiseApplication) {
+            return redirect()->route('operator.dashboard')->with('error', 'No renewed franchise found.');
+        }
+    
+        // 🟢 Ensure franchise has a driver assigned
+        if (!$franchiseApplication->driver_id) {
+            return redirect()->route('operator.dashboard')->with('error', 'This renewed franchise has no assigned driver.');
+        }
+    
+        $driver = Driver::find($franchiseApplication->driver_id);
+    
+        if (!$driver) {
+            return redirect()->route('operator.dashboard')->with('error', 'The driver assigned to this franchise no longer exists.');
+        }
+    
+        // 🟢 Operator documents
+        $operatorDocumentTypes = DocumentType::forOperator()->get();
+        $submittedOperatorDocuments = OperatorDocument::where('operator_id', $operator->operator_id)
+            ->get()
+            ->keyBy('document_type_id');
+    
+        // 🟢 Driver documents (only this one driver)
+        $driverDocumentTypes = DocumentType::forDriver()->get();
+        $submittedDriverDocuments = DriverDocument::where('driver_id', $driver->driver_id)
+            ->get()
+            ->keyBy('document_type_id');
+    
+        return view('operator.renewal.create', compact(
+            'operator',
+            'franchiseApplication',
+            'driver',
+            'operatorDocumentTypes',
+            'submittedOperatorDocuments',
+            'driverDocumentTypes',
+            'submittedDriverDocuments'
+        ));
+    }
+    
+
+    /**
+     * Show combined document submission view for both Driver and Operator (used only for renewal)
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\View\View|\Illuminate\Http\RedirectResponse
+     */
+    public function storeRenewalDocuments(Request $request)
+    {
+        $operator = $this->getCurrentOperator();
+    
+        if (!$operator) {
+            return redirect()->back()->with('error', 'Please complete your operator profile first');
+        }
+    
+        $franchiseApplication = FranchiseApplication::where('operator_id', $operator->operator_id)
+            ->where('status', 'renewed')
+            ->latest('updated_at')
+            ->first();
+    
+        if (!$franchiseApplication || !$franchiseApplication->driver_id) {
+            return redirect()->route('operator.dashboard')->with('error', 'Franchise renewal data missing or unassigned driver.');
+        }
+    
+        $driver = Driver::find($franchiseApplication->driver_id);
+    
+        // Validation
+        $rules = [
+            'operator_documents.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'driver_documents.*' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+        ];
+    
+        $request->validate($rules);
+    
+        // Cloudinary setup
+        try {
+            if (!config('cloudinary.cloud_name') || !config('cloudinary.api_key') || !config('cloudinary.api_secret')) {
+                return back()->with('error', 'Cloudinary configuration is missing.');
+            }
+    
+            $cloudinary = new Cloudinary([
+                'cloud' => [
+                    'cloud_name' => config('cloudinary.cloud_name'),
+                    'api_key' => config('cloudinary.api_key'),
+                    'api_secret' => config('cloudinary.api_secret'),
+                ],
+                'url' => ['secure' => true]
+            ]);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Cloudinary configuration error: ' . $e->getMessage());
+        }
+    
+        // 🟢 Handle Operator Documents
+        if ($request->hasFile('operator_documents')) {
+            foreach ($request->file('operator_documents') as $typeId => $file) {
+                if ($file) {
+                    $existing = OperatorDocument::where('operator_id', $operator->operator_id)
+                        ->where('document_type_id', $typeId)
+                        ->first();
+    
+                    if ($existing && $existing->cloudinary_public_id) {
+                        try {
+                            $cloudinary->uploadApi()->destroy($existing->cloudinary_public_id, ['resource_type' => 'auto']);
+                        } catch (\Exception $e) {
+                            // Continue even if delete fails
+                        }
+                        $existing->delete();
+                    }
+    
+                    $upload = $cloudinary->uploadApi()->upload(
+                        $file->getRealPath(),
+                        [
+                            'folder' => 'operator_documents/' . $operator->operator_id,
+                            'public_id' => Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '_' . time(),
+                            'resource_type' => 'auto'
+                        ]
+                    );
+    
+                    OperatorDocument::create([
+                        'operator_id' => $operator->operator_id,
+                        'document_type_id' => $typeId,
+                        'document_name' => $file->getClientOriginalName(),
+                        'file_url' => $upload['secure_url'],
+                        'file_type' => $file->getClientOriginalExtension(),
+                        'file_size' => $file->getSize(),
+                        'cloudinary_public_id' => $upload['public_id'],
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+        }
+    
+        // 🟢 Handle Driver Documents
+        if ($request->hasFile('driver_documents')) {
+            foreach ($request->file('driver_documents') as $typeId => $file) {
+                if ($file) {
+                    $existing = DriverDocument::where('driver_id', $driver->driver_id)
+                        ->where('document_type_id', $typeId)
+                        ->first();
+    
+                    if ($existing && $existing->cloudinary_public_id) {
+                        try {
+                            $cloudinary->uploadApi()->destroy($existing->cloudinary_public_id, ['resource_type' => 'auto']);
+                        } catch (\Exception $e) {
+                            // Continue even if delete fails
+                        }
+                        $existing->delete();
+                    }
+    
+                    $upload = $cloudinary->uploadApi()->upload(
+                        $file->getRealPath(),
+                        [
+                            'folder' => 'driver_documents/' . $driver->driver_id,
+                            'public_id' => Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '_' . time(),
+                            'resource_type' => 'auto'
+                        ]
+                    );
+    
+                    DriverDocument::create([
+                        'driver_id' => $driver->driver_id,
+                        'document_type_id' => $typeId,
+                        'document_name' => $file->getClientOriginalName(),
+                        'file_url' => $upload['secure_url'],
+                        'file_type' => $file->getClientOriginalExtension(),
+                        'file_size' => $file->getSize(),
+                        'cloudinary_public_id' => $upload['public_id'],
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+        }
+    
+        // Log the renewal document submission
+        \App\Helpers\ActivityLogger::log(
+            'renewal',
+            'submission',
+            'Operator submitted renewal documents.',
+            [
+                'operator_id' => $operator->operator_id,
+                'driver_id' => $driver->driver_id,
+                'application_id' => $franchiseApplication->id,
+                'user_id' => Auth::id(),
+            ]
+        );
+    
+        return redirect()->route('operator.documents.status')
+            ->with('success', 'Renewal documents uploaded successfully!');
+    }
+    
+
 }

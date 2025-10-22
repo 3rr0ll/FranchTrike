@@ -34,7 +34,7 @@
         @php
         $activeFranchises = $applications->where('status', 'approved')->sortByDesc('submitted_at')->take(2);
         $renewedFranchises = $applications->filter(function($app) {
-        return $app->status !== 'approved';
+            return $app->status !== 'approved';
         });
         @endphp
 
@@ -59,6 +59,9 @@
 
                     </div>
                     <div class="flex gap-2 mt-2 justify-end">
+                        @php
+                            $encryptedId = encrypt($app->id);
+                        @endphp
                         <x-button
                             size="sm"
                             type="button"
@@ -76,7 +79,7 @@
                             data-motor-no="{{ $app->motorDetail ? $app->motorDetail->motorno : '-' }}"
                             data-chasis-no="{{ $app->motorDetail ? $app->motorDetail->chasisno : '-' }}"
                             data-plate-no="{{ $app->motorDetail ? $app->motorDetail->platenumber : '-' }}"
-                            data-id="{{ $app->id }}">
+                            data-id="{{ $encryptedId }}">
                             View Details
                         </x-button>
                     </div>
@@ -103,6 +106,9 @@
                     </thead>
                     <tbody>
                         @foreach ($renewedFranchises as $app)
+                        @php
+                            $encryptedId = encrypt($app->id);
+                        @endphp
                         <tr class="border-t">
                             <td class="p-2">{{ $app->id }}</td>
                             <td class="p-2 capitalize">{{ $app->application_type }}</td>
@@ -150,7 +156,7 @@
                                     data-motor-no="{{ $app->motorDetail->motorno ?? '' }}"
                                     data-chasis-no="{{ $app->motorDetail->chasisno ?? '' }}"
                                     data-plate-no="{{ $app->motorDetail->platenumber ?? '' }}"
-                                    data-id="{{ $app->id }}">
+                                    data-id="{{ $encryptedId }}">
                                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -463,7 +469,7 @@
                     });
 
                     let url = "{{ route('operator.franchise.motor-change.create', ':id') }}";
-                    url = url.replace(':id', franchiseId);
+                    url = url.replace(':id', encryptedId);
 
                     window.location.href = url;
                 }
@@ -472,21 +478,24 @@
 
         // Renew Franchise function
         function confirmRenewal(franchiseId) {
-            Swal.fire({
-                title: 'Renew Franchise?',
-                text: 'Are you sure you want to renew this franchise?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#1D2761',
-                cancelButtonColor: '#E63946',
-                confirmButtonText: 'Yes, Renew',
-                cancelButtonText: 'Cancel'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('renewalForm').setAttribute('action', `/operator/franchise/${franchiseId}/renew`);
-                    document.getElementById('renewalForm').submit();
-                }
-            });
-        }
-</script>
+        Swal.fire({
+            title: 'Renew Franchise?',
+            text: 'Are you sure you want to renew this franchise?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1D2761',
+            cancelButtonColor: '#E63946',
+            confirmButtonText: 'Yes, Renew',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Use Laravel's url() helper for correct absolute path
+                document.getElementById('renewalForm')
+                    .setAttribute('action', `{{ url('operator/franchise') }}/${franchiseId}/renew`);
+                document.getElementById('renewalForm').submit();
+            }
+        });
+    }
+
+    </script>
 @endpush
