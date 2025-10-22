@@ -73,11 +73,9 @@ class Driver extends Model
         $validity = Carbon::parse($this->license_validity);
 
         if ($validity->isPast()) {
-            return 'expired';
-        } elseif ($validity->diffInDays(now()) <= 30) {
-            return 'expiring_soon';
+            return 'Expired';
         } else {
-            return 'valid';
+            return 'Valid';
         }
     }
 
