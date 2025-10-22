@@ -27,6 +27,19 @@ class DriverController extends Controller
      */
     public function create()
     {
+        // Prevent access if the operator does not exist
+        $operator = Auth::user()->operator;
+        if (!$operator) {
+            return redirect()->route('operator.dashboard')
+                ->with('error', 'Please complete your operator profile first.');
+        }
+
+        // Prevent access if the operator already has 2 drivers
+        if ($operator->drivers()->count() >= 2) {
+            return redirect()->route('operator.driver.index')
+                ->with('error', 'You can only register up to 2 drivers.');
+        }
+
         return view('driver.create');
     }
 

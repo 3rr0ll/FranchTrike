@@ -22,6 +22,13 @@ class OperatorController extends Controller
 
     public function create()
     {
+        // Prevent access if the operator already submitted details
+        $existing = Operator::where('user_id', Auth::id())->first();
+        if ($existing) {
+            return redirect()->route('operator.dashboard')
+                ->with('error', 'You have already submitted your operator details.');
+        }
+
         return view('operator.create');
     }
 

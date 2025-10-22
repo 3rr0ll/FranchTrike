@@ -35,11 +35,19 @@ class DocumentSubmissionController extends Controller
             return redirect()->back()->with('error', 'Please complete your operator profile first');
         }
 
+        // Get required document types for the operator
         $documentTypes = DocumentType::forOperator()->get();
+
+        // Fetch submitted documents for this operator, keyed by document_type_id
         $submittedDocuments = OperatorDocument::where('operator_id', $operator->operator_id)
             ->with('documentType')
             ->get()
             ->keyBy('document_type_id');
+
+        // If the operator has already submitted all required documents, block access to submission page
+        if ($submittedDocuments->count() >= $documentTypes->count() && $documentTypes->count() > 0) {
+            return redirect()->route('operator.dashboard')->with('error', 'You have already submitted all required documents.');
+        }
 
         return view('operator.documents.operator.create', compact('documentTypes', 'submittedDocuments'));
     }

@@ -65,6 +65,12 @@ class FranchiseApplicationController extends Controller
         // Filter out drivers who already have applications
         $availableDrivers = $allDrivers->whereNotIn('driver_id', $driversWithApplications);
 
+        // If there are no available drivers, block access
+        if ($availableDrivers->isEmpty()) {
+            return redirect()->route('operator.franchise.index')
+                ->with('error', 'No available drivers to apply for a franchise. Please add a new driver or ensure an existing driver does not already have an application.');
+        }
+
         $routes = \App\Models\Route::all();
 
         return view('operator.franchise.create', compact('availableDrivers', 'routes'));
