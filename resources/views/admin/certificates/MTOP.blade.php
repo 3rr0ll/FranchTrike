@@ -13,7 +13,7 @@
         }
     </style>
 </head>
-<body>
+<body style="background: #e5e5e4;">
  <!-- Print Controls -->
  <div class="no-print" style="text-align: center; margin: 20px 0; padding: 20px; border-radius: 8px;">
         <h1 style="margin-bottom: 20px; color: #333;">Application Form Preview</h1>

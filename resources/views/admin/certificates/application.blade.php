@@ -21,7 +21,7 @@
             font-family: Arial, sans-serif;
             font-size: 11px;
             line-height: 1.2;
-            background-color: #f5f5f5;
+            background-color: #e5e5e4;
         }
 
         .application-container {
@@ -99,7 +99,7 @@
 </head>
 
 <body
-    style="margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; background-color: #f5f5f5;">
+    style="margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4; background-color: #e5e5e4;">
     @php
     $route = $franchiseApplication->route->name ?? '';
     $todaPresident = $franchiseApplication->toda_president ?? '';

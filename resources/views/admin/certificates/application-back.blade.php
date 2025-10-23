@@ -15,7 +15,7 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background: #f5f5f5;
+            background: #e5e5e4;
         }
 
         .container {

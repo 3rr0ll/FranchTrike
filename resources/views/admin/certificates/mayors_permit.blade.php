@@ -24,7 +24,7 @@
     </style>
 </head>
 
-<body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; background: #e5e5e4;">
     @php
     $ownerFirstName = $operator->first_name ?? '';
     $ownerMiddleName = $operator->middle_initial ?? '';
@@ -51,8 +51,8 @@
     <div id="mayor-certificate" style="position: relative; width: 800px; height: 1100px; margin: auto; padding: 40px; background: #fff; overflow: hidden;">
 
         <!-- Watermark -->
-        <div style="position: absolute; left: 0; top: 150px; width: 100%; height: calc(100% - 200px); opacity: 0.6; z-index: 0; pointer-events: none; display: flex; justify-content: center; align-items: flex-start;">
-        <img src="{{ asset('images/mayors_permit.jpg') }}" alt="Watermark" style="width: 870px; height: auto;">
+        <div style="position: absolute; left: 0; top: 100px; width: 100%; height: auto; opacity: 0.8; z-index: 0; pointer-events: none; display: flex; justify-content: center; align-items: center;">
+        <img src="{{ asset('images/mayors_permit.jpg') }}" alt="Watermark" style="width: 870px; height: 530px;">
             </div>
 
         <!-- All content above watermark -->
@@ -69,24 +69,28 @@
             </div>
 
             <!-- Body Content -->
-            <div style="margin-top: 40px; font-size: 14px; line-height: 1.6;">
-                <p style="margin-bottom: 20px;">
+            <div style="margin-top: 100px; font-size: 14px; line-height: 1.6;">
+                <p>
                     <span style="display: block; text-align: left;">
                         To Whom It May Concern: <br><br>
                     </span>
-                    Permit is hereby <strong>GRANTED</strong> to
-                    <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 200px; text-align: center;">
+                    Permit is hereby GRANTED to
+                    <span style="display: inline-block; min-width: 100px; text-align: center; font-weight: bold;">
                         {{ $ownerName }}
                     </span>
                     of Barangay
-                    <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 150px; text-align: center;">
+                    <span style="display: inline-block; min-width: 100px; text-align: center;font-weight: bold;">
                         {{ $ownerBarangay }}
                     </span>
                     to operate a
-                    <span style="border-bottom: 1px solid #000; display: inline-block; min-width: 100px; text-align: center;">
+                    <span style="display: inline-block; min-width: 80px; text-align: center;font-weight: bold;">
                         {{ $unitType }}
                     </span>
-                    within Padre Garcia, Batangas provided that the provisions of existing ordinances of the Local Tax Code are complied with.
+                    within
+                    <span style="display: inline-block; min-width: 70px; text-align: center; font-weight: bold;">
+                        {{ $route->name ?? '' }}
+                    </span>
+                    and vice versa of the municipality provided that the provision of existing ordinances of the Local Tax Code are complied with.
                 </p>
                 <p>
                     Granted this at Padre Garcia, Batangas.
@@ -94,7 +98,7 @@
             </div>
 
             <!-- Mayor Signature -->
-            <div style="text-align: right; margin-top: 60px; margin-right: 40px;">
+            <div style="text-align: right;  margin-right: 40px;">
                 <p style="margin: 0; font-weight: bold;">
                     {{ $municipal_mayor?->name }}
                 </p>
@@ -102,22 +106,20 @@
             </div>
 
             <!-- Footer Info and Motto -->
-            <div style="margin-top: 50px; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="margin-top: 5px; display: flex; justify-content: space-between; align-items: flex-start;">
                 <!-- Footer Info -->
                 <div style="font-size: 14px;">
-                    <p><strong>Franchise No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $franchiseNo }}</span></p>
-                    <p><strong>OR No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $or_no ?? 'N/A' }}</span></p>
-                    <p><strong>Amount:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $amount }}</span></p>
-                    <p><strong>CTC No.:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $ctcNo }}</span></p>
-                    <p><strong>Date Issued:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $ctcIssuedOn }}</span></p>
-                    <p><strong>Place Issued:</strong> <span style="border-bottom: 1px solid #000; min-width: 80px; display: inline-block;">{{ $ctcIssuedAt }}</span></p>
+                    <p><strong>Franchise No.:</strong> <span style="min-width: 80px; display: inline-block;">{{ $franchiseNo }}</span></p>
+                    <p><strong>OR No.:</strong> <span style="min-width: 80px; display: inline-block;">{{ $or_no ?? 'N/A' }}</span></p>
+                    <p><strong>Amount:</strong> <span style="min-width: 80px; display: inline-block;">{{ $amount }}</span></p>
+                    <p><strong>CTC No.:</strong> <span style="min-width: 80px; display: inline-block;">{{ $ctcNo }}</span></p>
+                    <p><strong>Date Issued:</strong> <span style="min-width: 80px; display: inline-block;">{{ $ctcIssuedOn }}</span></p>
+                    <p><strong>Place Issued:</strong> <span style="min-width: 80px; display: inline-block;">{{ $ctcIssuedAt }}</span></p>
                 </div>
 
                 <!-- Motto -->
-                <div style="font-size: 14px; font-weight: bold; text-align: right; line-height: 1.4;">
-                    <span style="color: red;">C</span>ontinuously <br>
-                    <span style="color: red;">B</span>ringing-up <br>
-                    <span style="color: red;">R</span>eforms
+                <div style="text-align: right; margin-top: 40px;">
+                    <img src="{{ asset('images/cbr.png') }}" alt="CBR Motto" style="height: 100px;">
                 </div>
             </div>
         </div>
