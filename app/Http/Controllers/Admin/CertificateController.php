@@ -173,6 +173,37 @@ class CertificateController extends Controller
 
         return view('admin.certificates.application-back', $data);
     }
+
+    public function previewCancellation($motorDetailId, Request $request)
+    {
+        // Fetch related motor details, franchise application, operator, and mpdc (planner)
+        $motorDetail = MotorDetail::with([
+            'franchiseApplication.operator',
+            'unitMake'
+        ])->findOrFail($motorDetailId);
+
+        $franchiseApplication = $motorDetail->franchiseApplication;
+        $operator = $franchiseApplication?->operator;
+
+
+        $orNo = $request->query('or_no');
+        $payment = $orNo ? Payment::where('or_no', $orNo)->first() : null;
+
+        $data = [
+            'operator' => $operator,
+            'motorDetail' => $motorDetail,
+            'date_today' => now()->format('F d, Y'),
+            'or_no' => $payment?->or_no ?? 'N/A',
+            'amount' => $payment?->amount_paid ?? 'N/A',
+            'unitMake' => $motorDetail->unitMake?->name ?? 'N/A',
+            'mpdc' => \App\Models\Signatory::where('position_title', 'MPDC')->first(),
+            'franchise_no' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
+        ];
+
+        return view('admin.certificates.cancellation', $data);
+    }
+
+    
     
     public function logPrint(Request $request, $motorDetailId)
     {

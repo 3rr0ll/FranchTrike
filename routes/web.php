@@ -375,7 +375,9 @@ Route::middleware([
             Route::get('/certificates/application/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateApplication'])->name('certificates.application.generate');
             Route::get('/certificates/application/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewApplication'])->name('certificates.application.preview');
             Route::get('/certificates/application-back/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewApplicationBack'])->name('certificates.application.preview');
+            Route::get('/certificates/cancellation/{motorDetail}/preview', [\App\Http\Controllers\Admin\CertificateController::class, 'previewCancellation'])->name('certificates.cancellation.preview');
             Route::get('/certificates/all/{motorDetail}/generate', [\App\Http\Controllers\Admin\CertificateController::class, 'generateAllCertificates'])->name('certificates.all.generate');
+
 
             Route::post('/certificates/{motorDetailId}/print-log', [\App\Http\Controllers\Admin\CertificateController::class, 'logPrint'])->name('certificates.print.log');
             // Log print action for Master List (admin)
