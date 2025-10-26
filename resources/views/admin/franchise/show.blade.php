@@ -75,6 +75,10 @@
                             <dt class="text-sm font-medium text-gray-500">Address</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->full_address ?? 'N/A' }}</dd>
                         </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Email</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator->user->email ?? 'N/A' }}</dd>
+                        </div>
                     </dl>
                 </div>
 
@@ -98,6 +102,7 @@
                             <dt class="text-sm font-medium text-gray-500">Address</dt>
                             <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->driver->full_address ?? 'N/A' }}</dd>
                         </div>
+                        
                     </dl>
                 </div>
             </div>
@@ -507,7 +512,7 @@
 
         closeOrModal();
 
-        const baseUrl = 'http://localhost/Franchise/franchtrike/public/admin/certificates';
+        const baseUrl = "{{ url('admin/certificates') }}";
         let url = `${baseUrl}/${currentCertType}/${currentMotorId}/preview?or_no=${orNo}`;
 
         window.open(url, '_blank');

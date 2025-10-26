@@ -56,6 +56,7 @@ class UserManagementController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role_id' => $validated['role_id'],
+            'email_verified_at' => now(),
         ]);
         \App\Helpers\ActivityLogger::log(
             'user',

@@ -39,6 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'login_attempts',
         'locked_until',
         'cloudinary_profile_photo_id',
+        'email_verified_at',
     ];
 
     /**

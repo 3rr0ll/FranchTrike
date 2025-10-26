@@ -326,7 +326,7 @@ class FranchiseApplicationController extends Controller
                 'name' => $request->operator_first_name . ' ' . $request->operator_last_name,
                 'email' => $request->operator_email,
                 'password' => Hash::make($request->operator_password),
-                'role' => 'operator',
+                'role_id' => 1,
                 'email_verified_at' => now(),
             ]);
 

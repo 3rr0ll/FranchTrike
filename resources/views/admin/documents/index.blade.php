@@ -121,6 +121,9 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($documents as $i => $doc)
+                        @php
+                            $encryptedId = encrypt($doc['id']);
+                        @endphp
                         <tr class="px-4 py-2 whitespace-nowrap">
                             <td>{{ $doc['user_name'] }}</td>
                             <td>{{ $doc['user_type'] }}</td>
@@ -139,7 +142,7 @@
                                 {{ $doc['created_at']->format('M d, Y') }}</td>
                             <td>
                                 <a href="javascript:void(0);" 
-                                   onclick="openDocumentModal('{{ $doc['url'] }}', '{{ $doc['document_type'] }}', '{{ $doc['id'] }}', '{{ $doc['user_type'] }}')" 
+                                   onclick="openDocumentModal('{{ $doc['url'] }}', '{{ $doc['document_type'] }}', '{{ $encryptedId }}', '{{ $doc['user_type'] }}')" 
                                    class="text-blue-600 hover:text-blue-800" 
                                    title="View Document">
                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
