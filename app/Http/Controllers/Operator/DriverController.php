@@ -53,18 +53,29 @@ class DriverController extends Controller
             'first_name' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:1',
             'barangay' => 'required|string|max:255',
-            'municipality' => 'required|string|max:255',
-            'province' => 'required|string|max:255',
             'birth_date' => 'required|date',
-            'age' => 'required|integer|min:18|max:100',
+            'age' => 'required|integer|max:80',
             'sex' => 'required|in:Male,Female',
             'civil_status' => 'required|in:Single,Married,Divorced,Widowed,Separated',
-            'contact_no' => 'required|string|max:20',
-            'license_no' => 'required|string|max:50|unique:drivers,license_no',
+            'contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
+            'license_no' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:drivers,license_no',
+                'regex:/^[A-Z]\d{2}-\d{2}-\d{6}$/'
+            ],
             'license_validity' => 'required|date|after:today',
             'license_nature' => 'required|in:Professional,Non-Professional,Student,Restriction 1,Restriction 2',
         ]);
 
+        // Automatically assign fixed location values
+        $validated['municipality'] = 'Padre Garcia';
+        $validated['province'] = 'Batangas';
         $operator = Auth::user()->operator;
         $validated['operator_id'] = $operator->operator_id;
 

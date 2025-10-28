@@ -65,26 +65,32 @@
                         <x-input
                             label="Barangay"
                             name="barangay"
+                            type="select"
                             :model="$operator ?? null"
+                            :options="[
+                                'Banaba' => 'Banaba',
+                                'Banaybanay' => 'Banaybanay',
+                                'Bawi' => 'Bawi',
+                                'Bukal' => 'Bukal',
+                                'Castillo' => 'Castillo',
+                                'Cawongan' => 'Cawongan',
+                                'Manggas' => 'Manggas',
+                                'Maugat East' => 'Maugat East',
+                                'Maugat West' => 'Maugat West',
+                                'Pansol' => 'Pansol',
+                                'Poblacion' => 'Poblacion',
+                                'San Felipe' => 'San Felipe',
+                                'San Vicente' => 'San Vicente',
+                                'Santa Clara' => 'Santa Clara',
+                                'Santo Niño' => 'Santo Niño',
+                                'Silangan' => 'Silangan',
+                                'Tamak' => 'Tamak',
+                                'Quilo-quilo North' => 'Quilo-quilo North'
+                            ]"
                             required
                             class="bg-[#f9fafb] border-primary-gold focus:ring-primary-gold"
                         />
 
-                        <x-input
-                            label="Municipality"
-                            name="municipality"
-                            :model="$operator ?? null"
-                            required
-                            class="bg-[#f9fafb] border-primary-gold focus:ring-primary-gold"
-                        />
-
-                        <x-input
-                            label="Province"
-                            name="province"
-                            :model="$operator ?? null"
-                            required
-                            class="bg-[#f9fafb] border-primary-gold focus:ring-primary-gold"
-                        />
 
                         <x-input
                             label="Birth Date"
@@ -101,8 +107,10 @@
                             type="number"
                             :model="$operator ?? null"
                             required
+                            max="80"
                             class="bg-[#f9fafb] border-primary-gold focus:ring-primary-gold"
                         />
+
 
                         <x-input
                             label="Sex"

@@ -63,7 +63,7 @@
                         <x-input
                             label="Contact Number"
                             name="contact_no"
-                            placeholder="e.g., 09123456789"
+                            placeholder="e.g.,09123456789"
                             required />
                     </div>
                 </div>
@@ -75,15 +75,30 @@
                         <x-input
                             label="Barangay"
                             name="barangay"
-                            required />
-                        <x-input
-                            label="Municipality"
-                            name="municipality"
-                            required />
-                        <x-input
-                            label="Province"
-                            name="province"
-                            required />
+                            type="select"
+                            :options="[
+                                '' => 'Select Barangay',
+                                'Banaba' => 'Banaba',
+                                'Banaybanay' => 'Banaybanay',
+                                'Bawi' => 'Bawi',
+                                'Bukal' => 'Bukal',
+                                'Castillo' => 'Castillo',
+                                'Cawongan' => 'Cawongan',
+                                'Manggas' => 'Manggas',
+                                'Maugat East' => 'Maugat East',
+                                'Maugat West' => 'Maugat West',
+                                'Pansol' => 'Pansol',
+                                'Poblacion' => 'Poblacion',
+                                'San Felipe' => 'San Felipe',
+                                'San Vicente' => 'San Vicente',
+                                'Santa Clara' => 'Santa Clara',
+                                'Santo Niño' => 'Santo Niño',
+                                'Silangan' => 'Silangan',
+                                'Tamak' => 'Tamak',
+                                'Quilo-quilo North' => 'Quilo-quilo North'
+                            ]"
+                            required
+                        />
                     </div>
                 </div>
 
@@ -94,7 +109,7 @@
                         <x-input
                             label="License Number"
                             name="license_no"
-                            placeholder="e.g., N01-12-123456"
+                            placeholder="e.g.,N01-12-123456"
                             required />
                         <x-input
                             label="License Validity"

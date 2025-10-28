@@ -39,21 +39,25 @@ class OperatorController extends Controller
             'first_name' => 'required|string',
             'middle_initial' => 'nullable|string',
             'barangay' => 'required|string',
-            'municipality' => 'required|string',
-            'province' => 'required|string',
             'birth_date' => 'required|date',
-            'age' => 'required|integer',
+            'age' => 'required|integer|max:80',
             'sex' => 'required|string',
             'civil_status' => 'required|string',
-            'contact_no' => 'required|string',
+            'contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
         ]);
-
-        $validated['user_id'] = Auth::user()->id;
+    
+        // Automatically assign fixed location values
+        $validated['municipality'] = 'Padre Garcia';
+        $validated['province'] = 'Batangas';
+        $validated['user_id'] = Auth::id();
+    
         $userId = Auth::check() ? Auth::id() : null;
-
-
+    
         Operator::create($validated);
-
         \App\Helpers\ActivityLogger::log(
             'operator',
             'created',
