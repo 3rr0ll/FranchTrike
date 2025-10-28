@@ -28,7 +28,6 @@ class SignatoryController extends Controller
     public function update(Request $request, Signatory $signatory)
     {
         $validated = $request->validate([
-            'position_title' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
         ]);
