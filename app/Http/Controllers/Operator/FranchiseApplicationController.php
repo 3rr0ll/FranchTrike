@@ -84,39 +84,65 @@ class FranchiseApplicationController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'application_type' => 'required|in:new,renewal',
-            'previous_application_id' => 'nullable|integer',
-            'driver_id' => 'required|exists:drivers,driver_id',
-            'route_id' => 'required|exists:routes,id',
-            'franchise_no' => 'nullable|string',
-            'sticker_no' => 'nullable|string',
-            'operator_name' => 'required|string',
-            'ctc_no' => 'required|string',
-            'ctc_date_issued' => 'required|date',
-            'ctc_place_issued' => 'required|string',
-            'franchise_fee' => 'nullable|numeric',
-        ]);
-
         $operator = Auth::user()->operator;
         $userId = Auth::check() ? Auth::id() : null;
+
+        // Additional manual validation to supplement default rules
+        $rules = [
+            'application_type' => 'required|in:new,renewal',
+            'previous_application_id' => 'nullable|integer|exists:franchise_applications,id',
+            'driver_id' => [
+                'required',
+                'exists:drivers,driver_id',
+                // Custom closure to ensure the driver belongs to the operator:
+                function ($attribute, $value, $fail) use ($operator) {
+                    if (!$operator->drivers()->where('driver_id', $value)->exists()) {
+                        $fail('The selected driver does not belong to your account.');
+                    }
+                },
+                // Custom closure to ensure driver doesn't have an active application:
+                function ($attribute, $value, $fail) use ($operator) {
+                    $existing = FranchiseApplication::where('operator_id', $operator->operator_id)
+                        ->where('driver_id', $value)
+                        ->whereIn('status', ['submitted', 'approved'])
+                        ->first();
+                    if ($existing) {
+                        $fail('This driver already has a franchise application.');
+                    }
+                },
+            ],
+            'route_id' => 'required|exists:routes,id',
+            'franchise_no' => 'nullable|string|max:255',
+            'sticker_no' => 'nullable|string|max:255',
+            'operator_name' => 'required|string|max:255',
+            'ctc_no' => 'required|string|max:255',
+            'ctc_date_issued' => 'required|date|before_or_equal:' . now()->toDateString(),
+            'ctc_place_issued' => 'required|string|max:255',
+            'franchise_fee' => 'nullable|numeric|min:0|max:99999.99',
+        ];
+
+        if (!$operator) {
+            return back()->with('error', 'Please complete your operator profile first.');
+        }
+
+        $validated = $request->validate($rules);
 
         // Create the franchise application
         $franchiseApplication = FranchiseApplication::create([
             'operator_id' => $operator->operator_id,
-            'driver_id' => $request->driver_id,
-            'route_id' => $request->route_id,
-            'application_type' => $request->application_type,
-            'previous_application_id' => $request->previous_application_id,
-            'franchise_no' => $request->franchise_no,
-            'sticker_no' => $request->sticker_no,
-            'operator_name' => $request->operator_name,
-            'ctc_no' => $request->ctc_no,
-            'ctc_date_issued' => $request->ctc_date_issued,
-            'ctc_place_issued' => $request->ctc_place_issued,
+            'driver_id' => $validated['driver_id'],
+            'route_id' => $validated['route_id'],
+            'application_type' => $validated['application_type'],
+            'previous_application_id' => $validated['previous_application_id'] ?? null,
+            'franchise_no' => $validated['franchise_no'] ?? null,
+            'sticker_no' => $validated['sticker_no'] ?? null,
+            'operator_name' => $validated['operator_name'],
+            'ctc_no' => $validated['ctc_no'],
+            'ctc_date_issued' => $validated['ctc_date_issued'],
+            'ctc_place_issued' => $validated['ctc_place_issued'],
             'franchise_start_date' => null,
             'franchise_end_date' => null,
-            'franchise_fee' => $request->franchise_fee,
+            'franchise_fee' => $validated['franchise_fee'] ?? null,
             'submitted_at' => now(),
             'status' => 'submitted',
         ]);
@@ -128,26 +154,26 @@ class FranchiseApplicationController extends Controller
             [
                 'franchise_application_id' => $franchiseApplication->id,
                 'operator_id' => $operator->operator_id,
-                'driver_id' => $request->driver_id,
-                'route_id' => $request->route_id,
-                'application_type' => $request->application_type,
-                'previous_application_id' => $request->previous_application_id,
-                'franchise_no' => $request->franchise_no,
-                'sticker_no' => $request->sticker_no,
-                'operator_name' => $request->operator_name,
-                'ctc_no' => $request->ctc_no,
-                'ctc_date_issued' => $request->ctc_date_issued,
-                'ctc_place_issued' => $request->ctc_place_issued,
-                'franchise_fee' => $request->franchise_fee,
+                'driver_id' => $validated['driver_id'],
+                'route_id' => $validated['route_id'],
+                'application_type' => $validated['application_type'],
+                'previous_application_id' => $validated['previous_application_id'] ?? null,
+                'franchise_no' => $validated['franchise_no'] ?? null,
+                'sticker_no' => $validated['sticker_no'] ?? null,
+                'operator_name' => $validated['operator_name'],
+                'ctc_no' => $validated['ctc_no'],
+                'ctc_date_issued' => $validated['ctc_date_issued'],
+                'ctc_place_issued' => $validated['ctc_place_issued'],
+                'franchise_fee' => $validated['franchise_fee'] ?? null,
                 'submitted_by' => Auth::user()->name,
                 'user_id' => $userId,
-
             ]
         );
 
         $encryptedId = encrypt($franchiseApplication->id);
 
-        return redirect()->route('operator.franchise.motor-details', $encryptedId)->with('success', 'Franchise application submitted..');
+        return redirect()->route('operator.franchise.motor-details', $encryptedId)
+            ->with('success', 'Franchise application submitted.');
     }
 
     // Motor details form

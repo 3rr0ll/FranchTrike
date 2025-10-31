@@ -9,6 +9,8 @@ use Illuminate\Validation\Rules\Password;
 use Cloudinary\Cloudinary;
 use App\Helpers\ActivityLogger;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+
 class ProfileController extends Controller
 {
     /**
@@ -16,7 +18,7 @@ class ProfileController extends Controller
      */
     public function edit()
     {
-        $operator = auth()->user(); // authenticated operator
+        $operator = Auth::user()->operator;
         return view('operator.edit', compact('operator'));
     }
 
@@ -25,21 +27,55 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $operator = auth()->user();
+        $operator = Auth::user()->operator;
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'password' => ['nullable', 'confirmed', Password::defaults()],
-            'profile_photo' => 'nullable|image|max:2048', // max 2MB
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                // Optionally prevent duplicate names within operators table:
+                // 'unique:operators,name,' . $operator->id,
+            ],
+            'password' => [
+                'nullable',
+                'string',
+                'min:8', // minimum 8 chars
+                'confirmed',
+                Password::defaults(),
+            ],
+            'profile_photo' => [
+                'nullable',
+                'image',
+                'max:2048', // 2MB
+                'mimes:jpeg,png,jpg,gif,webp'
+            ],
+        ],
+        [
+            'name.required' => 'The name is required.',
+            'name.string'   => 'The name must be a string.',
+            'name.max'      => 'The name may not be greater than 255 characters.',
+            'password.confirmed' => 'The password confirmation does not match.',
+            'password.min'  => 'The password must be at least 8 characters.',
+            'profile_photo.image' => 'The profile photo must be an image.',
+            'profile_photo.max' => 'The profile photo size must not exceed 2MB.',
+            'profile_photo.mimes' => 'Only jpeg, png, jpg, gif, and webp images are allowed.',
         ]);
 
-        
-        $changes = false;
+        $changes = [];
+
+        // Additional programmatic validation
+        if ($request->hasFile('profile_photo')) {
+            $file = $request->file('profile_photo');
+            // You could add additional custom checks here (e.g., aspect ratio)
+            if (!$file->isValid()) {
+                return back()->withErrors(['profile_photo' => 'Invalid profile photo file.']);
+            }
+        }
 
         // Handle profile photo upload to Cloudinary
         if ($request->hasFile('profile_photo')) {
             try {
-                // Initialize Cloudinary (reference from DocumentSubmissionController)
                 $cloudinary = new Cloudinary([
                     'cloud' => [
                         'cloud_name' => config('cloudinary.cloud_name'),
@@ -58,12 +94,10 @@ class ProfileController extends Controller
                             ['resource_type' => 'image']
                         );
                     } catch (\Exception $e) {
-                        // Log error but continue
                         Log::error('Failed to delete old Cloudinary profile photo: ' . $e->getMessage());
                     }
                 }
 
-                // Upload new photo
                 $publicId = 'operator_' . $operator->id . '_profile_' . time();
                 $upload = $cloudinary->uploadApi()->upload(
                     $request->file('profile_photo')->getRealPath(),
@@ -75,7 +109,6 @@ class ProfileController extends Controller
                     ]
                 );
 
-                // Log the profile photo update activity
                 ActivityLogger::log(
                     'operator_profile',
                     'updated',
@@ -89,6 +122,7 @@ class ProfileController extends Controller
 
                 $operator->profile_photo_path = $upload['secure_url'] ?? null;
                 $operator->cloudinary_profile_photo_id = $upload['public_id'] ?? null;
+                $changes['profile_photo'] = 'updated';
 
             } catch (\Exception $e) {
                 Log::error('Cloudinary profile photo upload failed: ' . $e->getMessage());
@@ -96,10 +130,11 @@ class ProfileController extends Controller
             }
         }
 
-        $changes = [];
-
-        // Update password if provided
+        // Update password if provided and valid
         if ($request->filled('password')) {
+            if ($request->password !== $request->password_confirmation) {
+                return back()->withErrors(['password' => 'The password and confirmation do not match.']);
+            }
             $operator->password = Hash::make($request->password);
             $changes['password'] = 'changed';
             ActivityLogger::log(
@@ -112,8 +147,8 @@ class ProfileController extends Controller
             );
         }
 
-        // Update name if changed
-        if ($request->name !== $operator->name) {
+        // Update name if changed and not empty
+        if ($request->filled('name') && $request->name !== $operator->name) {
             $oldName = $operator->name;
             $operator->name = $request->name;
             $changes['name'] = [
@@ -132,9 +167,8 @@ class ProfileController extends Controller
             );
         }
 
-        $operator->save();
-
-        if ($changes) {
+        // Save changes if any
+        if (!empty($changes)) {
             $operator->save();
             return back()->with('status', 'Profile updated successfully.');
         }

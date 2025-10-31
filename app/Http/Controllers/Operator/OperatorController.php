@@ -35,14 +35,53 @@ class OperatorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'last_name' => 'required|string',
-            'first_name' => 'required|string',
-            'middle_initial' => 'nullable|string',
-            'barangay' => 'required|string',
-            'birth_date' => 'required|date',
-            'age' => 'required|integer|max:80',
-            'sex' => 'required|string',
-            'civil_status' => 'required|string',
+            'last_name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'first_name' => [
+                'required', 
+                'string', 
+                'max:255', 
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'middle_initial' => [
+                'nullable',
+                'string',
+                'max:1',
+                'regex:/^[A-Za-z]$/'
+            ],
+            'barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The operator must be at least 18 years old.');
+                    }
+                },
+            ],
+            'age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80'
+            ],
+            'sex' => [
+                'required',
+                'in:Male,Female'
+            ],
+            'civil_status' => [
+                'required',
+                'in:Single,Married,Divorced,Widowed,Separated'
+            ],
             'contact_no' => [
                 'required',
                 'string',

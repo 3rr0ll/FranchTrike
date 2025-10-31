@@ -83,11 +83,43 @@ class MotorChangeController extends Controller
         }
     
         $userId = Auth::id();
-    
-        // ✅ Create the motor change request
+
+        // Validation: The franchise must not be cancelled/invalid.
+        if (in_array($application->status, ['rejected', 'expired'])) {
+            return redirect()->route('operator.franchise.index')
+                ->with('error', 'You cannot request a motor change for a invalid franchise.');
+        }
+
+        // Additional: Restricting to only one allowed change at a time was ensured above.
+
+        // Validation: The operator can only create a request for their franchise
+        if (Auth::user()->operator->operator_id !== $application->operator_id) {
+            return redirect()->route('operator.franchise.index')
+                ->with('error', 'You are not authorized to request a motor change for this franchise.');
+        }
+
+        // You may perform extra detail checks here, e.g., allow only if franchise is approved
+        if ($application->status !== 'approved') {
+            return redirect()->route('operator.franchise.index')
+                ->with('error', 'Motor change requests are only allowed for approved franchises.');
+        }
+
+        // If you wish, also check that motor detail has valid/complete values
+        if (
+            empty($motorDetail->unit_type)
+            || empty($motorDetail->unit_make_id)
+            || empty($motorDetail->motorno)
+            || empty($motorDetail->chasisno)
+            || empty($motorDetail->platenumber)
+        ) {
+            return redirect()->route('operator.franchise.index')
+                ->with('error', 'Motor details are incomplete. Please ensure all motor details are provided.');
+        }
+
+        // At this point, all validations passed.
         MotorChangeRequest::create([
             'franchise_application_id' => $application->id,
-            'operator_id' => $application->operator_id, // <-- important
+            'operator_id' => $application->operator_id,
             'old_unit_type' => $motorDetail->unit_type,
             'old_unit_make_id' => $motorDetail->unit_make_id,
             'old_motorno' => $motorDetail->motorno,
