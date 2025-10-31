@@ -24,6 +24,7 @@ class OperatorController extends Controller
         }
         $operator = Operator::findOrFail($id);
         return view('admin.operators.edit', compact('operator', 'encryptedId'));
+        
     }
 
 
@@ -34,33 +35,77 @@ class OperatorController extends Controller
         } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
             abort(404, 'Invalid or tampered link.');
         }
-        $request->validate([
-            'last_name' => 'required|string|max:255',
-            'first_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:2',
-            'barangay' => 'required|string|max:255',
-            'municipality' => 'required|string|max:255',
-            'province' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'age' => 'required|integer|min:0',
-            'sex' => 'required|string|max:10',
-            'civil_status' => 'required|string|max:50',
-            'contact_no' => 'required|string|max:20',
+
+        $validated = $request->validate([
+            'last_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'first_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'middle_initial' => [
+                'nullable',
+                'string',
+                'max:1',
+                'regex:/^[A-Za-z]$/'
+            ],
+            'barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The operator must be at least 18 years old.');
+                    }
+                },
+            ],
+            'age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80'
+            ],
+            'sex' => [
+                'required',
+                'in:Male,Female'
+            ],
+            'civil_status' => [
+                'required'
+                
+            ],
+            'contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
         ]);
+        $validated['municipality'] = 'Padre Garcia';
+        $validated['province'] = 'Batangas';
 
         $operator = Operator::findOrFail($id);
 
-        $operator->last_name = $request->input('last_name');
-        $operator->first_name = $request->input('first_name');
-        $operator->middle_initial = $request->input('middle_initial');
-        $operator->barangay = $request->input('barangay');
-        $operator->municipality = $request->input('municipality');
-        $operator->province = $request->input('province');
-        $operator->birth_date = $request->input('birth_date');
-        $operator->age = $request->input('age');
-        $operator->sex = $request->input('sex');
-        $operator->civil_status = $request->input('civil_status');
-        $operator->contact_no = $request->input('contact_no');
+        $operator->last_name = $validated['last_name'];
+        $operator->first_name = $validated['first_name'];
+        $operator->middle_initial = $validated['middle_initial'] ?? null;
+        $operator->barangay = $validated['barangay'];
+        $operator->municipality = $validated['municipality'];
+        $operator->province = $validated['province'];
+        $operator->birth_date = $validated['birth_date'];
+        $operator->age = $validated['age'];
+        $operator->sex = $validated['sex'];
+        $operator->civil_status = $validated['civil_status'];
+        $operator->contact_no = $validated['contact_no'];
 
         // Use isDirty to check if any attributes have changed
         if (!$operator->isDirty()) {

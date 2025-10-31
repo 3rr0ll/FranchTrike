@@ -20,7 +20,7 @@ use App\Services\NotificationService;
 use App\Models\FranchiseApplicationLog;
 use App\Models\UnitMake;
 use Illuminate\Contracts\Encryption\DecryptException;
-
+use Illuminate\Validation\Rule;
 
 
 class FranchiseApplicationController extends Controller
@@ -251,72 +251,248 @@ class FranchiseApplicationController extends Controller
     {
         $validationRules = [
             // Operator details
-            'operator_last_name' => 'required|string|max:255',
-            'operator_first_name' => 'required|string|max:255',
-            'operator_middle_initial' => 'nullable|string|max:1',
-            'operator_barangay' => 'required|string|max:255',
-            'operator_municipality' => 'required|string|max:255',
-            'operator_province' => 'required|string|max:255',
-            'operator_birth_date' => 'required|date',
-            'operator_age' => 'required|integer|min:18',
-            'operator_sex' => 'required|string|in:male,female',
-            'operator_civil_status' => 'required|string',
-            'operator_contact_no' => 'required|string|max:20',
-            'operator_email' => 'required|email|unique:users,email',
-            'operator_password' => 'required|string|min:8',
+            'operator_last_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'operator_first_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'operator_middle_initial' => [
+                'nullable',
+                'string',
+                'max:1',
+                'regex:/^[A-Za-z]$/'
+            ],
+            'operator_barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'operator_birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The operator must be at least 18 years old.');
+                    }
+                },
+            ],
+            'operator_age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80'
+            ],
+            'operator_sex' => [
+                'required'
+            ],
+            'operator_civil_status' => [
+                'required'
+            ],
+            'operator_contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
+            'operator_email' => [
+                'required',
+                'email',
+                'unique:users,email'
+            ],
+            'operator_password' => [
+                'required',
+                'string',
+                'min:8'
+            ],
 
             // Driver details
-            'driver_last_name' => 'required|string|max:255',
-            'driver_first_name' => 'required|string|max:255',
-            'driver_middle_initial' => 'nullable|string|max:1',
-            'driver_barangay' => 'required|string|max:255',
-            'driver_municipality' => 'required|string|max:255',
-            'driver_province' => 'required|string|max:255',
-            'driver_birth_date' => 'required|date',
-            'driver_age' => 'required|integer|min:18',
-            'driver_sex' => 'required|string|in:male,female',
-            'driver_civil_status' => 'required|string',
-            'driver_contact_no' => 'required|string|max:20',
-            'driver_license_no' => 'required|string|max:50',
-            'driver_license_validity' => 'required|date|after:today',
-            'driver_license_nature' => 'required|string',
+            'driver_last_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'driver_first_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'driver_middle_initial' => [
+                'nullable',
+                'string',
+                'max:1',
+                'regex:/^[A-Za-z]$/'
+            ],
+            'driver_barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'driver_birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The driver must be at least 18 years old.');
+                    }
+                },
+            ],
+            'driver_age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80',
+            ],
+            'driver_sex' => [
+                'required'            ],
+            'driver_civil_status' => [
+                'required'
+            ],
+            'driver_contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
+            'driver_license_no' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:drivers,license_no',
+                'regex:/^[A-Z]\d{2}-\d{2}-\d{6}$/'
+            ],
+            'driver_license_validity' => [
+                'required',
+                'date',
+                'after:today',
+            ],
+            'driver_license_nature' => [
+                'required'
+            ],
 
             // Franchise application details
-            'application_type' => 'required|in:new,renewal',
-            'route_id' => 'required|exists:routes,id',
-            'ctc_no' => 'required|string|max:50',
-            'ctc_date_issued' => 'required|date',
-            'ctc_place_issued' => 'required|string|max:255',
-            'franchise_fee' => 'nullable|numeric|min:0',
+            'application_type' => [
+                'required',
+                'in:new,renewal'
+            ],
+            'route_id' => [
+                'required',
+                'exists:routes,id'
+            ],
+            'ctc_no' => [
+                'required',
+                'string',
+                'max:50'
+            ],
+            'ctc_date_issued' => [
+                'required',
+                'date'
+            ],
+            'ctc_place_issued' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'franchise_fee' => [
+                'nullable',
+                'numeric',
+                'min:0'
+            ],
 
             // Previous franchise details (for renewal)
-            'previous_franchise_no' => 'nullable|string|max:50',
-            'previous_sticker_no' => 'nullable|string|max:50',
-            'previous_application_id' => 'nullable|integer',
-            'previous_franchise_end_date' => 'nullable|date',
+            'previous_franchise_no' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+            'previous_sticker_no' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+            'previous_application_id' => [
+                'nullable',
+                'integer'
+            ],
+            'previous_franchise_end_date' => [
+                'nullable',
+                'date'
+            ],
 
             // Document checkboxes
-            'operator_documents' => 'required|array',
-            'operator_documents.*' => 'exists:document_types,document_id',
-            'driver_documents' => 'required|array',
-            'driver_documents.*' => 'exists:document_types,document_id',
+            'operator_documents' => [
+                'required',
+                'array'
+            ],
+            'operator_documents.*' => [
+                'exists:document_types,document_id'
+            ],
+            'driver_documents' => [
+                'required',
+                'array'
+            ],
+            'driver_documents.*' => [
+                'exists:document_types,document_id'
+            ],
 
             // Motor Details - referencing Operator side
-            'unit_type' => 'required|string',
-            'unit_make_id' => 'required|exists:unit_makes,id',
-            'motorno' => 'required|string',
-            'chasisno' => 'required|string',
-            'platenumber' => 'required|string',
+            'unit_type' => [
+                'required',
+                'string'
+            ],
+            'unit_make_id' => [
+                'required',
+                'exists:unit_makes,id'
+            ],
+            'motorno' => [
+                'required',
+                'string'
+            ],
+            'chasisno' => [
+                'required',
+                'string'
+            ],
+            'platenumber' => [
+                'required',
+                'string'
+            ],
         ];
 
         // Add conditional validation for renewal applications
         if ($request->application_type === 'renewal') {
-            $validationRules['previous_franchise_no'] = 'required|string|max:50';
-            $validationRules['previous_sticker_no'] = 'required|string|max:50';
-            $validationRules['previous_franchise_end_date'] = 'required|date';
+            $validationRules['previous_franchise_no'] = [
+                'required',
+                'string',
+                'max:50'
+            ];
+            $validationRules['previous_sticker_no'] = [
+                'required',
+                'string',
+                'max:50'
+            ];
+            $validationRules['previous_franchise_end_date'] = [
+                'required',
+                'date'
+            ];
         }
+        // Set default municipality and province for operator and driver
+        $request->merge([
+            'operator_municipality' => 'Padre Garcia',
+            'operator_province' => 'Batangas',
+            'driver_municipality' => 'Padre Garcia',
+            'driver_province' => 'Batangas',
+        ]);
 
         $request->validate($validationRules);
+
 
         DB::beginTransaction();
 
@@ -486,26 +662,30 @@ class FranchiseApplicationController extends Controller
             abort(404, 'Invalid or tampered link.');
         }
 
+        // Load all data/relationships needed for the edit view
         $franchiseApplication = FranchiseApplication::with([
             'operator.user',
             'driver',
-            'motorDetail',
+            'driver.driverDocuments.documentType',
+            'motorDetail.unitMake',
             'route',
+            'operator',
         ])->findOrFail($id);
 
-        // Fetch options for dropdowns or checkboxes
+        // Get list of all possible routes (for route select field)
         $routes = Route::all();
+
+        // Get list of all unit makes (for motor detail/unit select fields)
         $unitMakes = UnitMake::all();
-        $documentTypes = DocumentType::all();
 
         return view('admin.franchise.edit', compact(
             'franchiseApplication',
             'routes',
             'unitMakes',
-            'documentTypes',
             'encryptedId'
         ));
     }
+
 
     /**
      * Update the specified Franchise Application in storage.
@@ -517,65 +697,347 @@ class FranchiseApplicationController extends Controller
         } catch (DecryptException $e) {
             abort(404, 'Invalid or tampered link.');
         }
-    
-        $franchiseApplication = FranchiseApplication::with(['operator', 'driver', 'motorDetail'])
+
+        $franchiseApplication = FranchiseApplication::with(['operator.user', 'driver', 'motorDetail'])
             ->findOrFail($id);
-    
-        $validated = $request->validate([
-            'operator_name' => 'required|string|max:255',
-            'operator_contact_no' => 'required|string|max:20',
-            'operator_address' => 'required|string|max:255',
-            'driver_name' => 'required|string|max:255',
-            'driver_license_no' => 'required|string|max:50',
-            'driver_contact_no' => 'required|string|max:20',
-            'driver_address' => 'required|string|max:255',
-            'application_type' => 'required|in:new,renewal',
-            'route_id' => 'required|exists:routes,id',
-            'ctc_no' => 'required|string|max:50',
-            'operator_name_document' => 'required|string|max:255',
-            'franchise_no' => 'nullable|string|max:50',
-            'sticker_no' => 'nullable|string|max:50',
-            'franchise_start_date' => 'nullable|date',
-            'franchise_end_date' => 'nullable|date',
-            'rejection_reason' => 'nullable|string|max:500',
+
+        // Set up validation rules (unchanged logic)
+        $validationRules = [
+            // Operator details
+            'operator_last_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'operator_first_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'operator_middle_initial' => [
+                'nullable',
+                'string',
+                'max:1',
+                'regex:/^[A-Za-z]$/'
+            ],
+            'operator_barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'operator_birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The operator must be at least 18 years old.');
+                    }
+                },
+            ],
+            'operator_age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80'
+            ],
+            'operator_sex' => [
+                'required'
+            ],
+            'operator_civil_status' => [
+                'required'
+            ],
+            'operator_contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
+            'operator_email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')
+                    ->ignore(optional($franchiseApplication->operator->user)->id ?? null)
+                    ->where('role_id', 1),
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/\.com$/i', $value)) {
+                        $fail('The operator email must end with .com.');
+                    }
+                },
+            ],
+            'operator_password' => [
+                'nullable',
+                'string',
+                'min:8'
+            ],
+
+            // Driver details
+            'driver_last_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'driver_first_name' => [
+                'required',
+                'string',
+                'max:255',
+                'regex:/^[A-Za-z\s\-]+$/'
+            ],
+            'driver_middle_initial' => [
+                'nullable',
+                'string',
+                'max:1',
+                'regex:/^[A-Za-z]$/'
+            ],
+            'driver_barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'driver_birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The driver must be at least 18 years old.');
+                    }
+                },
+            ],
+            'driver_age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80',
+            ],
+            'driver_sex' => [
+                'required',
+            ],
+            'driver_civil_status' => [
+                'required'
+            ],
+            'driver_contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
+            'driver_license_no' => [
+                'required',
+                'string',
+                'max:50',
+                'regex:/^[A-Z]\d{2}-\d{2}-\d{6}$/'
+            ],
+            'driver_license_validity' => [
+                'required',
+                'date',
+                'after:today',
+            ],
+            'driver_license_nature' => [
+                'required'
+            ],
+
+            // Franchise application details
+            'application_type' => [
+                'required',
+                'in:new,renewal'
+            ],
+            'route_id' => [
+                'required',
+                'exists:routes,id'
+            ],
+            'ctc_no' => [
+                'required',
+                'string',
+                'max:50'
+            ],
+            'ctc_date_issued' => [
+                'required',
+                'date'
+            ],
+            'ctc_place_issued' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'franchise_no' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+            'sticker_no' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+
+            // Previous franchise details (for renewal)
+            'previous_franchise_no' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+            'previous_sticker_no' => [
+                'nullable',
+                'string',
+                'max:50'
+            ],
+            'previous_application_id' => [
+                'nullable',
+                'integer'
+            ],
+            'previous_franchise_end_date' => [
+                'nullable',
+                'date'
+            ],
+        ];
+
+        // We want fields missing from the form to keep their old values
+        // For "old value" in validation, merge old values for nullable fields
+        $request->merge([
+            'franchise_fee' => $request->input('franchise_fee', $franchiseApplication->franchise_fee),
+            'franchise_no' => $request->input('franchise_no', $franchiseApplication->franchise_no),
+            'sticker_no' => $request->input('sticker_no', $franchiseApplication->sticker_no),
+            'previous_franchise_no' => $request->input('previous_franchise_no', $franchiseApplication->previous_franchise_no),
+            'previous_sticker_no' => $request->input('previous_sticker_no', $franchiseApplication->previous_sticker_no),
+            'previous_application_id' => $request->input('previous_application_id', $franchiseApplication->previous_application_id),
+            'previous_franchise_end_date' => $request->input('previous_franchise_end_date', $franchiseApplication->previous_franchise_end_date),
         ]);
 
-        $originalData = $franchiseApplication->getAttributes();
+        $validated = $request->validate($validationRules);
 
-           // Check for changes before saving
-           if (!$franchiseApplication->isDirty()) {
-            return redirect()->route('admin.franchise.show', $encryptedId)->with('info', 'No changes were made to the driver.');
+        // Enhanced check for changes, including all editable fields and normalizing nulls
+        $fieldsToCheck = [
+            'application_type',
+            'route_id',
+            'ctc_no',
+            'ctc_date_issued',
+            'ctc_place_issued',
+            'franchise_fee',
+            'franchise_no',
+            'sticker_no',
+            'previous_franchise_no',
+            'previous_sticker_no',
+            'previous_application_id',
+            'previous_franchise_end_date'
+        ];
+
+        $hasChanges = false;
+        foreach ($fieldsToCheck as $field) {
+            if (($franchiseApplication->{$field} ?? null) != ($validated[$field] ?? null)) {
+                $hasChanges = true;
+                break;
+            }
         }
-    
+
+        // Also check OPERATOR fields
+        $operatorFields = [
+            'last_name'        => 'operator_last_name',
+            'first_name'       => 'operator_first_name',
+            'middle_initial'   => 'operator_middle_initial',
+            'barangay'         => 'operator_barangay',
+            'birth_date'       => 'operator_birth_date',
+            'age'              => 'operator_age',
+            'sex'              => 'operator_sex',
+            'civil_status'     => 'operator_civil_status',
+            'contact_no'       => 'operator_contact_no',
+        ];
+        if ($franchiseApplication->operator) {
+            foreach ($operatorFields as $db => $req) {
+                if (($franchiseApplication->operator->{$db} ?? null) != ($validated[$req] ?? null)) {
+                    $hasChanges = true;
+                    break;
+                }
+            }
+        }
+
+        // Also check DRIVER fields
+        $driverFields = [
+            'last_name'        => 'driver_last_name',
+            'first_name'       => 'driver_first_name',
+            'middle_initial'   => 'driver_middle_initial',
+            'barangay'         => 'driver_barangay',
+            'birth_date'       => 'driver_birth_date',
+            'age'              => 'driver_age',
+            'sex'              => 'driver_sex',
+            'civil_status'     => 'driver_civil_status',
+            'contact_no'       => 'driver_contact_no',
+            'license_no'       => 'driver_license_no',
+            'license_validity' => 'driver_license_validity',
+            'license_nature'   => 'driver_license_nature',
+        ];
+        if ($franchiseApplication->driver) {
+            foreach ($driverFields as $db => $req) {
+                if (($franchiseApplication->driver->{$db} ?? null) != ($validated[$req] ?? null)) {
+                    $hasChanges = true;
+                    break;
+                }
+            }
+        }
+
+        if (!$hasChanges) {
+            // Populate old values for the form by redirecting back with model data
+            return redirect()->route('admin.franchise.show', $encryptedId)
+                ->withInput($request->all())
+                ->with('info', 'No changes were made to the franchise application.');
+        }
+
         DB::transaction(function () use ($franchiseApplication, $validated) {
+            // Update franchiseApplication model with all relevant fields,
+            // using validated values and falling back to current value if not provided
             $franchiseApplication->update([
-                'application_type' => $validated['application_type'],
-                'route_id' => $validated['route_id'],
-                'ctc_no' => $validated['ctc_no'],
-                'operator_name' => $validated['operator_name_document'],
-                'franchise_no' => $validated['franchise_no'] ?? $franchiseApplication->franchise_no,
-                'sticker_no' => $validated['sticker_no'] ?? $franchiseApplication->sticker_no,
-                'franchise_start_date' => $validated['franchise_start_date'] ?? $franchiseApplication->franchise_start_date,
-                'franchise_end_date' => $validated['franchise_end_date'] ?? $franchiseApplication->franchise_end_date,
-                'rejection_reason' => $validated['rejection_reason'] ?? null,
+                'application_type'     => $validated['application_type'],
+                'route_id'             => $validated['route_id'],
+                'ctc_no'               => $validated['ctc_no'],
+                'ctc_date_issued'      => $validated['ctc_date_issued'],
+                'ctc_place_issued'     => $validated['ctc_place_issued'],
+                'franchise_fee'        => $validated['franchise_fee'] ?? $franchiseApplication->franchise_fee,
+                'franchise_no'         => $validated['franchise_no'] ?? $franchiseApplication->franchise_no,
+                'sticker_no'           => $validated['sticker_no'] ?? $franchiseApplication->sticker_no,
+                'previous_franchise_no'=> $validated['previous_franchise_no'] ?? $franchiseApplication->previous_franchise_no,
+                'previous_sticker_no'  => $validated['previous_sticker_no'] ?? $franchiseApplication->previous_sticker_no,
+                'previous_application_id' => $validated['previous_application_id'] ?? $franchiseApplication->previous_application_id,
+                'previous_franchise_end_date' => $validated['previous_franchise_end_date'] ?? $franchiseApplication->previous_franchise_end_date,
             ]);
-    
-            $franchiseApplication->operator->update([
-                'full_name' => $validated['operator_name'],
-                'contact_no' => $validated['operator_contact_no'],
-                'address' => $validated['operator_address'],
-            ]);
-    
-            $franchiseApplication->driver->update([
-                'full_name' => $validated['driver_name'],
-                'license_no' => $validated['driver_license_no'],
-                'contact_no' => $validated['driver_contact_no'],
-                'address' => $validated['driver_address'],
-            ]);
+
+            // Update operator details (assuming relationships)
+            if ($franchiseApplication->operator) {
+                $franchiseApplication->operator->update([
+                    'last_name'        => $validated['operator_last_name'],
+                    'first_name'       => $validated['operator_first_name'],
+                    'middle_initial'   => $validated['operator_middle_initial'] ?? $franchiseApplication->operator->middle_initial,
+                    'barangay'         => $validated['operator_barangay'],
+                    'birth_date'       => $validated['operator_birth_date'],
+                    'age'              => $validated['operator_age'],
+                    'sex'              => $validated['operator_sex'],
+                    'civil_status'     => $validated['operator_civil_status'],
+                    'contact_no'       => $validated['operator_contact_no'],
+                ]);
+            }
+
+            // Update driver details (assuming relationships)
+            if ($franchiseApplication->driver) {
+                $franchiseApplication->driver->update([
+                    'last_name'        => $validated['driver_last_name'],
+                    'first_name'       => $validated['driver_first_name'],
+                    'middle_initial'   => $validated['driver_middle_initial'] ?? $franchiseApplication->driver->middle_initial,
+                    'barangay'         => $validated['driver_barangay'],
+                    'birth_date'       => $validated['driver_birth_date'],
+                    'age'              => $validated['driver_age'],
+                    'sex'              => $validated['driver_sex'],
+                    'civil_status'     => $validated['driver_civil_status'],
+                    'contact_no'       => $validated['driver_contact_no'],
+                    'license_no'       => $validated['driver_license_no'],
+                    'license_validity' => $validated['driver_license_validity'],
+                    'license_nature'   => $validated['driver_license_nature'],
+                ]);
+            }
+
+            // Any other model relation updates come here...
         });
 
-
-    
         return redirect()
             ->route('admin.franchise.show', encrypt($franchiseApplication->id))
             ->with('success', 'Franchise application updated successfully.');

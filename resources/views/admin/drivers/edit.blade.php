@@ -92,32 +92,33 @@
                 <!-- Barangay -->
                 <div>
                     <label for="barangay" class="block text-sm font-medium text-primary-navy mb-1">Barangay</label>
-                    <input value="{{ old('barangay', $driver->barangay) }}" type="text"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('barangay') border-red-500 @enderror"
-                           id="barangay" name="barangay" required>
+                    <select 
+                        id="barangay" 
+                        name="barangay"
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-primary-navy focus:border-primary-navy @error('barangay') border-red-500 @enderror"
+                        required
+                    >
+                        <option value="">Select Barangay</option>
+                        <option value="Banaba" {{ old('barangay', $driver->barangay) == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                        <option value="Banaybanay" {{ old('barangay', $driver->barangay) == 'Banaybanay' ? 'selected' : '' }}>Banaybanay</option>
+                        <option value="Bawi" {{ old('barangay', $driver->barangay) == 'Bawi' ? 'selected' : '' }}>Bawi</option>
+                        <option value="Bukal" {{ old('barangay', $driver->barangay) == 'Bukal' ? 'selected' : '' }}>Bukal</option>
+                        <option value="Castillo" {{ old('barangay', $driver->barangay) == 'Castillo' ? 'selected' : '' }}>Castillo</option>
+                        <option value="Cawongan" {{ old('barangay', $driver->barangay) == 'Cawongan' ? 'selected' : '' }}>Cawongan</option>
+                        <option value="Manggas" {{ old('barangay', $driver->barangay) == 'Manggas' ? 'selected' : '' }}>Manggas</option>
+                        <option value="Maugat East" {{ old('barangay', $driver->barangay) == 'Maugat East' ? 'selected' : '' }}>Maugat East</option>
+                        <option value="Maugat West" {{ old('barangay', $driver->barangay) == 'Maugat West' ? 'selected' : '' }}>Maugat West</option>
+                        <option value="Pansol" {{ old('barangay', $driver->barangay) == 'Pansol' ? 'selected' : '' }}>Pansol</option>
+                        <option value="Poblacion" {{ old('barangay', $driver->barangay) == 'Poblacion' ? 'selected' : '' }}>Poblacion</option>
+                        <option value="San Felipe" {{ old('barangay', $driver->barangay) == 'San Felipe' ? 'selected' : '' }}>San Felipe</option>
+                        <option value="San Vicente" {{ old('barangay', $driver->barangay) == 'San Vicente' ? 'selected' : '' }}>San Vicente</option>
+                        <option value="Santa Clara" {{ old('barangay', $driver->barangay) == 'Santa Clara' ? 'selected' : '' }}>Santa Clara</option>
+                        <option value="Santo Niño" {{ old('barangay', $driver->barangay) == 'Santo Niño' ? 'selected' : '' }}>Santo Niño</option>
+                        <option value="Silangan" {{ old('barangay', $driver->barangay) == 'Silangan' ? 'selected' : '' }}>Silangan</option>
+                        <option value="Tamak" {{ old('barangay', $driver->barangay) == 'Tamak' ? 'selected' : '' }}>Tamak</option>
+                        <option value="Quilo-quilo North" {{ old('barangay', $driver->barangay) == 'Quilo-quilo North' ? 'selected' : '' }}>Quilo-quilo North</option>
+                    </select>
                     @error('barangay')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Municipality -->
-                <div>
-                    <label for="municipality" class="block text-sm font-medium text-primary-navy mb-1">Municipality</label>
-                    <input value="{{ old('municipality', $driver->municipality) }}" type="text"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('municipality') border-red-500 @enderror"
-                           id="municipality" name="municipality" required>
-                    @error('municipality')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Province -->
-                <div>
-                    <label for="province" class="block text-sm font-medium text-primary-navy mb-1">Province</label>
-                    <input value="{{ old('province', $driver->province) }}" type="text"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('province') border-red-500 @enderror"
-                           id="province" name="province" required>
-                    @error('province')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
@@ -197,9 +198,18 @@
                 <!-- License Nature -->
                 <div>
                     <label for="license_nature" class="block text-sm font-medium text-primary-navy mb-1">License Nature</label>
-                    <input value="{{ old('license_nature', $driver->license_nature) }}" type="text"
+                    <select 
+                        id="license_nature" 
+                        name="license_nature"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('license_nature') border-red-500 @enderror"
-                        id="license_nature" name="license_nature" required>
+                        required>
+                        <option value="">Select license nature</option>
+                        <option value="Professional" {{ old('license_nature', $driver->license_nature) == 'Professional' ? 'selected' : '' }}>Professional</option>
+                        <option value="Non-Professional" {{ old('license_nature', $driver->license_nature) == 'Non-Professional' ? 'selected' : '' }}>Non-Professional</option>
+                        <option value="Student" {{ old('license_nature', $driver->license_nature) == 'Student' ? 'selected' : '' }}>Student</option>
+                        <option value="Restriction 1" {{ old('license_nature', $driver->license_nature) == 'Restriction 1' ? 'selected' : '' }}>Restriction 1</option>
+                        <option value="Restriction 2" {{ old('license_nature', $driver->license_nature) == 'Restriction 2' ? 'selected' : '' }}>Restriction 2</option>
+                    </select>
                     @error('license_nature')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror

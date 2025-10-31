@@ -92,32 +92,34 @@
                 <!-- Barangay -->
                 <div>
                     <label for="barangay" class="block text-sm font-medium text-primary-navy mb-1">Barangay</label>
-                    <input value="{{ old('barangay', $operator->barangay) }}" type="text"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('barangay') border-red-500 @enderror"
-                           id="barangay" name="barangay" required>
+                    <select 
+                        id="barangay" 
+                        value="{{ old('operator_barangay', $franchiseApplication->operator->barangay ?? '') }}"
+                        name="barangay" 
+                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('barangay') border-red-500 @enderror"
+                        required
+                    >
+                        <option value="">Select Barangay</option>
+                        <option value="Banaba" {{ old('barangay', $operator->barangay) == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                        <option value="Banaybanay" {{ old('barangay', $operator->barangay) == 'Banaybanay' ? 'selected' : '' }}>Banaybanay</option>
+                        <option value="Bawi" {{ old('barangay', $operator->barangay) == 'Bawi' ? 'selected' : '' }}>Bawi</option>
+                        <option value="Bukal" {{ old('barangay', $operator->barangay) == 'Bukal' ? 'selected' : '' }}>Bukal</option>
+                        <option value="Castillo" {{ old('barangay', $operator->barangay) == 'Castillo' ? 'selected' : '' }}>Castillo</option>
+                        <option value="Cawongan" {{ old('barangay', $operator->barangay) == 'Cawongan' ? 'selected' : '' }}>Cawongan</option>
+                        <option value="Manggas" {{ old('barangay', $operator->barangay) == 'Manggas' ? 'selected' : '' }}>Manggas</option>
+                        <option value="Maugat East" {{ old('barangay', $operator->barangay) == 'Maugat East' ? 'selected' : '' }}>Maugat East</option>
+                        <option value="Maugat West" {{ old('barangay', $operator->barangay) == 'Maugat West' ? 'selected' : '' }}>Maugat West</option>
+                        <option value="Pansol" {{ old('barangay', $operator->barangay) == 'Pansol' ? 'selected' : '' }}>Pansol</option>
+                        <option value="Poblacion" {{ old('barangay', $operator->barangay) == 'Poblacion' ? 'selected' : '' }}>Poblacion</option>
+                        <option value="San Felipe" {{ old('barangay', $operator->barangay) == 'San Felipe' ? 'selected' : '' }}>San Felipe</option>
+                        <option value="San Vicente" {{ old('barangay', $operator->barangay) == 'San Vicente' ? 'selected' : '' }}>San Vicente</option>
+                        <option value="Santa Clara" {{ old('barangay', $operator->barangay) == 'Santa Clara' ? 'selected' : '' }}>Santa Clara</option>
+                        <option value="Santo Niño" {{ old('barangay', $operator->barangay) == 'Santo Niño' ? 'selected' : '' }}>Santo Niño</option>
+                        <option value="Silangan" {{ old('barangay', $operator->barangay) == 'Silangan' ? 'selected' : '' }}>Silangan</option>
+                        <option value="Tamak" {{ old('barangay', $operator->barangay) == 'Tamak' ? 'selected' : '' }}>Tamak</option>
+                        <option value="Quilo-quilo North" {{ old('barangay', $operator->barangay) == 'Quilo-quilo North' ? 'selected' : '' }}>Quilo-quilo North</option>
+                    </select>
                     @error('barangay')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Municipality -->
-                <div>
-                    <label for="municipality" class="block text-sm font-medium text-primary-navy mb-1">Municipality</label>
-                    <input value="{{ old('municipality', $operator->municipality) }}" type="text"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('municipality') border-red-500 @enderror"
-                           id="municipality" name="municipality" required>
-                    @error('municipality')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Province -->
-                <div>
-                    <label for="province" class="block text-sm font-medium text-primary-navy mb-1">Province</label>
-                    <input value="{{ old('province', $operator->province) }}" type="text"
-                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 @error('province') border-red-500 @enderror"
-                           id="province" name="province" required>
-                    @error('province')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>

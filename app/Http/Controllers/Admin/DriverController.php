@@ -24,7 +24,7 @@ class DriverController extends Controller
             abort(404, 'Invalid or tampered link.');
         }
         $driver = Driver::findOrFail($id);
-        return view('admin.drivers.edit', compact('driver','encryptedId'));
+        return view('admin.drivers.edit', compact('driver', 'encryptedId'));
     }
 
     public function update(Request $request, $encryptedId)
@@ -35,41 +35,74 @@ class DriverController extends Controller
             abort(404, 'Invalid or tampered link.');
         }
 
-        $request->validate([
-            'last_name' => 'required|string|max:255',
-            'first_name' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:2',
-            'barangay' => 'required|string|max:255',
-            'municipality' => 'required|string|max:255',
-            'province' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'age' => 'required|integer|min:0',
-            'sex' => 'required|string|max:10',
-            'civil_status' => 'required|string|max:50',
-            'contact_no' => 'required|string|max:20',
-            'license_no' => 'required|string|max:50',
-            'license_validity' => 'required|date',
-            'license_nature' => 'required|string|max:50',
+        $validated = $request->validate([
+            'last_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z\s\-]+$/'],
+            'first_name' => ['required', 'string', 'max:255', 'regex:/^[A-Za-z\s\-]+$/'],
+            'middle_initial' => ['nullable', 'string', 'max:1', 'regex:/^[A-Za-z]$/'],
+            'barangay' => [
+                'required',
+                'string',
+                'max:255'
+            ],
+            'birth_date' => [
+                'required',
+                'date',
+                'before:today',
+                function ($attribute, $value, $fail) {
+                    if (strtotime($value) > strtotime('-18 years')) {
+                        $fail('The driver must be at least 18 years old.');
+                    }
+                },
+            ],
+            'age' => [
+                'required',
+                'integer',
+                'min:18',
+                'max:80',
+            ],
+            'sex' => ['required'],
+            'civil_status' => ['required'],
+            'contact_no' => [
+                'required',
+                'string',
+                'regex:/^09\d{9}$/'
+            ],
+            'license_no' => [
+                'required',
+                'string',
+                'max:50',
+                'unique:drivers,license_no,' . $id . ',driver_id',
+                'regex:/^[A-Z]\d{2}-\d{2}-\d{6}$/'
+            ],
+            'license_validity' => [
+                'required',
+                'date',
+                'after:today',
+            ],
+            'license_nature' => [
+                'required'            ],
         ]);
-
+        // Automatically assign fixed location values
+        $validated['municipality'] = 'Padre Garcia';
+        $validated['province'] = 'Batangas';
         $driver = Driver::findOrFail($id);
 
         $originalData = $driver->getAttributes();
 
-        $driver->last_name = $request->input('last_name');
-        $driver->first_name = $request->input('first_name');
-        $driver->middle_initial = $request->input('middle_initial');
-        $driver->barangay = $request->input('barangay');
-        $driver->municipality = $request->input('municipality');
-        $driver->province = $request->input('province');
-        $driver->birth_date = $request->input('birth_date');
-        $driver->age = $request->input('age');
-        $driver->sex = $request->input('sex');
-        $driver->civil_status = $request->input('civil_status');
-        $driver->contact_no = $request->input('contact_no');
-        $driver->license_no = $request->input('license_no');
-        $driver->license_validity = $request->input('license_validity');
-        $driver->license_nature = $request->input('license_nature');
+        $driver->last_name = $validated['last_name'];
+        $driver->first_name = $validated['first_name'];
+        $driver->middle_initial = $validated['middle_initial'] ?? null;
+        $driver->barangay = $validated['barangay'];
+        $driver->municipality = $validated['municipality'];
+        $driver->province = $validated['province'];
+        $driver->birth_date = $validated['birth_date'];
+        $driver->age = $validated['age'];
+        $driver->sex = $validated['sex'];
+        $driver->civil_status = $validated['civil_status'];
+        $driver->contact_no = $validated['contact_no'];
+        $driver->license_no = $validated['license_no'];
+        $driver->license_validity = $validated['license_validity'];
+        $driver->license_nature = $validated['license_nature'];
 
         // Check for changes before saving
         if (!$driver->isDirty()) {

@@ -9,7 +9,9 @@
 @endsection
 
 @section('content')
-<div class="p-6 bg-white rounded-lg shadow">
+{{-- Removed the global error block --}}
+
+<div class="p-6 bg-white rounded-lg mt-4 shadow">
     @if (session('error'))
     <div class="mb-4 text-red-600 font-semibold bg-red-100 p-4 rounded">{{ session('error') }}</div>
     @endif
@@ -30,6 +32,9 @@
                         <option value="new">New Application</option>
                         <option value="renewal">Renewal</option>
                     </select>
+                    @error('application_type')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Route</label>
@@ -39,6 +44,9 @@
                             <option value="{{ $route->id }}">{{ $route->name }}</option>
                         @endforeach
                     </select>
+                    @error('route_id')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
             
@@ -56,23 +64,35 @@
                         <input type="text" name="previous_franchise_no" id="previous_franchise_no" value="{{ old('previous_franchise_no') }}" 
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy"
                                placeholder="Enter previous franchise number">
+                        @error('previous_franchise_no')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Previous Sticker Number <span class="text-red-500">*</span></label>
                         <input type="text" name="previous_sticker_no" id="previous_sticker_no" value="{{ old('previous_sticker_no') }}" 
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy"
                                placeholder="Enter previous sticker number">
+                        @error('previous_sticker_no')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Previous Application ID (Optional)</label>
                         <input type="number" name="previous_application_id" value="{{ old('previous_application_id') }}" 
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy"
                                placeholder="Enter previous application ID if known">
+                        @error('previous_application_id')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Previous Franchise End Date <span class="text-red-500">*</span></label>
                         <input type="date" name="previous_franchise_end_date" id="previous_franchise_end_date" value="{{ old('previous_franchise_end_date') }}" 
                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
+                        @error('previous_franchise_end_date')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -85,34 +105,64 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Last Name *</label>
                     <input type="text" name="operator_last_name" value="{{ old('operator_last_name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('operator_last_name')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">First Name *</label>
                     <input type="text" name="operator_first_name" value="{{ old('operator_first_name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('operator_first_name')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Middle Initial</label>
                     <input type="text" name="operator_middle_initial" value="{{ old('operator_middle_initial') }}" maxlength="1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
+                    @error('operator_middle_initial')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Barangay *</label>
-                    <input type="text" name="operator_barangay" value="{{ old('operator_barangay') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Municipality *</label>
-                    <input type="text" name="operator_municipality" value="{{ old('operator_municipality') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Province *</label>
-                    <input type="text" name="operator_province" value="{{ old('operator_province') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    <select name="operator_barangay" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                        <option value="">Select barangay</option>
+                        <option value="Banaba" {{ old('operator_barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                        <option value="Banaybanay" {{ old('operator_barangay') == 'Banaybanay' ? 'selected' : '' }}>Banaybanay</option>
+                        <option value="Bawi" {{ old('operator_barangay') == 'Bawi' ? 'selected' : '' }}>Bawi</option>
+                        <option value="Bukal" {{ old('operator_barangay') == 'Bukal' ? 'selected' : '' }}>Bukal</option>
+                        <option value="Castillo" {{ old('operator_barangay') == 'Castillo' ? 'selected' : '' }}>Castillo</option>
+                        <option value="Cawongan" {{ old('operator_barangay') == 'Cawongan' ? 'selected' : '' }}>Cawongan</option>
+                        <option value="Manggas" {{ old('operator_barangay') == 'Manggas' ? 'selected' : '' }}>Manggas</option>
+                        <option value="Maugat East" {{ old('operator_barangay') == 'Maugat East' ? 'selected' : '' }}>Maugat East</option>
+                        <option value="Maugat West" {{ old('operator_barangay') == 'Maugat West' ? 'selected' : '' }}>Maugat West</option>
+                        <option value="Pansol" {{ old('operator_barangay') == 'Pansol' ? 'selected' : '' }}>Pansol</option>
+                        <option value="Poblacion" {{ old('operator_barangay') == 'Poblacion' ? 'selected' : '' }}>Poblacion</option>
+                        <option value="San Felipe" {{ old('operator_barangay') == 'San Felipe' ? 'selected' : '' }}>San Felipe</option>
+                        <option value="San Vicente" {{ old('operator_barangay') == 'San Vicente' ? 'selected' : '' }}>San Vicente</option>
+                        <option value="Santa Clara" {{ old('operator_barangay') == 'Santa Clara' ? 'selected' : '' }}>Santa Clara</option>
+                        <option value="Santo Niño" {{ old('operator_barangay') == 'Santo Niño' ? 'selected' : '' }}>Santo Niño</option>
+                        <option value="Silangan" {{ old('operator_barangay') == 'Silangan' ? 'selected' : '' }}>Silangan</option>
+                        <option value="Tamak" {{ old('operator_barangay') == 'Tamak' ? 'selected' : '' }}>Tamak</option>
+                        <option value="Quilo-quilo North" {{ old('operator_barangay') == 'Quilo-quilo North' ? 'selected' : '' }}>Quilo-quilo North</option>
+                    </select>
+                    @error('operator_barangay')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Birth Date *</label>
                     <input type="date" name="operator_birth_date" value="{{ old('operator_birth_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('operator_birth_date')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Age *</label>
                     <input type="number" name="operator_age" value="{{ old('operator_age') }}" min="18" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('operator_age')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Sex *</label>
@@ -121,6 +171,9 @@
                         <option value="male" {{ old('operator_sex') == 'male' ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('operator_sex') == 'female' ? 'selected' : '' }}>Female</option>
                     </select>
+                    @error('operator_sex')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Civil Status *</label>
@@ -131,14 +184,23 @@
                         <option value="widowed" {{ old('operator_civil_status') == 'widowed' ? 'selected' : '' }}>Widowed</option>
                         <option value="divorced" {{ old('operator_civil_status') == 'divorced' ? 'selected' : '' }}>Divorced</option>
                     </select>
+                    @error('operator_civil_status')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contact Number *</label>
                     <input type="text" name="operator_contact_no" value="{{ old('operator_contact_no') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('operator_contact_no')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email Address *</label>
                     <input type="email" name="operator_email" value="{{ old('operator_email') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('operator_email')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label for="operator_password" class="block mb-1 text-sm font-semibold text-primary-navy">Password *</label>
@@ -159,6 +221,9 @@
                             </svg>
                         </button>
                     </div>
+                    @error('operator_password')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 
             </div>
@@ -171,34 +236,64 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Last Name *</label>
                     <input type="text" name="driver_last_name" value="{{ old('driver_last_name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_last_name')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">First Name *</label>
                     <input type="text" name="driver_first_name" value="{{ old('driver_first_name') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_first_name')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Middle Initial</label>
                     <input type="text" name="driver_middle_initial" value="{{ old('driver_middle_initial') }}" maxlength="1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
+                    @error('driver_middle_initial')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Barangay *</label>
-                    <input type="text" name="driver_barangay" value="{{ old('driver_barangay') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Municipality *</label>
-                    <input type="text" name="driver_municipality" value="{{ old('driver_municipality') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Province *</label>
-                    <input type="text" name="driver_province" value="{{ old('driver_province') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    <select name="driver_barangay" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                        <option value="">Select barangay</option>
+                        <option value="Banaba" {{ old('driver_barangay') == 'Banaba' ? 'selected' : '' }}>Banaba</option>
+                        <option value="Banaybanay" {{ old('driver_barangay') == 'Banaybanay' ? 'selected' : '' }}>Banaybanay</option>
+                        <option value="Bawi" {{ old('driver_barangay') == 'Bawi' ? 'selected' : '' }}>Bawi</option>
+                        <option value="Bukal" {{ old('driver_barangay') == 'Bukal' ? 'selected' : '' }}>Bukal</option>
+                        <option value="Castillo" {{ old('driver_barangay') == 'Castillo' ? 'selected' : '' }}>Castillo</option>
+                        <option value="Cawongan" {{ old('driver_barangay') == 'Cawongan' ? 'selected' : '' }}>Cawongan</option>
+                        <option value="Manggas" {{ old('driver_barangay') == 'Manggas' ? 'selected' : '' }}>Manggas</option>
+                        <option value="Maugat East" {{ old('driver_barangay') == 'Maugat East' ? 'selected' : '' }}>Maugat East</option>
+                        <option value="Maugat West" {{ old('driver_barangay') == 'Maugat West' ? 'selected' : '' }}>Maugat West</option>
+                        <option value="Pansol" {{ old('driver_barangay') == 'Pansol' ? 'selected' : '' }}>Pansol</option>
+                        <option value="Poblacion" {{ old('driver_barangay') == 'Poblacion' ? 'selected' : '' }}>Poblacion</option>
+                        <option value="San Felipe" {{ old('driver_barangay') == 'San Felipe' ? 'selected' : '' }}>San Felipe</option>
+                        <option value="San Vicente" {{ old('driver_barangay') == 'San Vicente' ? 'selected' : '' }}>San Vicente</option>
+                        <option value="Santa Clara" {{ old('driver_barangay') == 'Santa Clara' ? 'selected' : '' }}>Santa Clara</option>
+                        <option value="Santo Niño" {{ old('driver_barangay') == 'Santo Niño' ? 'selected' : '' }}>Santo Niño</option>
+                        <option value="Silangan" {{ old('driver_barangay') == 'Silangan' ? 'selected' : '' }}>Silangan</option>
+                        <option value="Tamak" {{ old('driver_barangay') == 'Tamak' ? 'selected' : '' }}>Tamak</option>
+                        <option value="Quilo-quilo North" {{ old('driver_barangay') == 'Quilo-quilo North' ? 'selected' : '' }}>Quilo-quilo North</option>
+                    </select>
+                    @error('driver_barangay')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Birth Date *</label>
                     <input type="date" name="driver_birth_date" value="{{ old('driver_birth_date') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_birth_date')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Age *</label>
                     <input type="number" name="driver_age" value="{{ old('driver_age') }}" min="18" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_age')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Sex *</label>
@@ -207,6 +302,9 @@
                         <option value="male" {{ old('driver_sex') == 'male' ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('driver_sex') == 'female' ? 'selected' : '' }}>Female</option>
                     </select>
+                    @error('driver_sex')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Civil Status *</label>
@@ -217,18 +315,30 @@
                         <option value="widowed" {{ old('driver_civil_status') == 'widowed' ? 'selected' : '' }}>Widowed</option>
                         <option value="divorced" {{ old('driver_civil_status') == 'divorced' ? 'selected' : '' }}>Divorced</option>
                     </select>
+                    @error('driver_civil_status')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contact Number *</label>
                     <input type="text" name="driver_contact_no" value="{{ old('driver_contact_no') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_contact_no')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">License Number *</label>
                     <input type="text" name="driver_license_no" value="{{ old('driver_license_no') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_license_no')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">License Validity *</label>
                     <input type="date" name="driver_license_validity" value="{{ old('driver_license_validity') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('driver_license_validity')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">License Nature *</label>
@@ -240,6 +350,9 @@
                         <option value="Restriction 1" {{ old('driver_license_nature') == 'Restriction 1' ? 'selected' : '' }}>Restriction 1</option>
                         <option value="Restriction 2" {{ old('driver_license_nature') == 'Restriction 2' ? 'selected' : '' }}>Restriction 2</option>
                     </select>
+                    @error('driver_license_nature')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
         </div>
@@ -255,6 +368,9 @@
                         <option value="motocab" {{ old('unit_type') == 'motocab' ? 'selected' : '' }}>Motocab</option>
                         <option value="tricycle" {{ old('unit_type') == 'tricycle' ? 'selected' : '' }}>Tricycle</option>
                     </select>
+                    @error('unit_type')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Unit Make *</label>
@@ -266,18 +382,30 @@
                             </option>
                         @endforeach
                     </select>
+                    @error('unit_make_id')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Motor Number *</label>
                     <input type="text" name="motorno" value="{{ old('motorno') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('motorno')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Chassis Number *</label>
                     <input type="text" name="chasisno" value="{{ old('chasisno') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('chasisno')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Plate Number *</label>
                     <input type="text" name="platenumber" value="{{ old('platenumber') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('platenumber')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
         </div>
@@ -289,19 +417,24 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">CTC No *</label>
                     <input type="text" name="ctc_no" value="{{ old('ctc_no') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('ctc_no')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">CTC Date Issued *</label>
                     <input type="date" name="ctc_date_issued" value="{{ old('ctc_date_issued') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('ctc_date_issued')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">CTC Place Issued *</label>
                     <input type="text" name="ctc_place_issued" value="{{ old('ctc_place_issued') }}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy" required>
+                    @error('ctc_place_issued')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-            </div>
-            <div class="mt-4">
-                <label class="block text-sm font-medium text-gray-700">Franchise Fee (Optional)</label>
-                <input type="number" name="franchise_fee" value="{{ old('franchise_fee') }}" step="0.01" min="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-navy focus:border-primary-navy">
             </div>
         </div>
 
@@ -322,6 +455,9 @@
                             <span class="ml-2 text-sm text-gray-700">{{ $docType->name }}</span>
                         </label>
                         @endforeach
+                        @error('operator_documents')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
@@ -336,6 +472,9 @@
                             <span class="ml-2 text-sm text-gray-700">{{ $docType->name }}</span>
                         </label>
                         @endforeach
+                        @error('driver_documents')
+                            <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
@@ -352,17 +491,6 @@
         </div>
     </form>
 </div>
-
-@if ($errors->any())
-<div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-    <h4 class="font-semibold">Please correct the following errors:</h4>
-    <ul class="list-disc list-inside mt-2">
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-    </ul>
-</div>
-@endif
 
 @push('scripts')
 <script>
