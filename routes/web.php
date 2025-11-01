@@ -125,6 +125,8 @@ Route::post('/email/verification-resend', function (Request $request) {
 })->middleware(['auth'])->name('verification.resend');
 
 
+Route::view('/terms', 'terms')->name('terms');
+Route::view('/privacy', 'privacy')->name('privacy');
 
 Route::get('/chatbot/categories', [ChatBotController::class, 'getCategories']);
 Route::get('/chatbot/questions/{category}', [ChatBotController::class, 'questions']);
