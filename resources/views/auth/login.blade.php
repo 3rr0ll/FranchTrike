@@ -75,6 +75,12 @@
               <a href="{{ route('password.request') }}" class="text-sm font-medium text-primary-navy hover:underline">Forgot password?</a>
               @endif
             </div>
+            <div style="display: flex; justify-content: center; margin: 20px 0; padding: 3px;">
+              <div class="cf-turnstile" 
+                   data-sitekey="{{ config('services.turnstile.key') }}"
+                   data-theme="light">
+              </div>
+            </div>            
             <button type="submit"
               class="w-full text-white bg-primary-navy hover:bg-accent-purple transition-colors duration-200 focus:ring-4 focus:outline-none focus:ring-primary-navy font-semibold rounded-lg text-base px-5 py-2.5 shadow">
               Sign in
@@ -121,6 +127,5 @@
         });
       }
     });
-  
   </script>
 </x-guest-layout>

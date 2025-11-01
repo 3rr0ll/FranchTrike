@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Fortify;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Fortify\Contracts\LoginResponse;
 use App\Actions\Fortify\RedirectAuthenticatedUsers;
@@ -21,6 +20,8 @@ use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Contracts\VerifyEmailViewResponse;
 use Laravel\Fortify\Http\Responses\VerifyEmailResponse;
 use Illuminate\Auth\Events\Verified; 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\ValidationException;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -64,17 +65,29 @@ class FortifyServiceProvider extends ServiceProvider
             };
         });
 
-        // Listen for the Verified event as a backup (in case other flows verify email)
         \Illuminate\Support\Facades\Event::listen(Verified::class, function ($event) {
             $user = $event->user;
-            // Role is already assigned during registration, but ensure it's set as backup
             if ($user && !$user->role_id) {
                 $user->role_id = 1;
                 $user->save();
             }
         });
-
         Fortify::authenticateUsing(function (Request $request) {
+
+            // Cloudflare Turnstile check
+            $turnstile = $request->input('cf-turnstile-response');
+            $verify = Http::asForm()->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                'secret' => config('services.turnstile.secret'),
+                'response' => $turnstile,
+                'remoteip' => $request->ip(),
+            ]);
+        
+            if (! ($verify->json('success') ?? false)) {
+                throw ValidationException::withMessages([
+                    'turnstile' => 'Bot verification failed. Please try again.',
+                ]);
+            }
+
             $user = \App\Models\User::where('email', $request->email)->first();
             $securityService = app(LoginSecurityService::class);
 
@@ -106,13 +119,11 @@ class FortifyServiceProvider extends ServiceProvider
 
             // Check role-based access
             if ($request->has('is_admin_login')) {
-                // Only allow admin or superadmin to login here
                 if (!in_array(optional($user->role)->name, ['admin', 'superadmin'])) {
                     $securityService->logLoginAttempt($request, $request->email, 'fail', 'Unauthorized role for admin login', $user);
                     return null;
                 }
             } else {
-                // Default login (operator only)
                 if (optional($user->role)->name !== 'operator') {
                     $securityService->logLoginAttempt($request, $request->email, 'fail', 'Unauthorized role for operator login', $user);
                     return null;

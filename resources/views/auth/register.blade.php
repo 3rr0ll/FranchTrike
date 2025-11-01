@@ -93,21 +93,12 @@
                 </button>
               </div>
             </div>
-            @if (Laravel\Jetstream\Jetstream::hasTermsAndPrivacyPolicyFeature())
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <input id="terms" name="terms" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-navy" required>
-              </div>
-              <div class="ml-3 text-sm">
-                <label for="terms" class="text-gray-500">
-                  I agree to the
-                  <a href="{{ route('terms.show') }}" target="_blank" class="text-primary-navy hover:underline">Terms of Service</a>
-                  and
-                  <a href="{{ route('policy.show') }}" target="_blank" class="text-primary-navy hover:underline">Privacy Policy</a>
-                </label>
+            <div style="display: flex; justify-content: center; margin: 20px 0;">
+              <div class="cf-turnstile" 
+                   data-sitekey="{{ config('services.turnstile.key') }}"
+                   data-theme="light">
               </div>
             </div>
-            @endif
             <button type="submit"
               class="w-full text-white bg-primary-navy hover:bg-accent-purple transition-colors duration-200 focus:ring-4 focus:outline-none focus:ring-primary-navy font-semibold rounded-lg text-base px-5 py-2.5 shadow">
               Create account
