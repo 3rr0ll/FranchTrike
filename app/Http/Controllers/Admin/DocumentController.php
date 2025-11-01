@@ -18,28 +18,38 @@ class DocumentController extends Controller
         $driverDocs = DriverDocument::with(['driver', 'documentType'])
             ->get()
             ->map(function ($doc) {
+                // Check if document is physically submitted by checking if document_name contains the pattern
+                $isPhysicallySubmitted = str_contains($doc->document_name, 'Physically Submitted');
+                $displayName = $isPhysicallySubmitted ? $doc->document_name : ($doc->documentType ? $doc->documentType->name : 'N/A');
+                
                 return [
                     'id' => $doc->id,
                     'user_name' => $doc->driver ? $doc->driver->first_name . ' ' . $doc->driver->last_name : 'N/A',
                     'user_type' => 'Driver',
-                    'document_type' => $doc->documentType ? $doc->documentType->name : 'N/A',
+                    'document_type' => $displayName,
                     'status' => $doc->status,
                     'created_at' => $doc->created_at,
                     'url' => $doc->file_url ?: $doc->full_file_url,
+                    'is_physically_submitted' => $isPhysicallySubmitted,
                 ];
             });
 
         $operatorDocs = OperatorDocument::with(['operator', 'documentType'])
             ->get()
             ->map(function ($doc) {
+                // Check if document is physically submitted by checking if document_name contains the pattern
+                $isPhysicallySubmitted = str_contains($doc->document_name, 'Physically Submitted');
+                $displayName = $isPhysicallySubmitted ? $doc->document_name : ($doc->documentType ? $doc->documentType->name : 'N/A');
+                
                 return [
                     'id' => $doc->id,
                     'user_name' => $doc->operator ? ($doc->operator->full_name ?? ($doc->operator->first_name . ' ' . $doc->operator->last_name)) : 'N/A',
                     'user_type' => 'Operator',
-                    'document_type' => $doc->documentType ? $doc->documentType->name : 'N/A',
+                    'document_type' => $displayName,
                     'status' => $doc->status,
                     'created_at' => $doc->created_at,
                     'url' => $doc->file_url ?: $doc->full_file_url,
+                    'is_physically_submitted' => $isPhysicallySubmitted,
                 ];
             });
 

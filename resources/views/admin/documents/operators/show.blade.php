@@ -27,7 +27,7 @@
             </div>
             <div>
                 <span class="font-semibold">Birth Date:</span>
-                {{ $operator->birth_date }}
+                {{ \Carbon\Carbon::parse($operator->birth_date)->format('F d, Y') }}
             </div>
             <div>
                 <span class="font-semibold">Age:</span>
@@ -52,8 +52,9 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-        <table id="documentsTable" class="min-w-full display nowrap table-auto" style="width:100%">
+    <div class="bg-white p-4 rounded-lg shadow border border-gray-200 mt-4">
+        <h2 class="text-2xl font-bold text-primary-navy mb-4">Operator Documents</h2>
+         <table id="documentsTable" class="min-w-full display nowrap table-auto" style="width:100%">
             <thead>
                 <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
                     <th>#</th>
@@ -66,7 +67,7 @@
                 @foreach($documents as $i => $document)
                 <tr>
                     <td class="py-2 px-4">{{ $i + 1 }}</td>
-                    <td class="py-2 px-4">{{ $document->documentType->name }}</td>
+                    <td class="py-2 px-4">{{ $document->display_name }}</td>
                     <td class="py-2 px-4">
                         <span class="px-3 py-1 text-xs font-medium rounded-full
                             @if($document->status === 'approved') bg-green-100 text-green-800
@@ -78,17 +79,29 @@
                         </span>
                     </td>
                     <td class="py-2 px-4">
-                        {{-- Updated to use Cloudinary URL --}}
-                        <x-button
-                            color="blue"
-                            class="flex items-center justify-center"
-                            onclick="openDocumentModal('{{ $document->file_url ?: $document->full_file_url }}', '{{ $document->documentType->name }}', '{{ encrypt($document->id) }}', '{{ $document->status }}')">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                            View Document
-                        </x-button>
+                        @if(str_contains($document->document_name, 'Physically Submitted'))
+                            <x-button
+                                color="blue"
+                                class="flex items-center justify-center"
+                                onclick="showPhysicalDocumentAlert('{{ ucfirst($document->status) }}')">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                View Document
+                            </x-button>
+                        @else
+                            <x-button
+                                color="blue"
+                                class="flex items-center justify-center"
+                                onclick="openDocumentModal('{{ $document->file_url ?: $document->full_file_url }}', '{{ $document->display_name }}', '{{ encrypt($document->id) }}', '{{ $document->status }}')">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                View Document
+                            </x-button>
+                        @endif
                     </td>
                 </tr>
                 @endforeach
@@ -146,6 +159,25 @@
     <script>
         let currentDocumentId = null;
         let currentDocumentStatus = null;
+
+        function showPhysicalDocumentAlert(status) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Physical Document Submission',
+                html: `
+                    <p class="text-gray-600 mb-4">
+                        This document was physically submitted to the office. 
+                        No digital file is available for viewing online.
+                    </p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                        <p class="text-sm text-blue-800">
+                            <strong>Status:</strong> ${status}
+                        </p>
+                    </div>
+                `,
+                confirmButtonColor: '#3085d6',
+            });
+        }
 
         function openDocumentModal(fileUrl, documentName, documentId, docStatus) {
             document.getElementById('modalTitle').textContent = documentName;

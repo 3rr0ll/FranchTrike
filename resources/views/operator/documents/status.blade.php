@@ -36,7 +36,7 @@
                     <tbody>
                         @foreach ($operatorDocuments as $doc)
                             <tr>
-                                <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
+                                <td class="px-4 py-2">{{ $doc->display_name }}</td>
                                 <td class="px-4 py-2">
                                     <span class="text-xs px-2 py-1 rounded-full
                                         @if($doc->status === 'approved') bg-green-100 text-green-700
@@ -48,24 +48,43 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 space-x-2">
-                                    {{-- Use file_url for Cloudinary files --}}
-                                    <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm"
-                                        onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                            </path>
-                                        </svg>
-                                        <button>
-                                            @if($doc->status === 'rejected')
-                                                <x-button size="sm" class="bg-red-500 hover:bg-red-600"
-                                                    onclick="openResubmitModal('operator', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.operator.resubmit', $doc->id) }}')">
-                                                    Resubmit
-                                                </x-button>
-                                            @endif
+                                    {{-- Check if document is physically submitted --}}
+                                    @php
+                                        $isPhysicallySubmitted = str_contains($doc->display_name, 'Physically Submitted') || empty($doc->file_url);
+                                    @endphp
+                                    
+                                    @if($isPhysicallySubmitted)
+                                        <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm"
+                                            onclick="showPhysicalDocumentAlert('{{ ucfirst($doc->status) }}')">
+                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    @else
+                                        {{-- Use file_url for Cloudinary files --}}
+                                        <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm"
+                                            onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->display_name }}')">
+                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    @endif
+                                    @if($doc->status === 'rejected')
+                                        <x-button size="sm" class="bg-red-500 hover:bg-red-600"
+                                            onclick="openResubmitModal('operator', {{ $doc->id }}, '{{ $doc->display_name }}', '{{ route('operator.documents.operator.resubmit', $doc->id) }}')">
+                                            Resubmit
+                                        </x-button>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-2 text-xs text-red-600">
                                     @if($doc->status === 'rejected' && $doc->rejection_reason)
@@ -105,7 +124,7 @@
                     <tbody>
                         @foreach ($driverDocuments as $doc)
                             <tr>
-                                <td class="px-4 py-2">{{ $doc->documentType->name }}</td>
+                                <td class="px-4 py-2">{{ $doc->display_name }}</td>
                                 <td class="px-4 py-2">
                                     @if(isset($doc->driver))
                                         @php
@@ -129,21 +148,40 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-2 space-x-2">
-                                    {{-- Use file_url directly for Cloudinary, or full_file_url as fallback --}}
-                                    <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm"
-                                        onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->documentType->name }}')">
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                            </path>
-                                        </svg>
-                                    </button>
+                                    {{-- Check if document is physically submitted --}}
+                                    @php
+                                        $isPhysicallySubmitted = str_contains($doc->display_name, 'Physically Submitted') || empty($doc->file_url);
+                                    @endphp
+                                    
+                                    @if($isPhysicallySubmitted)
+                                        <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm"
+                                            onclick="showPhysicalDocumentAlert('{{ ucfirst($doc->status) }}')">
+                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    @else
+                                        {{-- Use file_url directly for Cloudinary, or full_file_url as fallback --}}
+                                        <button class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900" size="sm"
+                                            onclick="openDocumentModal('{{ $doc->file_url ?: $doc->full_file_url }}', '{{ $doc->display_name }}')">
+                                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                    @endif
                                     @if($doc->status === 'rejected')
                                         <x-button size="sm" class="bg-red-500 hover:bg-red-600"
-                                            onclick="openResubmitModal('driver', {{ $doc->id }}, '{{ $doc->documentType->name }}', '{{ route('operator.documents.driver.resubmit', $doc->id) }}')">
+                                            onclick="openResubmitModal('driver', {{ $doc->id }}, '{{ $doc->display_name }}', '{{ route('operator.documents.driver.resubmit', $doc->id) }}')">
                                             Resubmit
                                         </x-button>
                                     @endif
@@ -332,6 +370,25 @@
         // ---------------------------
         // Document Modal Functions
         // ---------------------------
+        function showPhysicalDocumentAlert(status) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Physical Document Submission',
+                html: `
+                    <p class="text-gray-600 mb-4">
+                        This document was physically submitted to the office. 
+                        No digital file is available for viewing online.
+                    </p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                        <p class="text-sm text-blue-800">
+                            <strong>Status:</strong> ${status}
+                        </p>
+                    </div>
+                `,
+                confirmButtonColor: '#1e3558',
+            });
+        }
+
         function openDocumentModal(fileUrl, documentName) {
             document.getElementById('modalTitle').textContent = documentName;
             const container = document.getElementById('documentViewerContainer');

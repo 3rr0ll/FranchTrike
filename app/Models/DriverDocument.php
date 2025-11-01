@@ -115,6 +115,15 @@ class DriverDocument extends Model
     }
 
     /**
+     * Get display name - shows "Physically Submitted" suffix if applicable
+     */
+    public function getDisplayNameAttribute()
+    {
+        $isPhysicallySubmitted = str_contains($this->document_name, 'Physically Submitted');
+        return $isPhysicallySubmitted ? $this->document_name : ($this->documentType ? $this->documentType->name : 'N/A');
+    }
+
+    /**
      * Approve the document
      */
     public function approve($verifiedBy = null)

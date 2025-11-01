@@ -141,15 +141,27 @@
                             <td data-date="{{ $doc['created_at']->format('Y-m-d') }}">
                                 {{ $doc['created_at']->format('M d, Y') }}</td>
                             <td>
-                                <a href="javascript:void(0);" 
-                                   onclick="openDocumentModal('{{ $doc['url'] }}', '{{ $doc['document_type'] }}', '{{ $encryptedId }}', '{{ $doc['user_type'] }}')" 
-                                   class="text-blue-600 hover:text-blue-800" 
-                                   title="View Document">
-                                   <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>    
-                                </a>
+                                @if($doc['is_physically_submitted'])
+                                    <a href="javascript:void(0);" 
+                                       onclick="showPhysicalDocumentAlert('{{ ucfirst($doc['status']) }}')" 
+                                       class="text-blue-600 hover:text-blue-800" 
+                                       title="View Document">
+                                       <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>    
+                                    </a>
+                                @else
+                                    <a href="javascript:void(0);" 
+                                       onclick="openDocumentModal('{{ $doc['url'] }}', '{{ $doc['document_type'] }}', '{{ $encryptedId }}', '{{ $doc['user_type'] }}')" 
+                                       class="text-blue-600 hover:text-blue-800" 
+                                       title="View Document">
+                                       <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>    
+                                    </a>
+                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -201,6 +213,25 @@
     <script>
         let currentDocumentId = null;
         let currentUserType = null;
+
+        function showPhysicalDocumentAlert(status) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Physical Document Submission',
+                html: `
+                    <p class="text-gray-600 mb-4">
+                        This document was physically submitted to the office. 
+                        No digital file is available for viewing online.
+                    </p>
+                    <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
+                        <p class="text-sm text-blue-800">
+                            <strong>Status:</strong> ${status}
+                        </p>
+                    </div>
+                `,
+                confirmButtonColor: '#3085d6',
+            });
+        }
 
         function openDocumentModal(fileUrl, documentName, documentId, userType) {
             document.getElementById('modalTitle').textContent = documentName + ' (' + userType + ')';
