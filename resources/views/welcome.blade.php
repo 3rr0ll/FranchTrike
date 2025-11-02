@@ -61,23 +61,33 @@
             $user = Auth::user();
             $dashboardRoute = 'dashboard'; // Default fallback
 
-            // Determine dashboard route based on role_id
-            switch ($user->role_id) {
-              case 1:
-                $dashboardRoute = 'operator.home';
-                break;
-              case 2:
+            // If user is Operator (role_id 1)
+            if ($user->role_id == 1) {
+                // Check if operator profile is complete
+                $operator = $user->operator;
+                if (is_null($operator)) {
+                    // If operator info not registered, direct to operator.create
+                    $dashboardRoute = 'operator.create';
+                    $directToOperatorCreate = true;
+                } else {
+                    $dashboardRoute = 'operator.home';
+                    $directToOperatorCreate = false;
+                }
+            } elseif ($user->role_id == 2) {
                 $dashboardRoute = 'admin.home';
-                break;
-              case 3:
+                $directToOperatorCreate = false;
+            } elseif ($user->role_id == 3) {
                 $dashboardRoute = 'superadmin.dashboard';
-                break;
+                $directToOperatorCreate = false;
+            } else {
+                $dashboardRoute = 'dashboard';
+                $directToOperatorCreate = false;
             }
           @endphp
           <a
-            href="{{ route($dashboardRoute) }}"
+            href="{{ $directToOperatorCreate ?? false ? route($dashboardRoute) : route($dashboardRoute) }}"
             class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
-            Dashboard
+            {{ ($directToOperatorCreate ?? false) ? 'Complete Operator Info' : 'Dashboard' }}
           </a>
         @else
           <a
@@ -104,25 +114,38 @@
         <a href="#faq" class="hover:text-primary-gold transition-colors">FAQ</a>
         <div class="flex flex-col gap-4 pt-4 border-t border-white/10">
           @auth
-            @php
-              $user = Auth::user();
-              $dashboardRoute = 'dashboard'; // Default fallback
+          @php
+            $user = Auth::user();
+            $dashboardRoute = 'dashboard'; // Default fallback
 
-              switch ($user->role_id) {
-                case 1:
-                  $dashboardRoute = 'operator.home';
-                  break;
-                case 2:
-                  $dashboardRoute = 'admin.home';
-                  break;
-                case 3:
-                  $dashboardRoute = 'superadmin.dashboard';
-                  break;
-              }
-            @endphp
-            <a href="{{ route($dashboardRoute) }}" class="bg-primary-gold text-primary-navy font-semibold px-6 py-3 rounded-full hover:bg-yellow-400 transition-colors text-center">
-              Dashboard
-            </a>
+            // If user is Operator (role_id 1)
+            if ($user->role_id == 1) {
+                // Check if operator profile is complete
+                $operator = $user->operator;
+                if (is_null($operator)) {
+                    // If operator info not registered, direct to operator.create
+                    $dashboardRoute = 'operator.create';
+                    $directToOperatorCreate = true;
+                } else {
+                    $dashboardRoute = 'operator.home';
+                    $directToOperatorCreate = false;
+                }
+            } elseif ($user->role_id == 2) {
+                $dashboardRoute = 'admin.home';
+                $directToOperatorCreate = false;
+            } elseif ($user->role_id == 3) {
+                $dashboardRoute = 'superadmin.dashboard';
+                $directToOperatorCreate = false;
+            } else {
+                $dashboardRoute = 'dashboard';
+                $directToOperatorCreate = false;
+            }
+          @endphp
+          <a
+            href="{{ $directToOperatorCreate ?? false ? route($dashboardRoute) : route($dashboardRoute) }}"
+            class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
+            {{ ($directToOperatorCreate ?? false) ? 'Complete Operator Info' : 'Dashboard' }}
+          </a>
           @else
             <a href="{{ route('register') }}"
                class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full transition-colors text-center ring-4 ring-transparent hover:bg-yellow-400 hover:text-black hover:ring-primary-gold hover:scale-105 duration-200 shadow-md hover:shadow-lg"
