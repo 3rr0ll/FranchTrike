@@ -264,7 +264,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [4, 'desc']
+                [0, 'asc']
             ],
             language: {
                 search: "Search requests:",
@@ -303,7 +303,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [4, 'desc']
+                [0, 'asc']
             ],
             language: {
                 search: "Search history:",

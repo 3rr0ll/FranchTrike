@@ -322,8 +322,8 @@
                     [10, 25, 50, 100]
                 ],
                 order: [
-                    [5, 'desc']
-                ],
+                [0, 'asc']
+            ],
                 columnDefs: [{
                     targets: 5,
                     orderable: false,

@@ -110,7 +110,7 @@ Drivers List
                 [10, 25, 50, 100]
             ],
             order: [
-                [6, 'desc']
+                [0, 'asc']
             ],
             columnDefs: [{
                 targets: 6, 
