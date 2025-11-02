@@ -53,6 +53,7 @@
     </div>
 
     <div class="bg-white p-4 rounded-lg shadow border border-gray-200 mt-4">
+    <div class="overflow-auto">
         <h2 class="text-2xl font-bold text-primary-navy mb-4">Operator Documents</h2>
          <table id="documentsTable" class="min-w-full display nowrap table-auto" style="width:100%">
             <thead>
@@ -107,6 +108,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
 
     <!-- Document Modal -->
