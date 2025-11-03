@@ -48,12 +48,11 @@
                         <td>{{ $group['paid_at'] ? $group['paid_at']->format('M d, Y') : '-' }}</td>
                         <td>
                             <a href="{{ route('operator.payments.receipt', encrypt($group['first_payment_id'])) }}"
-                               class="px-3 py-1 bg-primary-navy  rounded text-s text-white">
+                               class="block sm:inline-block w-full sm:w-auto px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded text-xs text-gray-900 text-center transition-all whitespace-nowrap">
                                 View Receipt
                             </a>
                         </td>
                     </tr>
-              
                 @endforeach
             </tbody>
         </table>
@@ -96,9 +95,14 @@
                 $('.dataTables_length select').addClass(
                     'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
                 );
+                // Make the search input smaller (text-xs, px-2, py-1, reduce width)
                 $('.dataTables_filter input').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
-                );
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+                ).css({
+                    'height': '35px',
+                    'width': '150px',
+                    'max-width': '100%'
+                });
 
                 var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
                 var $length = $('.dataTables_length').css('margin', '0');

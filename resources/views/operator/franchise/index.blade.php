@@ -97,90 +97,90 @@
         </div>
         @endif
 
-        {{-- Renewed/Other Franchises Table --}}
-        <div>
-            <h4 class="text-md font-semibold mb-3 text-primary-navy">Renewed/Other Franchise Applications</h4>
-            <div class="overflow-x-auto">
-                <table id="renewedFranchiseTable" class="w-full table-auto row-border text-sm">
-                    <thead class="bg-gray-50">
-                        <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
-                            <th>Application #</th>
-                            <th>Application Type</th>
-                            <th>Status</th>
-                            <th>Franchise No</th>
-                            <th>Submitted</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($renewedFranchises as $app)
-                        @php
-                            $encryptedId = encrypt($app->id);
-                        @endphp
-                        <tr class="border-t">
-                            <td class="p-2">{{ $app->id }}</td>
-                            <td class="p-2 capitalize">{{ $app->application_type }}</td>
-                            <td class="p-2">
-                                <span class="px-2 py-1 text-xs font-medium rounded-full
-                                        @if($app->status == 'approved') bg-green-100 text-green-800
-                                        @elseif($app->status == 'rejected') bg-red-100 text-red-800
-                                        @elseif($app->status == 'expired') bg-red-100 text-red-800
-                                        @elseif($app->status == 'under_review' || $app->status == 'submitted') bg-yellow-100 text-yellow-800
-                                        @else bg-gray-100 text-gray-800 @endif">
-                                    @if($app->status === 'under_review')
-                                    Under review
-                                    @else
-                                    {{ ucfirst($app->status ?? 'pending') }}
-                                    @endif
-                                </span>
-                            </td>
-                            <td class="p-2">{{ $app->franchise_no ?? '-' }}</td>
-                            <td class="p-2">{{ $app->submitted_at ? $app->submitted_at->format('M d, Y') : '-' }}</td>
-                            <td class="p-2">
-                                <button size="sm" type="button" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900 open-franchise-details-modal" data-status="{{ $app->status ?? '' }}"
-                                    data-application-type="{{ ucfirst($app->application_type ?? '') }}"
-                                    data-franchise-no="{{ $app->franchise_no ?? '-' }}"
-                                    data-submitted="{{ optional($app->submitted_at)->format('F d, Y') ?? '-' }}"
-                                    data-expiry="{{ $app->franchise_end_date ? $app->franchise_end_date->format('F d, Y') : '' }}" data-operator="{{ $app->operator 
-                            ? trim(
-                                $app->operator->first_name . 
-                                ' ' . 
-                                ($app->operator->middle_initial ? $app->operator->middle_initial . ' ' : '') . 
-                                $app->operator->last_name
-                            ) 
-                            : 'N/A' }}"
-                                    data-driver="{{ $app->driver 
-                            ? trim(
-                                $app->driver->first_name . 
-                                ' ' . 
-                                ($app->driver->middle_initial ? $app->driver->middle_initial . ' ' : '') . 
-                                $app->driver->last_name
-                            ) 
-                            : 'N/A' }}"
-                                    data-route="{{ $app->route->name ?? 'N/A' }}"
+       
+</div>
+ {{-- Renewed/Other Franchises Table --}}
+ <div class="bg-white p-4 rounded-lg shadow mt-4">
+    <h4 class="text-md font-semibold mb-3 text-primary-navy">Renewed/Other Franchise Applications</h4>
+    <div class="overflow-x-auto">
+        <table id="renewedFranchiseTable" class="w-full table-auto row-border text-sm">
+            <thead class="bg-gray-50">
+                <tr class="tracking-wider text-gray-500 px-4 py-2 text-left text-md font-medium">
+                    <th>Application #</th>
+                    <th>Application Type</th>
+                    <th>Status</th>
+                    <th>Franchise No</th>
+                    <th>Submitted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($renewedFranchises as $app)
+                @php
+                    $encryptedId = encrypt($app->id);
+                @endphp
+                <tr class="border-t">
+                    <td class="p-2">{{ $app->id }}</td>
+                    <td class="p-2 capitalize">{{ $app->application_type }}</td>
+                    <td class="p-2">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full
+                                @if($app->status == 'approved') bg-green-100 text-green-800
+                                @elseif($app->status == 'rejected') bg-red-100 text-red-800
+                                @elseif($app->status == 'expired') bg-red-100 text-red-800
+                                @elseif($app->status == 'under_review' || $app->status == 'submitted') bg-yellow-100 text-yellow-800
+                                @else bg-gray-100 text-gray-800 @endif">
+                            @if($app->status === 'under_review')
+                            Under review
+                            @else
+                            {{ ucfirst($app->status ?? 'pending') }}
+                            @endif
+                        </span>
+                    </td>
+                    <td class="p-2">{{ $app->franchise_no ?? '-' }}</td>
+                    <td class="p-2">{{ $app->submitted_at ? $app->submitted_at->format('M d, Y') : '-' }}</td>
+                    <td class="p-2">
+                        <button size="sm" type="button" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-900 open-franchise-details-modal" data-status="{{ $app->status ?? '' }}"
+                            data-application-type="{{ ucfirst($app->application_type ?? '') }}"
+                            data-franchise-no="{{ $app->franchise_no ?? '-' }}"
+                            data-submitted="{{ optional($app->submitted_at)->format('F d, Y') ?? '-' }}"
+                            data-expiry="{{ $app->franchise_end_date ? $app->franchise_end_date->format('F d, Y') : '' }}" data-operator="{{ $app->operator 
+                    ? trim(
+                        $app->operator->first_name . 
+                        ' ' . 
+                        ($app->operator->middle_initial ? $app->operator->middle_initial . ' ' : '') . 
+                        $app->operator->last_name
+                    ) 
+                    : 'N/A' }}"
+                            data-driver="{{ $app->driver 
+                    ? trim(
+                        $app->driver->first_name . 
+                        ' ' . 
+                        ($app->driver->middle_initial ? $app->driver->middle_initial . ' ' : '') . 
+                        $app->driver->last_name
+                    ) 
+                    : 'N/A' }}"
+                            data-route="{{ $app->route->name ?? 'N/A' }}"
 
-                                    data-unit-type="{{ $app->motorDetail->unit_type ?? '' }}"
-                                    data-unit-make="{{ $app->motorDetail->unitMake->name ?? 'N/A' }}"
-                                    data-motor-no="{{ $app->motorDetail->motorno ?? '' }}"
-                                    data-chasis-no="{{ $app->motorDetail->chasisno ?? '' }}"
-                                    data-plate-no="{{ $app->motorDetail->platenumber ?? '' }}"
-                                    data-id="{{ $encryptedId }}">
-                                    <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
-                            </td>
-                        </tr>
-                       
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                            data-unit-type="{{ $app->motorDetail->unit_type ?? '' }}"
+                            data-unit-make="{{ $app->motorDetail->unitMake->name ?? 'N/A' }}"
+                            data-motor-no="{{ $app->motorDetail->motorno ?? '' }}"
+                            data-chasis-no="{{ $app->motorDetail->chasisno ?? '' }}"
+                            data-plate-no="{{ $app->motorDetail->platenumber ?? '' }}"
+                            data-id="{{ $encryptedId }}">
+                            <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+               
+                @endforeach
+            </tbody>
+        </table>
     </div>
 </div>
-
+</div>
 <!-- Franchise Details Modal -->
 <div id="franchiseDetailsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative border border-gray-100">
@@ -346,9 +346,14 @@
                     $('.dataTables_length select').addClass(
                         'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
                     );
+                    // Make the search input smaller (text-xs, px-2, py-1, reduce width)
                     $('.dataTables_filter input').addClass(
-                        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
-                    );
+                        'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+                    ).css({
+                        'height': '35px',
+                        'width': '150px',
+                        'max-width': '100%'
+                    });
 
                     var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
                     var $length = $('.dataTables_length').css('margin', '0');
