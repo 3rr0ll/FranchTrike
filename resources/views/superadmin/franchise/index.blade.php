@@ -210,7 +210,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [5, 'desc']
+            [0, 'asc']
             ], // Submitted column
             columnDefs: [{
                 targets: 6, // Actions column

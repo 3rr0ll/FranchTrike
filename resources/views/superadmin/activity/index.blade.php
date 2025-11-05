@@ -83,7 +83,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [4, 'desc']
+                [4, 'asc']
             ],
             columnDefs: [{
                 targets: 4, // Date column

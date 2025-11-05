@@ -154,7 +154,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [3, 'desc']
+                [0, 'asc']
             ],
             columnDefs: [{
                 targets: 3, // "Payments" column (4th column, 0-based index)
