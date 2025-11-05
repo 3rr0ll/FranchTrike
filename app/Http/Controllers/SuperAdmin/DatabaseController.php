@@ -19,9 +19,15 @@ class DatabaseController extends Controller
         // Get all table names
         $tables = DB::select('SHOW TABLES');
 
-        // Extract key (depends on database name)
-        $key = 'Tables_in_' . env('DB_DATABASE');
-        $tableNames = array_map(fn($table) => $table->$key, $tables);
+        // Extract the column name dynamically to fix the undefined property issue
+        if (empty($tables)) {
+            $tableNames = [];
+        } else {
+            // Get the first stdClass property name
+            $firstTableObj = (array)$tables[0];
+            $firstKey = array_key_first($firstTableObj);
+            $tableNames = array_map(fn($table) => $table->$firstKey, $tables);
+        }
 
         return view('superadmin.database.index', compact('tableNames'));
     }
@@ -32,19 +38,26 @@ class DatabaseController extends Controller
     public function show($table)
     {
         // Get all valid table names
-        $tables = collect(DB::select('SHOW TABLES'))
-            ->map(fn($t) => array_values((array)$t)[0])
+        $tablesRaw = DB::select('SHOW TABLES');
+        if (empty($tablesRaw)) {
+            abort(404, 'Table not found.');
+        }
+        $firstTableObj = (array)$tablesRaw[0];
+        $firstKey = array_key_first($firstTableObj);
+
+        $tables = collect($tablesRaw)
+            ->map(fn($t) => $t->$firstKey)
             ->toArray();
-    
+
         // Check if given table exists in list
         if (!in_array($table, $tables)) {
             abort(404, 'Table not found.');
         }
-    
+
         // Fetch limited data
         $data = DB::table($table)->limit(50)->get();
         $columns = DB::getSchemaBuilder()->getColumnListing($table);
-    
+
         return view('superadmin.database.show', compact('table', 'columns', 'data'));
     }
 
