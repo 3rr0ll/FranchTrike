@@ -282,7 +282,9 @@
                     [10, 25, 50, 100],
                     [10, 25, 50, 100]
                 ],
-                order: [],
+                order: [
+                    [0, 'asc']
+                ],
                 columnDefs: [
                     { orderable: false, targets: [2, 3] }
                 ],
@@ -310,7 +312,7 @@
                     [10, 25, 50, 100]
                 ],
                 order: [
-                    [3, 'desc']
+                    [0, 'asc']
                 ],
                 columnDefs: [{
                     targets: 4,
