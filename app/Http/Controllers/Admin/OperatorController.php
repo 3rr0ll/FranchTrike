@@ -24,9 +24,7 @@ class OperatorController extends Controller
         }
         $operator = Operator::findOrFail($id);
         return view('admin.operators.edit', compact('operator', 'encryptedId'));
-        
     }
-
 
     public function update(Request $request, $encryptedId)
     {
@@ -64,9 +62,22 @@ class OperatorController extends Controller
                 'required',
                 'date',
                 'before:today',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if (strtotime($value) > strtotime('-18 years')) {
                         $fail('The operator must be at least 18 years old.');
+                    }
+                    // Make sure age matches the birth date if age field is present
+                    if ($request->has('age')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($value);
+                            $ageFromBirthDate = $birthDate->age;
+                            $inputAge = (int)$request->input('age');
+                            if ($inputAge !== $ageFromBirthDate) {
+                                $fail('The entered age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error here, caught by earlier validation
+                        }
                     }
                 },
             ],
@@ -74,7 +85,21 @@ class OperatorController extends Controller
                 'required',
                 'integer',
                 'min:18',
-                'max:80'
+                'max:80',
+                function ($attribute, $value, $fail) use ($request) {
+                    // If birth_date is present, ensure age matches calculated age
+                    if ($request->has('birth_date')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($request->input('birth_date'));
+                            $ageFromBirthDate = $birthDate->age;
+                            if ((int)$value !== $ageFromBirthDate) {
+                                $fail('The entered age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error here, caught by earlier validation
+                        }
+                    }
+                },
             ],
             'sex' => [
                 'required',
@@ -82,7 +107,6 @@ class OperatorController extends Controller
             ],
             'civil_status' => [
                 'required'
-                
             ],
             'contact_no' => [
                 'required',

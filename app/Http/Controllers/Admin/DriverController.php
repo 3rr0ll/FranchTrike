@@ -48,9 +48,22 @@ class DriverController extends Controller
                 'required',
                 'date',
                 'before:today',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if (strtotime($value) > strtotime('-18 years')) {
                         $fail('The driver must be at least 18 years old.');
+                    }
+                    // If age field exists, ensure birth_date and age match
+                    if ($request->has('age')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($value);
+                            $ageFromBirthDate = $birthDate->age;
+                            $inputAge = (int)$request->input('age');
+                            if ($inputAge !== $ageFromBirthDate) {
+                                $fail('The entered age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error here, caught by earlier validation
+                        }
                     }
                 },
             ],
@@ -59,6 +72,20 @@ class DriverController extends Controller
                 'integer',
                 'min:18',
                 'max:80',
+                function($attribute, $value, $fail) use ($request) {
+                    // If birth_date is present, ensure age matches calculated age
+                    if ($request->has('birth_date')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($request->input('birth_date'));
+                            $ageFromBirthDate = $birthDate->age;
+                            if ((int)$value !== $ageFromBirthDate) {
+                                $fail('The entered age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error here, caught by earlier validation
+                        }
+                    }
+                },
             ],
             'sex' => ['required'],
             'civil_status' => ['required'],
@@ -80,7 +107,8 @@ class DriverController extends Controller
                 'after:today',
             ],
             'license_nature' => [
-                'required'            ],
+                'required'
+            ],
         ]);
         // Automatically assign fixed location values
         $validated['municipality'] = 'Padre Garcia';

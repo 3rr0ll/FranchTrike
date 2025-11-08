@@ -22,7 +22,6 @@ use App\Models\UnitMake;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Validation\Rule;
 
-
 class FranchiseApplicationController extends Controller
 {
     public function index(Request $request)
@@ -174,8 +173,6 @@ class FranchiseApplicationController extends Controller
             ]
         );
 
-
-
         return redirect()->route('admin.franchise.index')
             ->with('success', 'Application status updated successfully.');
     }
@@ -278,9 +275,22 @@ class FranchiseApplicationController extends Controller
                 'required',
                 'date',
                 'before:today',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if (strtotime($value) > strtotime('-18 years')) {
                         $fail('The operator must be at least 18 years old.');
+                    }
+                    // Birthdate/age logic
+                    if ($request->has('operator_age')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($value);
+                            $ageFromBirthDate = $birthDate->age;
+                            $inputAge = (int)$request->input('operator_age');
+                            if ($inputAge !== $ageFromBirthDate) {
+                                $fail('The entered operator age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
                     }
                 },
             ],
@@ -288,7 +298,20 @@ class FranchiseApplicationController extends Controller
                 'required',
                 'integer',
                 'min:18',
-                'max:80'
+                'max:80',
+                function($attribute, $value, $fail) use ($request) {
+                    if ($request->has('operator_birth_date')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($request->input('operator_birth_date'));
+                            $ageFromBirthDate = $birthDate->age;
+                            if ((int)$value !== $ageFromBirthDate) {
+                                $fail('The entered operator age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
+                    }
+                },
             ],
             'operator_sex' => [
                 'required'
@@ -340,9 +363,22 @@ class FranchiseApplicationController extends Controller
                 'required',
                 'date',
                 'before:today',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if (strtotime($value) > strtotime('-18 years')) {
                         $fail('The driver must be at least 18 years old.');
+                    }
+                    // Birthdate/age logic
+                    if ($request->has('driver_age')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($value);
+                            $ageFromBirthDate = $birthDate->age;
+                            $inputAge = (int)$request->input('driver_age');
+                            if ($inputAge !== $ageFromBirthDate) {
+                                $fail('The entered driver age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
                     }
                 },
             ],
@@ -351,6 +387,19 @@ class FranchiseApplicationController extends Controller
                 'integer',
                 'min:18',
                 'max:80',
+                function($attribute, $value, $fail) use ($request) {
+                    if ($request->has('driver_birth_date')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($request->input('driver_birth_date'));
+                            $ageFromBirthDate = $birthDate->age;
+                            if ((int)$value !== $ageFromBirthDate) {
+                                $fail('The entered driver age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
+                    }
+                },
             ],
             'driver_sex' => [
                 'required'            ],
@@ -492,7 +541,6 @@ class FranchiseApplicationController extends Controller
         ]);
 
         $request->validate($validationRules);
-
 
         DB::beginTransaction();
 
@@ -701,7 +749,7 @@ class FranchiseApplicationController extends Controller
         $franchiseApplication = FranchiseApplication::with(['operator.user', 'driver', 'motorDetail'])
             ->findOrFail($id);
 
-        // Set up validation rules (unchanged logic)
+        // Set up validation rules with birthdate/age sync
         $validationRules = [
             // Operator details
             'operator_last_name' => [
@@ -731,9 +779,21 @@ class FranchiseApplicationController extends Controller
                 'required',
                 'date',
                 'before:today',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if (strtotime($value) > strtotime('-18 years')) {
                         $fail('The operator must be at least 18 years old.');
+                    }
+                    if ($request->has('operator_age')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($value);
+                            $ageFromBirthDate = $birthDate->age;
+                            $inputAge = (int)$request->input('operator_age');
+                            if ($inputAge !== $ageFromBirthDate) {
+                                $fail('The entered operator age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
                     }
                 },
             ],
@@ -741,7 +801,20 @@ class FranchiseApplicationController extends Controller
                 'required',
                 'integer',
                 'min:18',
-                'max:80'
+                'max:80',
+                function($attribute, $value, $fail) use ($request) {
+                    if ($request->has('operator_birth_date')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($request->input('operator_birth_date'));
+                            $ageFromBirthDate = $birthDate->age;
+                            if ((int)$value !== $ageFromBirthDate) {
+                                $fail('The entered operator age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
+                    }
+                },
             ],
             'operator_sex' => [
                 'required'
@@ -801,9 +874,21 @@ class FranchiseApplicationController extends Controller
                 'required',
                 'date',
                 'before:today',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) use ($request) {
                     if (strtotime($value) > strtotime('-18 years')) {
                         $fail('The driver must be at least 18 years old.');
+                    }
+                    if ($request->has('driver_age')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($value);
+                            $ageFromBirthDate = $birthDate->age;
+                            $inputAge = (int)$request->input('driver_age');
+                            if ($inputAge !== $ageFromBirthDate) {
+                                $fail('The entered driver age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
                     }
                 },
             ],
@@ -812,6 +897,19 @@ class FranchiseApplicationController extends Controller
                 'integer',
                 'min:18',
                 'max:80',
+                function($attribute, $value, $fail) use ($request) {
+                    if ($request->has('driver_birth_date')) {
+                        try {
+                            $birthDate = \Carbon\Carbon::parse($request->input('driver_birth_date'));
+                            $ageFromBirthDate = $birthDate->age;
+                            if ((int)$value !== $ageFromBirthDate) {
+                                $fail('The entered driver age does not match the birth date.');
+                            }
+                        } catch (\Exception $e) {
+                            // ignore parse error, already handled by date validation
+                        }
+                    }
+                },
             ],
             'driver_sex' => [
                 'required',
