@@ -11,6 +11,7 @@
     @livewireStyles
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
@@ -19,6 +20,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.13.6/sorting/datetime-moment.js"></script>
 
 
     <!-- SweetAlert2 CDN -->
@@ -41,7 +45,7 @@
                         <span class="sr-only">Open sidebar</span>
                     </button>
                     <a href="{{ route('superadmin.home') }}" class="flex ml-2 md:mr-24">
-                        <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike Super Admin</span>
+                      <span class="text-md sm:text-2xl font-semibold text-white tracking-wide">Franchtrike Super Admin</span>
                     </a>
                 </div>
                 {{-- Superadmin quick info as modal trigger --}}
@@ -53,13 +57,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5a7.5 7.5 0 1115 0v.25a.25.25 0 01-.25.25H4.75a.25.25 0 01-.25-.25v-.25z" />
                     </svg>
                     <div class="flex flex-col leading-tight text-left">
-                        <span class="font-semibold text-primary-navy text-xs sm:text-sm break-words">
+            <span class="font-semibold text-primary-navy text-center text-xs sm:text-sm truncate max-w-[100px] sm:max-w-[150px]">
                             {{ Auth::user()->name ?? 'Superadmin' }}
                         </span>
                     </div>
-                    <svg class="w-4 h-4 text-primary-navy ml-2 sm:ml-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
                 </button>
 
                 {{-- Profile Modal --}}

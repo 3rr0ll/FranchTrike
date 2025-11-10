@@ -215,12 +215,12 @@
                             searchable: false
                         }],
                         language: {
-                            search: "Search applications:",
-                            lengthMenu: "Show _MENU_ applications per page",
-                            info: "Showing _START_ to _END_ of _TOTAL_ applications",
-                            infoEmpty: "Showing 0 to 0 of 0 applications",
-                            infoFiltered: "(filtered from _MAX_ total applications)",
-                            zeroRecords: "No applications found",
+                            search: "Search logins:",
+                            lengthMenu: "Show _MENU_ login logs per page",
+                            info: "Showing _START_ to _END_ of _TOTAL_ login logs",
+                            infoEmpty: "Showing 0 to 0 of 0 login logs",
+                            infoFiltered: "(filtered from _MAX_ total login logs)",
+                            zeroRecords: "No login activity found",
                             paginate: {
                                 first: "First",
                                 last: "Last",
@@ -235,6 +235,14 @@
                             $('.dataTables_filter input').addClass(
                                 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
                             );
+                            // Make the search input smaller (text-xs, px-2, py-1, reduce width)
+                            $('.dataTables_filter input').addClass(
+                                'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+                            ).css({
+                                'height': '35px',
+                                'width': '150px',
+                                'max-width': '100%'
+                            });
 
                             var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
                             var $length = $('.dataTables_length').css('margin', '0');
