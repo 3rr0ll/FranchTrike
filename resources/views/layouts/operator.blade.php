@@ -19,102 +19,102 @@
 
 <body class="font-sans antialiased bg-gray-50">
     {{-- Top Navbar --}}
-    <nav class="fixed top-0 z-50 w-full bg-primary-navy border-b border-primary-gold">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
+    <nav class="fixed top-0 z-50 w-full bg-primary-navy border-b border-primary-gold shadow-md">
+        <div class="px-2 sm:px-4 lg:px-5 py-3">
             <div class="flex items-center justify-between">
-                <div class="flex items-center justify-start rtl:justify-end">
+
+                {{-- Left: Brand + Sidebar Toggle --}}
+                <div class="flex items-center">
+                    {{-- Sidebar toggle (visible only on small screens) --}}
                     <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar"
                         aria-controls="logo-sidebar" type="button"
-                        class="inline-flex items-center p-2 text-sm text-white rounded-lg sm:hidden hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-gold">
+                        class="inline-flex items-center justify-center p-2 text-white rounded-lg hover:bg-primary-gold hover:text-primary-navy focus:outline-none focus:ring-2 focus:ring-primary-gold sm:hidden transition">
                         <span class="sr-only">Open sidebar</span>
-                        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                             <path clip-rule="evenodd" fill-rule="evenodd"
-                                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z">
-                            </path>
+                                d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z" />
                         </svg>
                     </button>
-                    <a href="{{ route('operator.dashboard') }}" class="flex ml-2 md:mr-24">
-                        <span
-                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike
+                    {{-- Left: Brand name (positioned at left edge) --}}
+                    <a href="{{ route('operator.dashboard') }}" class="flex items-center mr-4">
+                        <span class="text-md sm:text-2xl font-semibold text-white tracking-wide">Franchtrike
                             Operator</span>
                     </a>
-                </div>
-                <div class="flex items-center space-x-2 sm:space-x-4">
 
-                    {{-- Operator quick info as modal trigger --}}
+                </div>
+
+                {{-- Right: Profile & Notifications --}}
+                <div class="flex items-center gap-2 sm:gap-4">
+
+                    {{-- Profile Button --}}
                     <button id="open-profile-modal" type="button"
-                        class="flex items-center bg-white rounded shadow px-2 py-1.5 sm:px-3 sm:py-1.5 mr-2 sm:mr-4 focus:outline-none focus:ring-2 focus:ring-primary-gold transition-all min-w-[120px] sm:min-w-[0]"
-                        aria-label="Open profile modal">
-                        <svg class="w-7 h-7 text-primary-navy mr-2 hidden sm:block" fill="none" stroke="currentColor"
-                            stroke-width="1.5" viewBox="0 0 24 24">
+                        class="flex items-center bg-white rounded-lg shadow px-2 py-1.5 sm:px-3 sm:py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-gold transition hover:bg-gray-50">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7 text-primary-navy mr-2 hidden sm:block" fill="none"
+                            stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M4.5 19.5a7.5 7.5 0 1115 0v.25a.25.25 0 01-.25.25H4.75a.25.25 0 01-.25-.25v-.25z" />
                         </svg>
-                        <div class="flex flex-col leading-tight text-left">
-                            <span class="font-semibold text-primary-navy text-xs sm:text-sm break-words">
-                                {{
-    Auth::user()->operator
-    ? trim(
-        Auth::user()->operator->first_name .
-        ' ' .
-        (Auth::user()->operator->middle_initial ? Auth::user()->operator->middle_initial . ' ' : '') .
-        Auth::user()->operator->last_name
-    )
-    : 'Operator'
-                                }}
+
+                        <div class="flex flex-col text-left">
+                            <span
+                                class="font-semibold text-primary-navy text-xs sm:text-sm truncate max-w-[100px] sm:max-w-[150px]">
+                                {{ Auth::user()->name ?? 'Operator' }}
                             </span>
                         </div>
-                        <svg class="w-4 h-4 text-primary-navy ml-2 sm:ml-3" fill="none" stroke="currentColor"
+
+                        <svg class="w-4 h-4 text-primary-navy ml-1 sm:ml-3" fill="none" stroke="currentColor"
                             stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
-                    {{-- Notifications bell --}}
-                    <div class="relative mr-2 sm:mr-4">
-                        <button type="button" data-dropdown-toggle="dropdown-notifications"
-                            class="relative text-white hover:text-primary-gold focus:outline-none" id="open-notifs"
-                            aria-label="Open notifications">
+                    {{-- Notifications --}}
+                    <div class="relative">
+                        <button type="button" id="open-notifs" data-dropdown-toggle="dropdown-notifications"
+                            aria-label="Open notifications"
+                            class="relative text-white hover:text-primary-gold focus:outline-none transition">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                             </svg>
+
                             @php
                                 $notifCount = Auth::user()->siteNotifications()->whereNull('read_at')->count();
                             @endphp
-                            @if($notifCount > 0)
+
+                            @if ($notifCount > 0)
                                 <span id="notif-badge"
-                                    class="absolute -top-2 -right-2 inline-flex items-center justify-center w-2.5 h-2.5 bg-red-600 rounded-full"></span>
+                                    class="absolute -top-1 -right-1 inline-flex items-center justify-center w-2.5 h-2.5 bg-red-600 rounded-full"></span>
                             @endif
                         </button>
+
+                        {{-- Dropdown --}}
                         <div id="dropdown-notifications"
-                            class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-sm shadow-lg ring-1 ring-black ring-opacity-10 z-50">
+                            class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-10 z-50">
                             <div class="px-4 py-2 border-b font-semibold text-primary-navy">Notifications</div>
-                            <div class="max-h-80 overflow-y-auto">
+                            <div class="max-h-80 overflow-y-auto divide-y">
                                 @php
                                     $latestNotifs = Auth::user()->siteNotifications()->latest()->take(10)->get();
-                                @endphp
+                                  @endphp
                                 @forelse($latestNotifs as $n)
-                                    <div class="px-4 py-3 border-b text-sm">
+                                    <div class="px-4 py-3 text-sm hover:bg-gray-50 transition">
                                         <div class="text-gray-800">{{ $n->message }}</div>
                                         <div class="text-xs text-gray-500">{{ optional($n->created_at)->diffForHumans() }}
                                         </div>
                                     </div>
                                 @empty
-                                    <div class="px-4 py-6 text-sm text-gray-500">No notifications</div>
+                                    <div class="px-4 py-6 text-sm text-gray-500 text-center">No notifications</div>
                                 @endforelse
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </nav>
-
-
 
 
     {{-- Sidebar --}}
@@ -338,7 +338,7 @@
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Yes, logout'
-            }).then(function(result) {
+            }).then(function (result) {
                 if (result.isConfirmed) {
                     document.getElementById('logout-form').submit();
                 }
