@@ -49,7 +49,7 @@
                     type="text"
                     name="name"
                     id="name"
-                    value="{{ old('name', $operator->name) }}"
+                    value="{{ old('name', Auth::user()->name) }}"
                     class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-gold focus:border-primary-gold px-4 py-2"
                     required
                 >
@@ -82,8 +82,8 @@
                             <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                    @if($operator->profile_photo_path)
-                        <img src="{{ $operator->profile_photo_path }}" alt="Profile"
+                    @if($user->profile_photo_path)
+                        <img src="{{ $user->profile_photo_path }}" alt="Profile"
                              class="w-20 h-20 rounded-full object-cover border-2 border-primary-gold shadow">
                     @else
                         <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 border-2 border-gray-200">
