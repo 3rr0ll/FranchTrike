@@ -216,7 +216,7 @@
                 [10, 25, 50, 100]
             ],
             order: [
-                [1, 'asc']
+                [7, 'asc']
             ],
             columnDefs: [{
                 targets: 6, 
