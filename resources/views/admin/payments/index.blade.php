@@ -65,26 +65,29 @@
     </div>
 
     {{-- Date Filter & Export Buttons --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 mb-4 mr-4">
-        <div class="flex items-center gap-2">
-            <span class="text-gray-600">From:</span>
-            <input type="date" id="datepicker-range-start"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
-            <span class="text-gray-600">to</span>
-            <input type="date" id="datepicker-range-end"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
+    <div class="flex flex-col gap-4 mb-4 mr-0 sm:mr-4 sm:flex-row sm:items-center sm:justify-end">
+        <div class="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:items-center">
+            <div class="flex flex-row items-center gap-2 w-full">
+                <span class="text-gray-600 whitespace-nowrap">From:</span>
+                <input type="date" id="datepicker-range-start"
+                       class="flex-1 min-w-0 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                >
+                <span class="text-gray-600 whitespace-nowrap">to</span>
+                <input type="date" id="datepicker-range-end"
+                       class="flex-1 min-w-0 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
+                >
+            </div>
         </div>
-        <div id="export-buttons" class="flex flex-wrap gap-2 items-center">
+        <div id="export-buttons" class="flex flex-wrap gap-2 items-center w-full sm:w-auto justify-start sm:justify-end">
+            {{-- Export buttons will be dynamically injected here --}}
         </div>
-
-        <div class="flex justify-end">
-            <a href="{{ route('admin.payments.monthlyReport') }}" >
-              <x-button>
-                View Monthly Report
-              </x-button>
+        <div class="flex w-full sm:w-auto justify-end">
+            <a href="{{ route('admin.payments.monthlyReport') }}" class="w-full sm:w-auto">
+                <x-button class="w-full sm:w-auto">
+                    View Monthly Report
+                </x-button>
             </a>
         </div>
-        
     </div>
 
     <div class="p-4 bg-white rounded-lg shadow">
@@ -262,6 +265,14 @@
                 $('.dataTables_filter input').addClass(
                     'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
                 );
+                // Make the search input smaller (text-xs, px-2, py-1, reduce width)
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+                ).css({
+                    'height': '35px',
+                    'width': '150px',
+                    'max-width': '100%'
+                });
 
                 var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
                 var $length = $('.dataTables_length').css('margin', '0');

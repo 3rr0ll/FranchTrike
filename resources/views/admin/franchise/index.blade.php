@@ -136,13 +136,17 @@
             </select>
 
             <!-- Date Range Picker -->
-            <div class="flex items-center gap-2">
-                <span class="text-gray-600">From:</span>
-                <input type="date" id="datepicker-range-start"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
-                <span class="text-gray-600">to</span>
-                <input type="date" id="datepicker-range-end"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-2 w-full">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <span class="text-gray-600">From:</span>
+                    <input type="date" id="datepicker-range-start"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full sm:w-auto">
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <span class="text-gray-600">to</span>
+                    <input type="date" id="datepicker-range-end"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 w-full sm:w-auto">
+                </div>
             </div>
 
 
@@ -261,6 +265,14 @@
                 $('.dataTables_filter input').addClass(
                     'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
                 );
+                // Make the search input smaller (text-xs, px-2, py-1, reduce width)
+                $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+                ).css({
+                    'height': '35px',
+                    'width': '150px',
+                    'max-width': '100%'
+                });
 
                 var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
                 var $length = $('.dataTables_length').css('margin', '0');

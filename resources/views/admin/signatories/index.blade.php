@@ -8,7 +8,7 @@
 
 
 @section('content')
-<div class="container mx-auto px-4 sm:px-8 py-8">
+<div class="container mx-auto sm:px-8 py-4">
     
     <div class="p-4 bg-white rounded-lg shadow">
         <div class="overflow-auto">
@@ -128,6 +128,15 @@ document.addEventListener('DOMContentLoaded', function() {
             $('.dataTables_filter input').addClass(
                 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
             );
+                            // Make the search input smaller (text-xs, px-2, py-1, reduce width)
+                            $('.dataTables_filter input').addClass(
+                    'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+                ).css({
+                    'height': '35px',
+                    'width': '150px',
+                    'max-width': '100%'
+                });
+
             // Move search+length to top right, like payments table
             var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
             var $length = $('.dataTables_length').css('margin', '0');
