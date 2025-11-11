@@ -104,7 +104,7 @@
             @if($application->franchise_end_date)
                 <p>Franchise End Date: <strong style="color:#0a2240;">{{ \Carbon\Carbon::parse($application->franchise_end_date)->format('M d, Y') }}</strong></p>
             @endif
-            <a href="{{ url('/') }}" class="button">Go to Dashboard</a>
+            <a href="https://franchtrike.online/" class="button">Go to Dashboard</a>
         @elseif($status === 'rejected')
             <p style="color:#991b1b; font-weight:600; margin-bottom:10px;">We’re sorry to inform you that your application was <span style="color:#991b1b;">rejected</span>.</p>
             @if($application->rejection_reason)
