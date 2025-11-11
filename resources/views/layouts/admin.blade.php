@@ -29,7 +29,7 @@
 <body class="font-sans antialiased bg-gray-50">
     {{-- Top Navbar --}}
     <nav class="fixed top-0 z-50 w-full bg-primary-navy border-b border-primary-gold">
-        <div class="px-3 py-3 lg:px-5 lg:pl-3">
+  <div class="px-4 sm:px-6 lg:px-8 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center justify-start rtl:justify-end">
                     <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar"
@@ -44,9 +44,7 @@
                         </svg>
                     </button>
                     <a href="{{ route('admin.home') }}" class="flex ml-2 md:mr-24">
-                        <span
-                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Franchtrike
-                            Admin</span>
+                      <span class="text-md sm:text-2xl font-semibold text-white tracking-wide">Franchtrike Admin</span>
                     </a>
                 </div>
                 {{-- Admin quick info as modal trigger --}}
@@ -60,15 +58,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M4.5 19.5a7.5 7.5 0 1115 0v.25a.25.25 0 01-.25.25H4.75a.25.25 0 01-.25-.25v-.25z" />
                     </svg>
-                    <div class="flex flex-col leading-tight text-left">
-                        <span class="font-semibold text-primary-navy text-xs sm:text-sm break-words">
+                    <div class="flex flex-col leading-tight text-center">
+            <span class="font-semibold text-primary-navy text-center text-xs sm:text-sm truncate max-w-[100px] sm:max-w-[150px]">
                             {{ Auth::user()->name ?? 'Admin' }}
                         </span>
                     </div>
-                    <svg class="w-4 h-4 text-primary-navy ml-2 sm:ml-3" fill="none" stroke="currentColor"
-                        stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
+                   
                 </button>
 
                 {{-- Profile Modal --}}
