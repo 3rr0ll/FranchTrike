@@ -124,6 +124,16 @@
                         <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->ctc_no ?? 'N/A' }}</dd>
                     </div>
                     <div>
+                        <dt class="text-sm font-medium text-gray-500">CTC Place Issued</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->ctc_place_issued ?? 'N/A' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-sm font-medium text-gray-500">CTC Date</dt>
+                        <dd class="mt-1 text-sm text-gray-900">
+                            {{ $franchiseApplication->ctc_date_issued ? \Carbon\Carbon::parse($franchiseApplication->ctc_date_issued)->format('M d, Y') : 'N/A' }}
+                        </dd>
+                    </div>
+                    <div>
                         <dt class="text-sm font-medium text-gray-500">Operator Name</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $franchiseApplication->operator_name ?? 'N/A' }}</dd>
                     </div>
