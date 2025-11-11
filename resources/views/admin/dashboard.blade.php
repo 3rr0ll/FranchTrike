@@ -195,10 +195,6 @@
                     <span class="text-sm font-medium text-green-600">{{ $systemStats['active_users'] ?? 0 }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-sm text-gray-600">Total Routes</span>
-                    <span class="text-sm font-medium text-gray-900">{{ $systemStats['total_routes'] ?? 0 }}</span>
-                </div>
-                <div class="flex justify-between">
                     <span class="text-sm text-gray-600">System Status</span>
                     <span class="text-sm font-medium text-green-600">Online</span>
                 </div>
