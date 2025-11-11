@@ -281,10 +281,6 @@
           <p class="text-gray-600">Yes, track your application status in real-time through your personalized FranchTrike dashboard.</p>
         </div>
 
-        <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
-          <h4 class="font-semibold text-xl mb-4">What payment methods?</h4>
-          <p class="text-gray-600">We accept GCash, bank transfers, credit/debit cards, and in-person payments at the Municipal Treasury Office.</p>
-        </div>
       </div>
     </div>
   </section>
