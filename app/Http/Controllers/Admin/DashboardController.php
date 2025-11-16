@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $totalApplications = FranchiseApplication::count();
         $totalOperators = Operator::count();
         $totalDrivers = Driver::count();
-        $pendingReview = FranchiseApplication::whereIn('status', ['submitted', 'under_review'])->count();
+        $pendingReview = FranchiseApplication::whereIn('status', ['under_review'])->count();
 
         // Status Distribution
         $statusCounts = [
