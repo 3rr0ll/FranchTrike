@@ -205,4 +205,15 @@ class FranchiseApplication extends Model
     {
         return $this->hasMany(FranchiseApplicationLog::class);
     }
+
+    public function getPenaltyFee()
+    {
+        if (!$this->franchise_end_date) {
+            return null;
+        }
+
+        $expiredYear = $this->franchise_end_date->copy()->addYear()->year;
+
+        return Fee::where('year', $expiredYear)->first();
+    }
 }
