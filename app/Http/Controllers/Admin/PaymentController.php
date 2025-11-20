@@ -14,7 +14,6 @@ class PaymentController extends Controller
 {
     /**
      * Show payments list + create form
-     * Now returns grouped payments for the view.
      */
     public function index()
     {
@@ -60,7 +59,10 @@ class PaymentController extends Controller
             ];
         }
 
-        return view('admin.payments.index', compact('fees', 'groupedPayments'));
+        // For the select inputs for new payments, pass all open applications (with operator and motor detail loaded)
+        $applications = FranchiseApplication::with(['operator', 'motorDetail'])->get();
+
+        return view('admin.payments.index', compact('fees', 'groupedPayments', 'applications'));
     }
 
     /**
