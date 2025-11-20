@@ -89,8 +89,8 @@
             <div class="bg-white rounded-lg shadow p-6 flex flex-col items-center justify-center">
                 <span class="text-gray-600 text-md mb-2">Pending Documents</span>
                 <span class="text-4xl font-bold text-yellow-600">{{ $documentStats['pending_review'] ?? 0 }}</span>
-                <a href="{{ route('admin.franchise.index', ['status' => 'under_review']) }}"
-                    class="mt-4 text-yellow-600 hover:text-yellow-800" title="View Pending Review">
+                <a href="{{ route('admin.documents.index',) }}"
+                    class="mt-4 text-yellow-600 hover:text-yellow-800" title="View Pending Documents">
                     <x-button>
                         View
                     </x-button>
