@@ -23,28 +23,71 @@
         <h3 class="text-lg font-semibold mb-4 text-gray-800">Accept Payment</h3>
         <form id="payment-form" method="POST" action="{{ route('admin.payments.store') }}">
             @csrf
+            {{-- Franchise Application --}}
+            <div>
+                <label for="franchise_application_id" class="block font-medium mb-2">Select Franchise Application <span class="text-red-500">*</span></label>
+                <select name="franchise_application_id" id="franchise_application_id" class="w-full border border-gray-300 rounded-lg p-2.5 select2" required>
+                    <option value="">-- Select Application --</option>
+                    @foreach($applications as $application)
+                        @php
+                            $franchiseNo = $application->franchise_no ?? 'No Franchise#';
+                            $stickerNo = $application->sticker_no ?? 'No Sticker#';
+                            $endDate = $application->franchise_end_date
+                                ? \Carbon\Carbon::parse($application->franchise_end_date)->format('Y-m-d')
+                                : 'No End Date';
+                        @endphp
+                        <option value="{{ $application->id }}" {{ old('franchise_application_id') == $application->id ? 'selected' : '' }}>
+                            {{ $application->operator->last_name ?? 'N/A' }},
+                            {{ $application->operator->first_name ?? '' }}
+                            - Franchise#: {{ $franchiseNo }}, 
+                            Sticker#: {{ $stickerNo }}, 
+                            End Date: {{ $application->franchise_end_date
+                                ? \Carbon\Carbon::parse($application->franchise_end_date)->format('M d, Y')
+                                : 'No End Date' }}
+                            (Plate Number: {{ $application->motorDetail->platenumber ?? 'No Plate' }})
+                        <span class="ml-1 px-2 py-1 text-xs rounded 
+                            @if($application->status == 'active') bg-green-200 text-green-800 
+                            @elseif($application->status == 'expired') bg-red-200 text-red-800 
+                            @else bg-gray-200 text-gray-800 @endif">
+                            {{ ucfirst($application->status ?? 'Unknown') }}
+                        </span>
+                        </option>
+                    @endforeach
+                </select>
+                @error('franchise_application_id')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+            </div>      
             <div class="mb-4">
-                <label for="franchise_application_id" class="block text-sm font-medium text-gray-700 mb-1">
-                    Franchise Application ID
-                </label>
-                <input type="text" name="franchise_application_id" id="franchise_application_id" required
-                    class="w-full px-3 py-2 border rounded focus:outline-none focus:ring focus:border-blue-300"
-                    placeholder="Enter Franchise Application ID">
-            </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">
+                <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">
                     Select Fees to Pay
                 </label>
+                @php
+                    // Arrange fees for vertical filling (first column, then second, then third)
+                    $colCount = 3; 
+                    $feeChunks = [];
+                    $chunkSize = ceil(count($fees) / $colCount);
+                    for($i = 0; $i < $colCount; $i++) {
+                        $feeChunks[$i] = $fees->slice($i * $chunkSize, $chunkSize)->values();
+                    }
+                @endphp
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                    @foreach($fees as $fee)
-                    <div class="flex items-center">
-                        <input type="checkbox" name="fees[]" value="{{ $fee->id }}" id="fee_{{ $fee->id }}"
-                            class="mr-2 fee-checkbox" data-amount="{{ $fee->amount }}">
-                        <label for="fee_{{ $fee->id }}" class="text-gray-800">
-                            {{ $fee->description }} (₱{{ number_format($fee->amount, 2) }})
-                        </label>
-                    </div>
-                    @endforeach
+                    @for($row = 0; $row < $chunkSize; $row++)
+                        @for($col = 0; $col < $colCount; $col++)
+                            @php
+                                $fee = isset($feeChunks[$col][$row]) ? $feeChunks[$col][$row] : null;
+                            @endphp
+                            <div class="flex items-center">
+                                @if($fee)
+                                    <input type="checkbox" name="fees[]" value="{{ $fee->id }}" id="fee_{{ $fee->id }}"
+                                        class="mr-2 fee-checkbox" data-amount="{{ $fee->amount }}">
+                                    <label for="fee_{{ $fee->id }}" class="text-gray-800">
+                                        {{ $fee->description }} (₱{{ number_format($fee->amount, 2) }})
+                                    </label>
+                                @endif
+                            </div>
+                        @endfor
+                    @endfor
                 </div>
             </div>
             <div class="flex flex-col md:flex-row md:items-end md:justify-end gap-4">
@@ -297,5 +340,18 @@
         });
     });
 </script>
+ {{-- Include Select2 JS --}}
+ <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+ <script>
+     $(document).ready(function() {
+         $('.select2').select2({
+             width: '100%',
+             placeholder: function(){
+                 $(this).data('placeholder');
+             },
+             allowClear: true
+         });
+     });
+ </script>
 @endpush
 @endsection
