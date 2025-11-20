@@ -179,13 +179,7 @@ class FranchiseApplication extends Model
 
     protected function logStatusChange($previousStatus, $newStatus, $reason = null)
     {
-        // ApplicationStatusHistory::create([
-        //     'franchise_application_id' => $this->id,
-        //     'previous_status' => $previousStatus,
-        //     'new_status' => $newStatus,
-        //     'changed_by' => optional(auth())->id(),
-        //     'change_reason' => $reason,
-        // ]);
+
     }
     public function route()
     {
@@ -206,14 +200,4 @@ class FranchiseApplication extends Model
         return $this->hasMany(FranchiseApplicationLog::class);
     }
 
-    public function getPenaltyFee()
-    {
-        if (!$this->franchise_end_date) {
-            return null;
-        }
-
-        $expiredYear = $this->franchise_end_date->copy()->addYear()->year;
-
-        return Fee::where('year', $expiredYear)->first();
-    }
 }

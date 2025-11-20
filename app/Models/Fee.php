@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Fee extends Model
 {
-    protected $fillable = ['description', 'amount','year','is_active'];
+    protected $fillable = ['description', 'amount','is_active'];
 
     protected $casts = [
         'is_active' => 'boolean',
