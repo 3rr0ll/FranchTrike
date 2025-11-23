@@ -63,7 +63,6 @@
                     Select Fees to Pay
                 </label>
                 @php
-                    // Arrange fees for vertical filling (first column, then second, then third)
                     $colCount = 3; 
                     $feeChunks = [];
                     $chunkSize = ceil(count($fees) / $colCount);
@@ -81,7 +80,8 @@
                                 @if($fee)
                                     <input type="checkbox" name="fees[]" value="{{ $fee->id }}" id="fee_{{ $fee->id }}"
                                         class="mr-2 fee-checkbox" data-amount="{{ $fee->amount }}">
-                                    <label for="fee_{{ $fee->id }}" class="text-gray-800">
+                                    <label for="fee_{{ $fee->id }}" class="text-black">
+                                        <span class="text-black-500">{{ $fee->id }}</span>
                                         {{ $fee->description }} (₱{{ number_format($fee->amount, 2) }})
                                     </label>
                                 @endif
