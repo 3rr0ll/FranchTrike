@@ -201,7 +201,7 @@
             </div>
             <div style="text-align: left;">
                 <div style="font-weight: bold; text-decoration: underline; font-size: 15px; margin-left: 30px;">
-                    {{ $admin?->name ?? '' }}
+                    {{ $admin_name ?? '' }}
                 </div>
                 <div style="font-size: 12px; margin-top: 2px; text-align:center; display: flex; justify-content: flex-start;">
                     Signature over Printed Name Authorized Permit<br>

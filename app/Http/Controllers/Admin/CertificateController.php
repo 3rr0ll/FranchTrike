@@ -158,7 +158,7 @@ class CertificateController extends Controller
             'motorDetail' => $motorDetail,
             'franchise' => $franchiseApplication->franchise_no ?? $motorDetail->franchise_number ?? '',
             'sticker' => $franchiseApplication->sticker_no ?? $motorDetail->sticker_number ?? '',
-            'admin_name' => Auth::user()->name,
+            'admin_name' => \App\Models\Signatory::where('position_title', 'Application Verified By')->first()?->name ?? '',
             'route' => $route,
             'name' => $operator
                 ? trim(($operator->first_name ?? '') . ' ' . ($operator->middle_initial ?? '') . ' ' . ($operator->last_name ?? ''))
