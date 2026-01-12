@@ -10,8 +10,6 @@
 
 @section('content')
 <div class="p-4">
-
-
     @if(session('success'))
     <div class="mb-4 p-3 rounded bg-green-100 text-green-800">
         {{ session('success') }}
@@ -34,9 +32,15 @@
                             $stickerNo = $application->sticker_no ?? 'No Sticker#';
                             $endDate = $application->franchise_end_date
                                 ? \Carbon\Carbon::parse($application->franchise_end_date)->format('Y-m-d')
-                                : 'No End Date';
+                                : '';
+                            $expirationYear = $application->franchise_end_date
+                                ? \Carbon\Carbon::parse($application->franchise_end_date)->format('Y')
+                                : null;
                         @endphp
-                        <option value="{{ $application->id }}" {{ old('franchise_application_id') == $application->id ? 'selected' : '' }}>
+                        <option value="{{ $application->id }}"
+                            data-expiration-year="{{ $expirationYear }}"
+                            data-end-date="{{ $endDate }}"
+                            {{ old('franchise_application_id') == $application->id ? 'selected' : '' }}>
                             {{ $application->operator->last_name ?? 'N/A' }},
                             {{ $application->operator->first_name ?? '' }}
                             - Franchise#: {{ $franchiseNo }}, 
@@ -57,7 +61,7 @@
                 @error('franchise_application_id')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
-            </div>      
+            </div>
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">
                     Select Fees to Pay
@@ -78,16 +82,32 @@
                             @endphp
                             <div class="flex items-center">
                                 @if($fee)
-                                    <input type="checkbox" name="fees[]" value="{{ $fee->id }}" id="fee_{{ $fee->id }}"
-                                        class="mr-2 fee-checkbox" data-amount="{{ $fee->amount }}">
-                                    <label for="fee_{{ $fee->id }}" class="text-black">
-                                        <span class="text-black-500">{{ $fee->id }}</span>
-                                        {{ $fee->description }} (₱{{ number_format($fee->amount, 2) }})
-                                    </label>
+                                <input type="checkbox"
+                                id="fee_{{ $fee->id }}"
+                                name="fees[]"
+                                value="{{ $fee->id }}"
+                                class="fee-checkbox"
+                                data-amount="{{ $fee->amount }}"
+                                data-year="{{ $fee->year }}"
+                                data-type="{{ $fee->type }}"
+                                data-description="{{ $fee->description }}">
+                                <label for="fee_{{ $fee->id }}" class="text-black cursor-pointer">
+                                    <span class="text-gray-500 text-xs">#{{ $fee->id }}</span>
+                                    {{ $fee->description }}
+                                    @if($fee->year)
+                                        <span class="text-blue-600 font-semibold">({{ $fee->year }})</span>
+                                    @endif
+                                    - ₱{{ number_format($fee->amount, 2) }}
+                                </label>
                                 @endif
                             </div>
                         @endfor
                     @endfor
+                </div>
+                <div id="auto-select-info" class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded hidden">
+                    <p class="text-sm text-blue-800">
+                        <strong>Auto-selected penalties:</strong> <span id="penalty-list"></span>
+                    </p>
                 </div>
             </div>
             <div class="flex flex-col md:flex-row md:items-end md:justify-end gap-4">
@@ -181,7 +201,6 @@
                         <span class="text-gray-400 italic">Not reviewed</span>
                         @endif
                     </td>
-
                     <td class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                         @if(!$group['paid_at'])
                         <form method="POST" action="{{ route('admin.payments.markPaid', $group['first_payment_id']) }}" class="inline w-full sm:w-auto">
@@ -213,30 +232,115 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkboxes = document.querySelectorAll('.fee-checkbox');
-        const totalAmountInput = document.getElementById('total-amount');
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.fee-checkbox');
+    const totalAmountInput = document.getElementById('total-amount');
+    const franchiseSelect = document.getElementById('franchise_application_id');
+    const autoSelectInfo = document.getElementById('auto-select-info');
+    const penaltyList = document.getElementById('penalty-list');
 
-        function updateTotal() {
-            let total = 0;
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    total += parseFloat(cb.getAttribute('data-amount'));
-                }
-            });
-            totalAmountInput.value = '₱' + total.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
+    function updateTotal() {
+        let total = 0;
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                total += parseFloat(cb.getAttribute('data-amount'));
+            }
+        });
+        totalAmountInput.value = '₱' + total.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
+
+    /**
+     * Auto-select penalties based on franchise expiration date and Fee table
+     * Penalty rules:
+     * - Only select fees with type='penalty' for unrenewed/expired years > expirationYear <= currentYear
+     * - Do not auto-select other fees (type not 'penalty')
+     */
+    function autoSelectPenalties() {
+        // Uncheck all fee checkboxes first
+        checkboxes.forEach(cb => cb.checked = false);
+
+        const selectedOption = franchiseSelect.options[franchiseSelect.selectedIndex];
+        if (!selectedOption || !selectedOption.value) {
+            autoSelectInfo.classList.add('hidden');
+            updateTotal();
+            return;
         }
-        checkboxes.forEach(cb => cb.addEventListener('change', updateTotal));
 
-        // Date filter for DataTables
-        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+        const expirationYearAttr = selectedOption.getAttribute('data-expiration-year');
+        const endDateAttr = selectedOption.getAttribute('data-end-date'); // Format expected: YYYY-MM-DD
+
+        if (!endDateAttr || endDateAttr === 'null' || endDateAttr === '') {
+            autoSelectInfo.classList.add('hidden');
+            updateTotal();
+            return;
+        }
+
+        // Use only the date part (avoid timezone issues)
+        const endDate = new Date(`${endDateAttr}T00:00:00`);
+        const today = new Date();
+        const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+        const expirationYear = expirationYearAttr ? parseInt(expirationYearAttr, 10) : null;
+        const currentYear = today.getFullYear();
+
+        if (!expirationYear || isNaN(endDate.getTime())) {
+            autoSelectInfo.classList.add('hidden');
+            updateTotal();
+            return;
+        }
+
+        // Check if expired (franchise_end_date < today)
+        const isExpired = endDate < todayDate;
+
+        if (!isExpired) {
+            autoSelectInfo.classList.add('hidden');
+            updateTotal();
+            return;
+        }
+
+        let selectedPenalties = [];
+
+        // Auto-select only "penalty" (type) fees for all years after expirationYear up to current year
+        checkboxes.forEach(cb => {
+            const feeType = cb.getAttribute('data-type') || '';
+            const feeYearAttr = cb.getAttribute('data-year');
+            if (feeType.toLowerCase() !== 'penalty') return;
+            if (!feeYearAttr) return;
+            const feeYear = parseInt(feeYearAttr, 10);
+
+            if (feeYear > expirationYear && feeYear <= currentYear) {
+                cb.checked = true;
+                const description = cb.getAttribute('data-description');
+                selectedPenalties.push(`${description} (${feeYear})`);
+            }
+        });
+
+        if (selectedPenalties.length > 0) {
+            penaltyList.textContent = selectedPenalties.join(', ');
+            autoSelectInfo.classList.remove('hidden');
+        } else {
+            autoSelectInfo.classList.add('hidden');
+        }
+        updateTotal();
+    }
+
+    if (franchiseSelect) {
+        franchiseSelect.addEventListener('change', autoSelectPenalties);
+        if (franchiseSelect.value) {
+            autoSelectPenalties();
+        }
+    }
+
+    // Date filter for DataTables
+    $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
         let min = $('#datepicker-range-start').val();
         let max = $('#datepicker-range-end').val();
 
-        // Get the hidden date from the 7th column (<td data-date="...">)
         let dateCell = $(settings.aoData[dataIndex].nTr).find('td:eq(6)');
         let rawDate = dateCell.data('date');
 
@@ -255,103 +359,107 @@
         return false;
     });
 
-        var table = $('#payments-table').DataTable({
-            pageLength: 10,
-            lengthMenu: [
-                [10, 25, 50, 100],
-                [10, 25, 50, 100]
-            ],
-            order: [
-                [7, 'asc']
-            ],
-            columnDefs: [{
-                targets: 6, 
-                orderable: false,
-                searchable: false
-            }],
-            language: {
-                search: "Search payments:",
-                lengthMenu: "Show _MENU_ payments per page",
-                info: "Showing _START_ to _END_ of _TOTAL_ payments",
-                infoEmpty: "Showing 0 to 0 of 0 payments",
-                infoFiltered: "(filtered from _MAX_ total payments)",
-                zeroRecords: "No payments found",
-                paginate: {
-                    first: "First",
-                    last: "Last",
-                    next: "Next",
-                    previous: "Previous"
-                }
-            },
-            dom: 'Blfrtip',
-            buttons: [
-                {
-                    extend: 'csvHtml5',
-                    text: 'CSV',
-                    className: 'bg-blue-500 text-white px-3 py-1 rounded'
-                },
-                {
-                    extend: 'excelHtml5',
-                    text: 'Excel',
-                    className: 'bg-green-500 text-white px-3 py-1 rounded'
-                },
-                {
-                    extend: 'pdfHtml5',
-                    text: 'PDF',
-                    className: 'bg-red-500 text-white px-3 py-1 rounded'
-                },
-            ],
-            initComplete: function() {
-                $('.dataTables_length select').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
-                );
-                $('.dataTables_filter input').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
-                );
-                // Make the search input smaller (text-xs, px-2, py-1, reduce width)
-                $('.dataTables_filter input').addClass(
-                    'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
-                ).css({
-                    'height': '35px',
-                    'width': '150px',
-                    'max-width': '100%'
-                });
-
-                var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
-                var $length = $('.dataTables_length').css('margin', '0');
-                var $search = $('.dataTables_filter').css('margin', '0');
-                $controls.append($length).append($search);
-
-                $controls.insertBefore($('#payments-table').closest('.overflow-auto, .overflow-x-auto'));
-
-                var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
-                let $exportDiv = $('#export-buttons');
-                if ($exportDiv.length === 0) {
-                    $exportDiv = $('<div id="export-buttons" class="flex flex-wrap gap-2 mb-4"></div>');
-                    $('#payments-table').before($exportDiv);
-                }
-                $exportDiv.empty().append(btns);
+    var table = $('#payments-table').DataTable({
+        pageLength: 10,
+        lengthMenu: [
+            [10, 25, 50, 100],
+            [10, 25, 50, 100]
+        ],
+        order: [
+            [7, 'asc']
+        ],
+        columnDefs: [{
+            targets: 6, 
+            orderable: false,
+            searchable: false
+        }],
+        language: {
+            search: "Search payments:",
+            lengthMenu: "Show _MENU_ payments per page",
+            info: "Showing _START_ to _END_ of _TOTAL_ payments",
+            infoEmpty: "Showing 0 to 0 of 0 payments",
+            infoFiltered: "(filtered from _MAX_ total payments)",
+            zeroRecords: "No payments found",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next",
+                previous: "Previous"
             }
-        });
+        },
+        dom: 'Blfrtip',
+        buttons: [
+            {
+                extend: 'csvHtml5',
+                text: 'CSV',
+                className: 'bg-blue-500 text-white px-3 py-1 rounded'
+            },
+            {
+                extend: 'excelHtml5',
+                text: 'Excel',
+                className: 'bg-green-500 text-white px-3 py-1 rounded'
+            },
+            {
+                extend: 'pdfHtml5',
+                text: 'PDF',
+                className: 'bg-red-500 text-white px-3 py-1 rounded'
+            },
+        ],
+        initComplete: function() {
+            $('.dataTables_length select').addClass(
+                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg'
+            );
+            $('.dataTables_filter input').addClass(
+                'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg ml-2'
+            );
+            $('.dataTables_filter input').addClass(
+                'bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg ml-2 px-2 py-1'
+            ).css({
+                'height': '35px',
+                'width': '150px',
+                'max-width': '100%'
+            });
 
-        // Redraw when date inputs change
-        $('#datepicker-range-start, #datepicker-range-end').on('change', function() {
-            table.draw();
-        });
+            var $controls = $('<div class="w-full flex flex-row justify-between items-center mb-4 mr-2"></div>');
+            var $length = $('.dataTables_length').css('margin', '0');
+            var $search = $('.dataTables_filter').css('margin', '0');
+            $controls.append($length).append($search);
+
+            $controls.insertBefore($('#payments-table').closest('.overflow-auto, .overflow-x-auto'));
+
+            var btns = $('.dt-buttons').addClass('flex flex-wrap gap-2').children();
+            let $exportDiv = $('#export-buttons');
+            if ($exportDiv.length === 0) {
+                $exportDiv = $('<div id="export-buttons" class="flex flex-wrap gap-2 mb-4"></div>');
+                $('#payments-table').before($exportDiv);
+            }
+            $exportDiv.empty().append(btns);
+        }
     });
+
+    // Redraw when date inputs change
+    $('#datepicker-range-start, #datepicker-range-end').on('change', function() {
+        table.draw();
+    });
+});
 </script>
- {{-- Include Select2 JS --}}
- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
- <script>
-     $(document).ready(function() {
-         $('.select2').select2({
-             width: '100%',
-             placeholder: function(){
-                 $(this).data('placeholder');
-             },
-             allowClear: true
-         });
-     });
- </script>
+{{-- Include Select2 JS --}}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).ready(function() {
+    $('.select2').select2({
+        width: '100%',
+        placeholder: '-- Select Application --',
+        allowClear: true
+    });
+    
+    // Trigger autoSelectPenalties after Select2 changes
+    $('#franchise_application_id').on('select2:select select2:clear', function() {
+        autoSelectPenalties();
+    });
+});
+
+</script>
 @endpush
 @endsection
