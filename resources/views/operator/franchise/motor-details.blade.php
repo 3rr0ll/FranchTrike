@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto mt-6 bg-white p-6 rounded-lg shadow">
-    <form method="POST" action="{{ route('operator.franchise.store-motor-details', $franchiseApplication->id) }}">
+    <form method="POST" action="{{ route('operator.franchise.store-motor-details', $encryptedId) }}">
         @csrf
         {{-- Motor Details --}}
         <div class="mb-6">
