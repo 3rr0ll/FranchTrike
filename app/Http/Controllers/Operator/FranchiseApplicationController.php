@@ -239,7 +239,7 @@ class FranchiseApplicationController extends Controller
         // Use encrypt here for redirect
         $redirectId = encrypt($franchiseApplicationId);
 
-        return redirect()->route('operator.franchise.index')->with('success', 'Motor details added successfully.');
+        return redirect()->route('operator.franchise.index')->with('success', 'Franchise submitted successfully.');
     }
 
     // Approve method: set status to approved, set start and end dates

@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Fee extends Model
 {
-    protected $fillable = ['description', 'amount','is_active'];
+    protected $fillable = ['description', 'amount','year', 'is_active' ,'type'];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'amount' => 'decimal:2'
+        'amount' => 'decimal:2',
+        'type' => 'string'
     ];
 
     public function payments()
