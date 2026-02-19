@@ -1,5 +1,11 @@
 @extends('layouts.operator')
 
+@section('header')
+<h2 class="font-bold text-3xl text-primary-navy mb-8 flex items-center gap-2">
+    Input Driver Information
+</h2>
+@endsection
+
 @section('content')
     <div class="py-6 px-4">
         <div class="bg-white shadow rounded-lg p-6">
