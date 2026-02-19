@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\Http\Controllers\ChatBotController;
-
+use App\Http\Controllers\Auth\GoogleController;
 
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboard;
 use App\Http\Controllers\Operator\OperatorController;
@@ -124,6 +124,9 @@ Route::post('/email/verification-resend', function (Request $request) {
     return back()->with('status', 'verification-link-sent');
 })->middleware(['auth'])->name('verification.resend');
 
+
+Route::get('/auth/google', [GoogleController::class, 'redirect']);
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 
 Route::view('/terms', 'terms')->name('terms');
 Route::view('/privacy', 'privacy')->name('privacy');
