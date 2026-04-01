@@ -27,7 +27,11 @@
   <link rel="stylesheet" href="css/components.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
 </head>
 
 <body class="bg-white text-primary-navy font-['Inter']">
@@ -89,6 +93,13 @@
             class="bg-primary-gold text-primary-navy font-semibold px-6 py-2 rounded-full hover:bg-yellow-400 transition-colors text-sm">
             {{ ($directToOperatorCreate ?? false) ? 'Complete Operator Info' : 'Dashboard' }}
           </a>
+          <form method="POST" action="{{ route('logout') }}" class="inline">
+            @csrf
+            <button type="submit"
+            class="border-2 border-white text-white font-semibold px-6 py-2 rounded-full hover:bg-white hover:text-primary-navy transition-colors text-sm">
+              Logout
+            </button>
+          </form>
         @else
           <a
             href="{{ route('register') }}"
@@ -524,7 +535,7 @@
       })
       .catch(error => {
         console.error('Error loading questions:', error); // Debug log
-        showBotMessage("❌ Failed to load questions. Please try again later.");
+        showBotMessage("Failed to load questions. Please try again later.");
         addBackToCategories();
       });
   }
