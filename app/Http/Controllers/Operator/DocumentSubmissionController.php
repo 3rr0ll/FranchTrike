@@ -10,6 +10,7 @@ use App\Models\FranchiseApplication;
 use App\Models\Driver;
 use App\Models\Operator;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -24,6 +25,121 @@ class DocumentSubmissionController extends Controller
     private function getCurrentOperator()
     {
         return Operator::where('user_id', Auth::id())->first();
+    }
+
+    private function makeCloudinaryInstance(): Cloudinary
+    {
+        if (! config('cloudinary.cloud_name') || ! config('cloudinary.api_key') || ! config('cloudinary.api_secret')) {
+            throw new \RuntimeException('Cloudinary configuration is missing.');
+        }
+
+        return new Cloudinary([
+            'cloud' => [
+                'cloud_name' => config('cloudinary.cloud_name'),
+                'api_key' => config('cloudinary.api_key'),
+                'api_secret' => config('cloudinary.api_secret'),
+            ],
+            'url' => [
+                'secure' => true,
+            ],
+        ]);
+    }
+
+    private function processOperatorDocumentFile(Operator $operator, $documentTypeId, UploadedFile $file, Cloudinary $cloudinary): void
+    {
+        $operatorId = $operator->operator_id;
+
+        $existingDocument = OperatorDocument::where('operator_id', $operatorId)
+            ->where('document_type_id', $documentTypeId)
+            ->first();
+
+        if ($existingDocument) {
+            if ($existingDocument->cloudinary_public_id) {
+                try {
+                    $cloudinary->uploadApi()->destroy(
+                        $existingDocument->cloudinary_public_id,
+                        ['resource_type' => 'auto']
+                    );
+                } catch (\Exception $e) {
+                    // Continue even if Cloudinary delete fails
+                }
+            }
+            $existingDocument->delete();
+        }
+
+        $publicId = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)).'_'.time();
+
+        $upload = $cloudinary->uploadApi()->upload(
+            $file->getRealPath(),
+            [
+                'folder' => 'operator_documents/'.$operatorId,
+                'public_id' => $publicId,
+                'resource_type' => 'auto',
+            ]
+        );
+
+        $fileUrl = $upload['secure_url'];
+        $cloudinaryPublicId = $upload['public_id'];
+
+        OperatorDocument::create([
+            'operator_id' => $operatorId,
+            'document_type_id' => $documentTypeId,
+            'document_name' => $file->getClientOriginalName(),
+            'file_url' => $fileUrl,
+            'file_type' => $file->getClientOriginalExtension(),
+            'file_size' => $file->getSize(),
+            'cloudinary_public_id' => $cloudinaryPublicId,
+            'status' => 'pending',
+        ]);
+    }
+
+    private function processDriverDocumentFile(Driver $driver, $documentTypeId, UploadedFile $file, Cloudinary $cloudinary, $userId): void
+    {
+        $driverId = $driver->driver_id;
+
+        $existingDocument = DriverDocument::where('driver_id', $driverId)
+            ->where('document_type_id', $documentTypeId)
+            ->first();
+
+        if ($existingDocument) {
+            if ($existingDocument->cloudinary_public_id) {
+                try {
+                    $cloudinary->uploadApi()->destroy(
+                        $existingDocument->cloudinary_public_id,
+                        ['resource_type' => 'auto']
+                    );
+                } catch (\Exception $e) {
+                    // Continue even if Cloudinary delete fails
+                }
+            }
+            $existingDocument->delete();
+        }
+
+        $publicId = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)).'_'.time();
+
+        $upload = $cloudinary->uploadApi()->upload(
+            $file->getRealPath(),
+            [
+                'folder' => 'driver_documents/'.$driverId,
+                'public_id' => $publicId,
+                'resource_type' => 'auto',
+            ]
+        );
+
+        $fileUrl = $upload['secure_url'];
+        $cloudinaryPublicId = $upload['public_id'];
+
+        DriverDocument::create([
+            'driver_id' => $driverId,
+            'document_type_id' => $documentTypeId,
+            'document_name' => $file->getClientOriginalName(),
+            'file_url' => $fileUrl,
+            'file_type' => $file->getClientOriginalExtension(),
+            'file_size' => $file->getSize(),
+            'cloudinary_public_id' => $cloudinaryPublicId,
+            'status' => 'pending',
+            'user_id' => $userId,
+        ]);
     }
 
     /**
@@ -100,68 +216,16 @@ class DocumentSubmissionController extends Controller
         $userId = Auth::check() ? Auth::id() : null;
 
         try {
-            if (!config('cloudinary.cloud_name') || !config('cloudinary.api_key') || !config('cloudinary.api_secret')) {
-                return back()->with('error', 'Cloudinary configuration is missing.');
-            }
-
-            $cloudinary = new Cloudinary([
-                'cloud' => [
-                    'cloud_name' => config('cloudinary.cloud_name'),
-                    'api_key' => config('cloudinary.api_key'),
-                    'api_secret' => config('cloudinary.api_secret'),
-                ],
-                'url' => [
-                    'secure' => true
-                ]
-            ]);
+            $cloudinary = $this->makeCloudinaryInstance();
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             return back()->with('error', 'Cloudinary configuration error: ' . $e->getMessage());
         }
 
         foreach ($request->file('documents') as $documentTypeId => $file) {
             try {
-                $existingDocument = OperatorDocument::where('operator_id', $operatorId)
-                    ->where('document_type_id', $documentTypeId)
-                    ->first();
-
-                if ($existingDocument) {
-                    if ($existingDocument->cloudinary_public_id) {
-                        try {
-                            $cloudinary->uploadApi()->destroy(
-                                $existingDocument->cloudinary_public_id,
-                                ['resource_type' => 'auto']
-                            );
-                        } catch (\Exception $e) {
-                            // Continue even if Cloudinary delete fails
-                        }
-                    }
-                    $existingDocument->delete();
-                }
-
-                $publicId = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '_' . time();
-
-                $upload = $cloudinary->uploadApi()->upload(
-                    $file->getRealPath(),
-                    [
-                        'folder' => 'operator_documents/' . $operatorId,
-                        'public_id' => $publicId,
-                        'resource_type' => 'auto'
-                    ]
-                );
-
-                $fileUrl = $upload['secure_url'];
-                $cloudinaryPublicId = $upload['public_id'];
-
-                OperatorDocument::create([
-                    'operator_id'          => $operatorId,
-                    'document_type_id'     => $documentTypeId,
-                    'document_name'        => $file->getClientOriginalName(),
-                    'file_url'             => $fileUrl,
-                    'file_type'            => $file->getClientOriginalExtension(),
-                    'file_size'            => $file->getSize(),
-                    'cloudinary_public_id' => $cloudinaryPublicId,
-                    'status'               => 'pending',
-                ]);
+                $this->processOperatorDocumentFile($operator, $documentTypeId, $file, $cloudinary);
             } catch (\Exception $e) {
                 return back()->with('error', 'Failed to upload document: ' . $file->getClientOriginalName() . '. Error: ' . $e->getMessage());
             }
@@ -214,69 +278,16 @@ class DocumentSubmissionController extends Controller
         }
 
         try {
-            if (!config('cloudinary.cloud_name') || !config('cloudinary.api_key') || !config('cloudinary.api_secret')) {
-                return back()->with('error', 'Cloudinary configuration is missing.');
-            }
-
-            $cloudinary = new Cloudinary([
-                'cloud' => [
-                    'cloud_name' => config('cloudinary.cloud_name'),
-                    'api_key' => config('cloudinary.api_key'),
-                    'api_secret' => config('cloudinary.api_secret'),
-                ],
-                'url' => [
-                    'secure' => true
-                ]
-            ]);
+            $cloudinary = $this->makeCloudinaryInstance();
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
         } catch (\Exception $e) {
             return back()->with('error', 'Cloudinary configuration error: ' . $e->getMessage());
         }
 
         foreach ($request->file('documents') as $documentTypeId => $file) {
             try {
-                $existingDocument = DriverDocument::where('driver_id', $driverId)
-                    ->where('document_type_id', $documentTypeId)
-                    ->first();
-
-                if ($existingDocument) {
-                    if ($existingDocument->cloudinary_public_id) {
-                        try {
-                            $cloudinary->uploadApi()->destroy(
-                                $existingDocument->cloudinary_public_id,
-                                ['resource_type' => 'auto']
-                            );
-                        } catch (\Exception $e) {
-                            // Continue even if Cloudinary delete fails
-                        }
-                    }
-                    $existingDocument->delete();
-                }
-
-                $publicId = Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '_' . time();
-
-                $upload = $cloudinary->uploadApi()->upload(
-                    $file->getRealPath(),
-                    [
-                        'folder' => 'driver_documents/' . $driverId,
-                        'public_id' => $publicId,
-                        'resource_type' => 'auto'
-                    ]
-                );
-
-                $fileUrl = $upload['secure_url'];
-                $cloudinaryPublicId = $upload['public_id'];
-
-                DriverDocument::create([
-                    'driver_id'            => $driverId,
-                    'document_type_id'     => $documentTypeId,
-                    'document_name'        => $file->getClientOriginalName(),
-                    'file_url'             => $fileUrl,
-                    'file_type'            => $file->getClientOriginalExtension(),
-                    'file_size'            => $file->getSize(),
-                    'cloudinary_public_id' => $cloudinaryPublicId,
-                    'status'               => 'pending',
-                    'user_id'              => $userId,
-                ]);
+                $this->processDriverDocumentFile($driver, $documentTypeId, $file, $cloudinary, $userId);
             } catch (\Exception $e) {
                 return back()->with('error', 'Failed to upload document: ' . $file->getClientOriginalName() . '. Error: ' . $e->getMessage());
             }
@@ -298,6 +309,129 @@ class DocumentSubmissionController extends Controller
 
         return redirect()->route('operator.home', ['driver' => $driverId])
             ->with('success', 'Driver documents uploaded successfully!');
+    }
+
+    /**
+     * Upload one operator document via XHR (progress tracked client-side to the server).
+     */
+    public function uploadOperatorDocumentAjax(Request $request)
+    {
+        $request->validate([
+            'document_type_id' => 'required|exists:document_types,document_id',
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $operator = $this->getCurrentOperator();
+        if (! $operator) {
+            return response()->json(['message' => 'Please complete your operator profile first.'], 403);
+        }
+
+        $docType = DocumentType::forOperator()->where('document_id', $request->document_type_id)->first();
+        if (! $docType) {
+            return response()->json(['message' => 'Invalid document type.'], 422);
+        }
+
+        try {
+            $cloudinary = $this->makeCloudinaryInstance();
+            $this->processOperatorDocumentFile(
+                $operator,
+                $request->document_type_id,
+                $request->file('file'),
+                $cloudinary
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $file = $request->file('file');
+        $userId = Auth::check() ? Auth::id() : null;
+
+        \App\Helpers\ActivityLogger::log(
+            'operator document',
+            'uploaded',
+            'Operator uploaded documents.',
+            [
+                'operator_id' => $operator->operator_id,
+                'uploaded document names' => [$file->getClientOriginalName()],
+                'uploaded_by' => Auth::user() ? Auth::user()->name : null,
+                'user_id' => $userId,
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Document uploaded successfully.',
+            'document_type_id' => (int) $request->document_type_id,
+        ]);
+    }
+
+    /**
+     * Upload one driver document via XHR (progress tracked client-side to the server).
+     */
+    public function uploadDriverDocumentAjax(Request $request)
+    {
+        $request->validate([
+            'driver_id' => 'required|exists:drivers,driver_id',
+            'document_type_id' => 'required|exists:document_types,document_id',
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $operator = $this->getCurrentOperator();
+        if (! $operator) {
+            return response()->json(['message' => 'Please complete your operator profile first.'], 403);
+        }
+
+        $driver = Driver::where('driver_id', $request->driver_id)
+            ->where('operator_id', $operator->operator_id)
+            ->first();
+
+        if (! $driver) {
+            return response()->json(['message' => 'Driver not found or does not belong to your operator account.'], 403);
+        }
+
+        $docType = DocumentType::forDriver()->where('document_id', $request->document_type_id)->first();
+        if (! $docType) {
+            return response()->json(['message' => 'Invalid document type.'], 422);
+        }
+
+        $userId = Auth::check() ? Auth::id() : null;
+
+        try {
+            $cloudinary = $this->makeCloudinaryInstance();
+            $this->processDriverDocumentFile(
+                $driver,
+                $request->document_type_id,
+                $request->file('file'),
+                $cloudinary,
+                $userId
+            );
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        $file = $request->file('file');
+
+        \App\Helpers\ActivityLogger::log(
+            'driver document',
+            'uploaded',
+            'Driver documents uploaded by operator.',
+            [
+                'operator_id' => $operator->operator_id,
+                'driver_id' => $driver->driver_id,
+                'uploaded document names' => [$file->getClientOriginalName()],
+                'uploaded_by' => Auth::user() ? Auth::user()->name : null,
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Document uploaded successfully.',
+            'document_type_id' => (int) $request->document_type_id,
+        ]);
     }
 
     /**
@@ -634,7 +768,7 @@ class DocumentSubmissionController extends Controller
             return redirect()->route('operator.dashboard')->with('error', 'No renewed franchise found.');
         }
     
-        // 🟢 Ensure franchise has a driver assigned
+        // Ensure franchise has a driver assigned
         if (!$franchiseApplication->driver_id) {
             return redirect()->route('operator.dashboard')->with('error', 'This renewed franchise has no assigned driver.');
         }
@@ -645,13 +779,13 @@ class DocumentSubmissionController extends Controller
             return redirect()->route('operator.dashboard')->with('error', 'The driver assigned to this franchise no longer exists.');
         }
     
-        // 🟢 Operator documents
+        //  Operator documents
         $operatorDocumentTypes = DocumentType::forOperator()->get();
         $submittedOperatorDocuments = OperatorDocument::where('operator_id', $operator->operator_id)
             ->get()
             ->keyBy('document_type_id');
     
-        // 🟢 Driver documents (only this one driver)
+        //  Driver documents (only this one driver)
         $driverDocumentTypes = DocumentType::forDriver()->get();
         $submittedDriverDocuments = DriverDocument::where('driver_id', $driver->driver_id)
             ->get()
