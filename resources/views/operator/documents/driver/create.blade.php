@@ -34,7 +34,11 @@
 
         <!-- Document Upload Form -->
         <div class="bg-white rounded-lg shadow-md p-6">
-            <form action="{{ route('operator.documents.driver.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="driver-documents-form"
+                action="{{ route('operator.documents.driver.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                data-upload-url="{{ route('operator.documents.driver.upload-ajax') }}">
                 @csrf
 
                 <div class="mb-6">
@@ -118,6 +122,15 @@
                                     {{ isset($submittedDocuments[$docType->document_id]) ? '' : 'required' }} />
                             </label>
                         </div>
+                        <div id="upload-progress-wrap-{{ $docType->document_id }}" class="hidden mt-3">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                                <div id="upload-progress-bar-{{ $docType->document_id }}"
+                                    class="bg-indigo-600 h-2.5 rounded-full transition-all duration-150 ease-out"
+                                    style="width: 0%"></div>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-1 text-right"><span id="upload-progress-pct-{{ $docType->document_id }}">0%</span></p>
+                        </div>
+                        <p id="upload-error-{{ $docType->document_id }}" class="hidden mt-2 text-sm text-red-600"></p>
                     </div>
                     @endforeach
                 </div>
@@ -137,48 +150,100 @@
 
 @push('scripts')
 <script>
-    // Prepare an array of document IDs from Blade
-    const documentTypeIds = {!! json_encode($documentTypes->pluck('document_id')) !!};
+(function () {
+    var documentTypeIds = @json($documentTypes->pluck('document_id')->values());
+    var form = document.getElementById('driver-documents-form');
+    var uploadUrl = form ? form.getAttribute('data-upload-url') : '';
+    var driverSelect = document.getElementById('driver_id');
+    var homeBaseUrl = @json(route('operator.home'));
 
-    documentTypeIds.forEach(function(docId) {
-        const input = document.getElementById('dropzone-file-' + docId);
-        const previewContainer = document.getElementById('file-preview-container-' + docId);
-        const previewContent = document.getElementById('file-preview-content-' + docId);
-        const dropzoneContent = document.getElementById('dropzone-content-' + docId);
-        const dropzoneLabel = document.getElementById('dropzone-label-' + docId);
+    function csrfToken() {
+        var t = form && form.querySelector('input[name="_token"]');
+        return t ? t.value : '';
+    }
+
+    function parseXhrError(xhr) {
+        try {
+            var j = JSON.parse(xhr.responseText);
+            if (j.message) return j.message;
+            if (j.errors) {
+                var keys = Object.keys(j.errors);
+                if (keys.length && j.errors[keys[0]][0]) return j.errors[keys[0]][0];
+            }
+        } catch (e) {}
+        return 'Upload failed (' + xhr.status + ').';
+    }
+
+    function uploadWithProgress(url, formData, onProgress) {
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader('X-CSRF-TOKEN', csrfToken());
+            xhr.setRequestHeader('Accept', 'application/json');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.upload.onprogress = function (ev) {
+                if (ev.lengthComputable) onProgress(ev.loaded / ev.total);
+            };
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    try {
+                        resolve(JSON.parse(xhr.responseText));
+                    } catch (err) {
+                        reject('Invalid server response');
+                    }
+                } else {
+                    reject(parseXhrError(xhr));
+                }
+            };
+            xhr.onerror = function () {
+                reject('Network error.');
+            };
+            xhr.send(formData);
+        });
+    }
+
+    function setProgress(docId, ratio) {
+        var p = Math.max(0, Math.min(1, ratio));
+        var bar = document.getElementById('upload-progress-bar-' + docId);
+        var pct = document.getElementById('upload-progress-pct-' + docId);
+        if (bar) bar.style.width = (p * 100) + '%';
+        if (pct) pct.textContent = Math.round(p * 100) + '%';
+    }
+
+    documentTypeIds.forEach(function (docId) {
+        var input = document.getElementById('dropzone-file-' + docId);
+        var previewContainer = document.getElementById('file-preview-container-' + docId);
+        var previewContent = document.getElementById('file-preview-content-' + docId);
+        var dropzoneContent = document.getElementById('dropzone-content-' + docId);
+        var dropzoneLabel = document.getElementById('dropzone-label-' + docId);
 
         if (!input) return;
 
-        // Drag & drop support
         if (dropzoneLabel) {
-            // Prevent default drag behaviors
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                dropzoneLabel.addEventListener(eventName, function(e) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(function (eventName) {
+                dropzoneLabel.addEventListener(eventName, function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                 });
             });
 
-            // Highlight on dragover
-            dropzoneLabel.addEventListener('dragover', function(e) {
+            dropzoneLabel.addEventListener('dragover', function () {
                 dropzoneLabel.classList.add('ring-2', 'ring-indigo-300');
             });
-            dropzoneLabel.addEventListener('dragleave', function(e) {
+            dropzoneLabel.addEventListener('dragleave', function () {
                 dropzoneLabel.classList.remove('ring-2', 'ring-indigo-300');
             });
-            dropzoneLabel.addEventListener('drop', function(e) {
+            dropzoneLabel.addEventListener('drop', function (e) {
                 dropzoneLabel.classList.remove('ring-2', 'ring-indigo-300');
                 if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
                     input.files = e.dataTransfer.files;
-                    // Manually trigger change event for preview
-                    const event = new Event('change', { bubbles: true });
-                    input.dispatchEvent(event);
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
         }
 
-        input.addEventListener('change', function(e) {
-            const file = e.target.files[0];
+        input.addEventListener('change', function () {
+            var file = input.files[0];
             if (!file) return;
 
             if ((file.size / 1024 / 1024) > 5) {
@@ -191,14 +256,14 @@
 
             previewContent.innerHTML = '';
             if (file.type === 'application/pdf') {
-                const iframe = document.createElement('iframe');
+                var iframe = document.createElement('iframe');
                 iframe.src = URL.createObjectURL(file);
-                iframe.className = "w-full h-full object-contain border rounded-lg";
+                iframe.className = 'w-full h-full object-contain border rounded-lg';
                 previewContent.appendChild(iframe);
             } else if (file.type.startsWith('image/')) {
-                const img = document.createElement('img');
+                var img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
-                img.className = "w-full h-full object-contain border rounded-lg";
+                img.className = 'w-full h-full object-contain border rounded-lg';
                 previewContent.appendChild(img);
             } else {
                 previewContent.innerHTML = '<span class="text-red-600">Unsupported file type</span>';
@@ -208,12 +273,106 @@
             dropzoneContent.classList.add('opacity-30');
         });
 
-        previewContainer.addEventListener('click', function() {
+        previewContainer.addEventListener('click', function () {
             previewContainer.classList.add('hidden');
             dropzoneContent.classList.remove('opacity-30');
             input.value = '';
+            var err = document.getElementById('upload-error-' + docId);
+            var wrap = document.getElementById('upload-progress-wrap-' + docId);
+            if (err) {
+                err.classList.add('hidden');
+                err.textContent = '';
+            }
+            if (wrap) wrap.classList.add('hidden');
+            setProgress(docId, 0);
         });
     });
+
+    if (!form || !uploadUrl) return;
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        if (!driverSelect || !driverSelect.value) {
+            alert('Please select a driver.');
+            return;
+        }
+
+        var driverId = driverSelect.value;
+
+        for (var i = 0; i < documentTypeIds.length; i++) {
+            var docId = documentTypeIds[i];
+            var input = document.getElementById('dropzone-file-' + docId);
+            if (!input) continue;
+            if (input.required && (!input.files || !input.files.length)) {
+                alert('Please select all required documents.');
+                return;
+            }
+        }
+
+        var promises = [];
+        var submitBtn = form.querySelector('button[type="submit"]');
+
+        documentTypeIds.forEach(function (docId) {
+            var input = document.getElementById('dropzone-file-' + docId);
+            if (!input || !input.files || !input.files.length) return;
+
+            var errEl = document.getElementById('upload-error-' + docId);
+            var wrap = document.getElementById('upload-progress-wrap-' + docId);
+            if (errEl) {
+                errEl.classList.add('hidden');
+                errEl.textContent = '';
+            }
+            if (wrap) wrap.classList.remove('hidden');
+            setProgress(docId, 0);
+
+            var fd = new FormData();
+            fd.append('file', input.files[0]);
+            fd.append('document_type_id', docId);
+            fd.append('driver_id', driverId);
+
+            promises.push(
+                uploadWithProgress(uploadUrl, fd, function (ratio) {
+                    setProgress(docId, ratio);
+                }).catch(function (msg) {
+                    if (errEl) {
+                        errEl.textContent = msg;
+                        errEl.classList.remove('hidden');
+                    }
+                    return Promise.reject(msg);
+                })
+            );
+        });
+
+        if (promises.length === 0) {
+            alert('Please choose at least one file to upload.');
+            return;
+        }
+
+        if (submitBtn) submitBtn.disabled = true;
+
+        Promise.all(promises)
+            .then(function () {
+                var redirectUrl = homeBaseUrl + (homeBaseUrl.indexOf('?') >= 0 ? '&' : '?') + 'driver=' + encodeURIComponent(driverId);
+                function go() {
+                    window.location.href = redirectUrl;
+                }
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Uploaded',
+                        text: 'Driver documents uploaded successfully.'
+                    }).then(go);
+                } else {
+                    alert('Driver documents uploaded successfully.');
+                    go();
+                }
+            })
+            .finally(function () {
+                if (submitBtn) submitBtn.disabled = false;
+            });
+    });
+})();
 </script>
 @endpush
 @endsection
