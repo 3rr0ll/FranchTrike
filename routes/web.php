@@ -135,49 +135,6 @@ Route::get('/chatbot/categories', [ChatBotController::class, 'getCategories']);
 Route::get('/chatbot/questions/{category}', [ChatBotController::class, 'questions']);
 Route::get('/chatbot/answer/{id}', [ChatBotController::class, 'answer']);
 
-// Debug route to manually verify email (remove in production)
-Route::get('/debug/verify-email/{user_id}', function ($user_id) {
-    $user = \App\Models\User::find($user_id);
-    if ($user) {
-        $user->markEmailAsVerified();
-        return "Email verified for user: " . $user->email;
-    }
-    return "User not found";
-})->middleware('auth');
-
-// Debug route to check user authentication and role (remove in production)
-Route::get('/debug/user-info', function () {
-    $user = Auth::user();
-    if (!$user) {
-        return "Not logged in";
-    }
-    
-    return [
-        'user_id' => $user->id,
-        'name' => $user->name,
-        'email' => $user->email,
-        'role_id' => $user->role_id,
-        'role_name' => $user->role ? $user->role->name : 'No role assigned',
-        'is_active' => $user->is_active,
-        'email_verified' => $user->hasVerifiedEmail(),
-    ];
-})->middleware('auth');
-
-// Debug route to test login-logs access (remove in production)
-Route::get('/debug/test-login-logs', function () {
-    $user = Auth::user();
-    if (!$user) {
-        return "Not logged in";
-    }
-    
-    if (!$user->role || $user->role->name !== 'superadmin') {
-        return "Access denied. You need superadmin role. Current role: " . ($user->role ? $user->role->name : 'No role');
-    }
-    
-    // If we get here, user has superadmin role
-    return redirect()->route('superadmin.users.login-logs');
-})->middleware('auth');
-
 
 Route::middleware([
     'auth:sanctum',
